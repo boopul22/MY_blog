@@ -45,9 +45,14 @@ const HomePage: React.FC = () => {
                 
                 {/* View All Button */}
                 <div className="text-center mt-8 sm:mt-12">
-                    <button className="border border-slate-400 dark:border-slate-600 text-slate-600 dark:text-slate-300 font-medium py-3 px-6 sm:px-8 text-sm hover:bg-slate-100 dark:hover:bg-medium-dark transition-colors">
-                        View all trending articles
-                    </button>
+                    {publishedPosts.length > 12 && (
+                        <Link 
+                            to="/all-posts" 
+                            className="inline-block border border-slate-400 dark:border-slate-600 text-slate-600 dark:text-slate-300 font-medium py-3 px-6 sm:px-8 text-sm hover:bg-slate-100 dark:hover:bg-medium-dark transition-colors"
+                        >
+                            View all trending articles
+                        </Link>
+                    )}
                 </div>
             </main>
 

@@ -6,6 +6,7 @@ import { ThemeProvider } from './context/ThemeContext';
 import HomePage from './pages/public/HomePage';
 import PostPage from './pages/public/PostPage';
 import CategoryPage from './pages/public/CategoryPage';
+import AllPostsPage from './pages/public/AllPostsPage';
 import LoginPage from './pages/admin/LoginPage';
 import AdminLayout from './pages/admin/AdminLayout';
 import DashboardPage from './pages/admin/DashboardPage';
@@ -125,6 +126,7 @@ const App: React.FC = () => {
                           <Route path="/" element={<HomePage />} />
                           <Route path="/post/:slug" element={<PostPage />} />
                           <Route path="/category/:slug" element={<CategoryPage />} />
+                          <Route path="/all-posts" element={<AllPostsPage />} />
                           <Route path="/sitemap.xml" element={<Sitemap />} />
                       </Routes>
                   </div>

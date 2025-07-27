@@ -1,12 +1,30 @@
 
-import React, { useState } from 'react';
+import React, { useState, useContext, useEffect, useRef } from 'react';
 import { NavLink, Link } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext';
+import { BlogContext } from '../context/SupabaseBlogContext';
 import { MenuIcon, SearchIcon, MoonIcon, SunIcon, GlobeAltIcon } from './icons';
 
 const Header: React.FC = () => {
     const { isDarkMode, toggleDarkMode } = useTheme();
+    const context = useContext(BlogContext);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const [isCategoriesOpen, setIsCategoriesOpen] = useState(false);
+    const dropdownRef = useRef<HTMLLIElement>(null);
+
+    // Close dropdown when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+                setIsCategoriesOpen(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, []);
 
     const NavItem: React.FC<{ to: string; children: React.ReactNode; mobile?: boolean }> = ({ to, children, mobile = false }) => (
         <li>
@@ -59,8 +77,38 @@ const Header: React.FC = () => {
                         <nav className="hidden md:flex flex-1 justify-center">
                             <ul className="flex items-center space-x-6 lg:space-x-8">
                                 <NavItem to="/">Home</NavItem>
-                                <NavItem to="/category/lifestyle">Pages</NavItem>
-                                <NavItem to="/category/technology">Blog</NavItem>
+                                
+                                {/* Categories Dropdown */}
+                                <li className="relative" ref={dropdownRef}>
+                                    <button
+                                        onClick={() => setIsCategoriesOpen(!isCategoriesOpen)}
+                                        className="flex items-center gap-2 text-sm font-medium text-dark-text dark:text-light-text hover:text-primary dark:hover:text-primary transition-colors"
+                                    >
+                                        <div className="w-2 h-2 rounded-full border border-primary dark:border-primary"></div>
+                                        Categories
+                                        <svg className={`w-4 h-4 transition-transform ${isCategoriesOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                        </svg>
+                                    </button>
+                                    
+                                    {isCategoriesOpen && context && (
+                                        <div className="absolute top-full left-0 mt-2 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50">
+                                            <div className="py-2">
+                                                {context.categories.map((category) => (
+                                                    <Link
+                                                        key={category.id}
+                                                        to={`/category/${category.slug}`}
+                                                        onClick={() => setIsCategoriesOpen(false)}
+                                                        className="block px-4 py-2 text-sm text-dark-text dark:text-light-text hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-primary dark:hover:text-primary transition-colors"
+                                                    >
+                                                        {category.name}
+                                                    </Link>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+                                </li>
+                                
                                 <NavItem to="/admin">Contact</NavItem>
                             </ul>
                         </nav>
@@ -105,8 +153,41 @@ const Header: React.FC = () => {
                         <nav className="max-w-screen-xl mx-auto px-4">
                             <ul className="py-4">
                                 <NavItem to="/" mobile>Home</NavItem>
-                                <NavItem to="/category/lifestyle" mobile>Pages</NavItem>
-                                <NavItem to="/category/technology" mobile>Blog</NavItem>
+                                
+                                {/* Mobile Categories */}
+                                <li className="border-b border-slate-200 dark:border-slate-700">
+                                    <button
+                                        onClick={() => setIsCategoriesOpen(!isCategoriesOpen)}
+                                        className="flex items-center justify-between w-full py-2 px-4 text-sm font-medium text-dark-text dark:text-light-text hover:text-primary dark:hover:text-primary transition-colors"
+                                    >
+                                        <span className="flex items-center gap-2">
+                                            <div className="w-2 h-2 rounded-full border border-primary dark:border-primary"></div>
+                                            Categories
+                                        </span>
+                                        <svg className={`w-4 h-4 transition-transform ${isCategoriesOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                        </svg>
+                                    </button>
+                                    
+                                    {isCategoriesOpen && context && (
+                                        <div className="pl-6 pb-2">
+                                            {context.categories.map((category) => (
+                                                <Link
+                                                    key={category.id}
+                                                    to={`/category/${category.slug}`}
+                                                    onClick={() => {
+                                                        setIsCategoriesOpen(false);
+                                                        setIsMobileMenuOpen(false);
+                                                    }}
+                                                    className="block py-1 text-sm text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors"
+                                                >
+                                                    {category.name}
+                                                </Link>
+                                            ))}
+                                        </div>
+                                    )}
+                                </li>
+                                
                                 <NavItem to="/admin" mobile>Contact</NavItem>
                             </ul>
                             <div className="py-4 border-t border-slate-200 dark:border-slate-700 flex items-center justify-center space-x-4">

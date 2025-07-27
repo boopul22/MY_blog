@@ -5,6 +5,10 @@ import { BlogContext } from '../../context/SupabaseBlogContext';
 import { useTheme } from '../../context/ThemeContext';
 import { Post } from '../../types';
 import StructuredData from '../../components/StructuredData';
+import TableOfContents from '../../components/TableOfContents';
+import FAQSchema from '../../components/FAQSchema';
+import AuthorInfo from '../../components/AuthorInfo';
+
 import { 
     FacebookIcon, 
     TwitterIcon, 
@@ -102,7 +106,11 @@ const PostPage: React.FC = () => {
     };
 
     const Sidebar = () => (
-        <aside className="space-y-12 bg-light dark:bg-dark">
+        <aside className="space-y-8 bg-light dark:bg-dark">
+            {/* Table of Contents */}
+            <TableOfContents content={post.content} />
+            
+            {/* Popular Posts */}
             <div>
                 <h2 className="text-lg font-bold mb-6 relative after:content-[''] after:absolute after:left-0 after:bottom-[-8px] after:w-8 after:h-0.5 after:bg-slate-800 dark:after:bg-slate-200 text-dark-text dark:text-light-text">
                     POPULAR POSTS
@@ -248,9 +256,11 @@ const PostPage: React.FC = () => {
     return (
         <div className="bg-light dark:bg-dark min-h-screen">
             <title>{post.seoTitle || post.title}</title>
-            <meta name="description" content={post.metaDescription} />
+            <meta name="description" content={post.seoDescription} />
             <StructuredData post={post} />
             <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
+
+                
                 <main className="mt-6 sm:mt-8 lg:mt-12">
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-x-16">
                         <div className="lg:col-span-2 order-1 lg:order-1">
@@ -344,32 +354,13 @@ const PostPage: React.FC = () => {
                                     )}
                                 </div>
 
-                                {/* Author Bio */}
-                                <div className="mt-12 sm:mt-16 bg-gray-50 dark:bg-gray-800 p-4 sm:p-6 lg:p-8 flex flex-col sm:flex-row items-center sm:items-start space-y-4 sm:space-y-0 sm:space-x-6 rounded-lg">
-                                    <div className="w-20 h-20 sm:w-24 sm:h-24 bg-gray-200 dark:bg-gray-700 rounded-full flex-shrink-0 flex items-center justify-center">
-                                        <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-400 dark:bg-gray-500 rounded-full"></div>
-                                    </div>
-                                    <div className="w-full text-center sm:text-left">
-                                        <h3 className="text-lg sm:text-xl font-bold text-dark-text dark:text-light-text">
-                                            {post.authorName || 'Author Name'}
-                                        </h3>
-                                        <p className="mt-2 text-sm sm:text-base text-gray-600 dark:text-gray-400">
-                                            Author bio and description would go here. This is a placeholder for the author's information and background.
-                                        </p>
-                                        <div className="mt-3 sm:mt-4 flex justify-center sm:justify-start items-center space-x-3 sm:space-x-4 text-gray-500 dark:text-gray-400">
-                                            <a href="#" className="hover:text-gray-800 dark:hover:text-gray-200 transition-colors" aria-label="Author's Facebook">
-                                                <FacebookIcon className="w-4 h-4" />
-                                            </a>
-                                            <a href="#" className="hover:text-gray-800 dark:hover:text-gray-200 transition-colors" aria-label="Author's Twitter">
-                                                <TwitterIcon className="w-4 h-4" />
-                                            </a>
-                                            <a href="#" className="hover:text-gray-800 dark:hover:text-gray-200 transition-colors" aria-label="Author's LinkedIn">
-                                                <LinkedInIcon className="w-4 h-4" />
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
                             </article>
+
+                            {/* FAQ Schema */}
+                            <FAQSchema post={post} />
+                            
+                            {/* Author Information */}
+                            <AuthorInfo post={post} className="mt-12 sm:mt-16" />
 
                             <CommentSection />
                         </div>
