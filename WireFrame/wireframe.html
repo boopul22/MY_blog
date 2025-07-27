@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Athena - Wireframe</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.4;
+            background: #fff;
+        }
+        
+        .wireframe-element {
+            border: 1px solid #333;
+            background: #fff;
+            position: relative;
+        }
+        
+        .wireframe-image {
+            background: repeating-linear-gradient(
+                45deg,
+                #ddd 0px,
+                #ddd 2px,
+                #fff 2px,
+                #fff 10px
+            );
+            border: 1px solid #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            color: #666;
+        }
+        
+        /* Promo Bar */
+        .promo-bar {
+            background: #f0f0f0;
+            padding: 8px;
+            text-align: center;
+            border-bottom: 1px solid #333;
+            font-size: 12px;
+            position: relative;
+        }
+        
+        .close-btn {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            border: 1px solid #333;
+            padding: 2px 6px;
+            font-size: 12px;
+        }
+        
+        /* Header */
+        .header {
+            padding: 15px 0;
+            border-bottom: 2px solid #333;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding-left: 20px;
+            padding-right: 20px;
+        }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 40px;
+        }
+        
+        .hamburger {
+            border: 1px solid #333;
+            padding: 8px;
+            font-size: 16px;
+        }
+        
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            text-align: center;
+            letter-spacing: 1px;
+        }
+        
+        .nav {
+            display: flex;
+            gap: 35px;
+        }
+        
+        .nav-item {
+            padding: 8px 12px;
+            border: 1px solid #333;
+            font-size: 14px;
+        }
+        
+        .header-right {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .search-icon, .language, .login {
+            border: 1px solid #333;
+            padding: 6px 10px;
+            font-size: 12px;
+        }
+        
+        .login {
+            background: #333;
+            color: #fff;
+        }
+        
+        /* Main Container */
+        .main-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* Main Content Grid - 2 columns */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            padding: 30px 0;
+        }
+        
+        .article-card {
+            border: 2px solid #333;
+            position: relative;
+            overflow: visible;
+        }
+        
+        .article-image {
+            height: 250px;
+            border-bottom: 1px solid #333;
+        }
+        
+        .article-meta {
+            padding: 10px 15px;
+            border-bottom: 1px solid #333;
+            font-size: 10px;
+            background: #f9f9f9;
+            letter-spacing: 0.5px;
+        }
+        
+        .article-title {
+            padding: 15px;
+            font-size: 18px;
+            font-weight: bold;
+            line-height: 1.3;
+        }
+        
+        /* Vertical Date */
+        .vertical-date {
+            position: absolute;
+            left: -20px;
+            top: 50%;
+            transform: translateY(-50%) rotate(-90deg);
+            font-size: 11px;
+            font-weight: bold;
+            color: #666;
+            background: #fff;
+            padding: 4px 10px;
+            border: 1px solid #333;
+            white-space: nowrap;
+        }
+        
+        /* Secondary Grid - 4 columns but only 3 filled */
+        .secondary-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            padding-bottom: 25px;
+        }
+        
+        .small-card {
+            border: 1px solid #333;
+            position: relative;
+        }
+        
+        .small-image {
+            height: 140px;
+            border-bottom: 1px solid #333;
+        }
+        
+        .small-meta {
+            padding: 8px 10px;
+            font-size: 9px;
+            border-bottom: 1px solid #333;
+            background: #f9f9f9;
+            letter-spacing: 0.3px;
+        }
+        
+        .small-title {
+            padding: 10px;
+            font-size: 13px;
+            font-weight: bold;
+            line-height: 1.2;
+        }
+        
+        .small-vertical-date {
+            position: absolute;
+            left: -15px;
+            top: 50%;
+            transform: translateY(-50%) rotate(-90deg);
+            font-size: 10px;
+            font-weight: bold;
+            color: #666;
+            background: #fff;
+            padding: 3px 8px;
+            border: 1px solid #333;
+            white-space: nowrap;
+        }
+        
+        /* Third Grid - 4 columns all filled */
+        .third-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            padding-bottom: 25px;
+        }
+        
+        /* Fourth Grid - 4 columns all filled */
+        .fourth-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            padding-bottom: 30px;
+        }
+        
+        /* View All Button */
+        .view-all {
+            text-align: center;
+            padding: 25px 0;
+        }
+        
+        .view-all-btn {
+            border: 2px solid #333;
+            padding: 12px 25px;
+            background: #fff;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        
+        /* Instagram Section */
+        .instagram-section {
+            text-align: center;
+            padding: 40px 20px;
+            border-top: 2px solid #333;
+            margin-top: 30px;
+        }
+        
+        .instagram-profile {
+            width: 50px;
+            height: 50px;
+            border: 2px solid #333;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+        
+        .instagram-title {
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .instagram-handle {
+            font-size: 14px;
+            margin-bottom: 30px;
+            color: #666;
+        }
+        
+        .instagram-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 12px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .instagram-post {
+            aspect-ratio: 1;
+            border: 1px solid #333;
+        }
+        
+        /* Cookie Bar */
+        .cookie-bar {
+            background: #000;
+            color: #fff;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            font-size: 13px;
+        }
+        
+        .cookie-buttons {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .cookie-btn {
+            border: 1px solid #fff;
+            background: transparent;
+            color: #fff;
+            padding: 8px 15px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        
+        .empty-card {
+            border: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Promo Bar -->
+    <div class="promo-bar wireframe-element">
+        ← → Students and teachers save a massive 71% on Creative Cloud All Apps
+        <div class="close-btn">×</div>
+    </div>
+    
+    <!-- Header -->
+    <div class="header wireframe-element">
+        <div class="header-left">
+            <div class="hamburger">☰</div>
+            <div class="logo">Athena</div>
+        </div>
+        
+        <nav class="nav">
+            <div class="nav-item">Home</div>
+            <div class="nav-item">Pages</div>
+            <div class="nav-item">Blog</div>
+            <div class="nav-item">Contact</div>
+        </nav>
+        
+        <div class="header-right">
+            <div class="search-icon">🔍</div>
+            <div class="search-icon">🔍</div>
+            <div class="language">🌐 English</div>
+            <div class="login">Login</div>
+        </div>
+    </div>
+    
+    <div class="main-container">
+        <!-- Main Content Grid -->
+        <div class="main-grid">
+            <!-- First Large Article -->
+            <div class="article-card">
+                <div class="vertical-date">25 JAN</div>
+                <div class="article-image wireframe-image">IMAGE: Interior workspace with computers and desks</div>
+                <div class="article-meta">CONSULTING • DEVELOPMENT • SELF HELP/ADVICE</div>
+                <div class="article-title">Discover Your Best Self: A Journey to a Vibrant Lifestyle</div>
+            </div>
+            
+            <!-- Second Large Article -->
+            <div class="article-card">
+                <div class="vertical-date">17 JAN</div>
+                <div class="article-image wireframe-image">IMAGE: Desk with notebook, pencil, and compass</div>
+                <div class="article-meta">BUSINESS • TRAVEL • PLACES PLANNING</div>
+                <div class="article-title">The Art of Mindful Living: Transforming Your Lifestyle for Inner Peace</div>
+            </div>
+        </div>
+        
+        <!-- Secondary Grid -->
+        <div class="secondary-grid">
+            <div class="small-card">
+                <div class="small-vertical-date">15 JAN</div>
+                <div class="small-image wireframe-image">IMAGE: Light bulb on blue background</div>
+                <div class="small-meta">ART & SCIENCE • GUIDES • SELF HELP/BUSINESS</div>
+                <div class="small-title">Living Authentically: Honoring Your Values in Your Daily Lifestyle</div>
+            </div>
+            
+            <div class="small-card">
+                <div class="small-vertical-date">13 JAN</div>
+                <div class="small-image wireframe-image">IMAGE: Group of people outdoors at sunset</div>
+                <div class="small-meta">FOOD • MUSIC • PLACES PLANNING</div>
+                <div class="small-title">Fueling Your Body, Nourishing Your Soul: The Foundation of a Healthy...</div>
+            </div>
+            
+            <div class="small-card">
+                <div class="small-vertical-date">11 JAN</div>
+                <div class="small-image wireframe-image">IMAGE: Modern bedroom interior</div>
+                <div class="small-meta">TECHNOLOGY • SELF IMPROVEMENT • SELF HELP/BUSINESS</div>
+                <div class="small-title">Achieving Harmony: Strategies for Work-Life Balance</div>
+            </div>
+            
+            <!-- Empty fourth column -->
+            <div class="empty-card"></div>
+        </div>
+        
+        <!-- Third Grid -->
+        <div class="third-grid">
+            <div class="small-card">
+                <div class="small-vertical-date">9 JAN</div>
+                <div class="small-image wireframe-image">IMAGE: Notebook and coffee on desk</div>
+                <div class="small-meta">ENTERTAINMENT • TECHNOLOGY • GUIDES</div>
+                <div class="small-title">The Art of Simplifying Life: Exploring Minimalist Living</div>
+            </div>
+            
+            <div class="small-card">
+                <div class="small-vertical-date">7 JAN</div>
+                <div class="small-image wireframe-image">IMAGE: Green salad with herbs</div>
+                <div class="small-meta">FASHION • HEALTH & FITNESS • WELLNESS</div>
+                <div class="small-title">Embracing the Spirit of Adventure with Outdoor...</div>
+            </div>
+            
+            <div class="small-card">
+                <div class="small-vertical-date">5 JAN</div>
+                <div class="small-image wireframe-image">IMAGE: Woman in hat with travel items</div>
+                <div class="small-meta">LIFESTYLE • FASHION & TRAVEL • TRAVEL</div>
+                <div class="small-title">Minimalism and Mindfulness: Cultivating...</div>
+            </div>
+            
+            <div class="small-card">
+                <div class="small-vertical-date">3 JAN</div>
+                <div class="small-image wireframe-image">IMAGE: Library interior with books</div>
+                <div class="small-meta">SCHOOL • TECHNOLOGY • BUSINESS GUIDES</div>
+                <div class="small-title">Minimalist Travel: Embracing Experiences...</div>
+            </div>
+        </div>
+        
+        <!-- Fourth Grid -->
+        <div class="fourth-grid">
+            <div class="small-card">
+                <div class="small-vertical-date">1 JAN</div>
+                <div class="small-image wireframe-image">IMAGE: Silhouette of person by window</div>
+                <div class="small-meta">PHOTOGRAPHY • SCREEN & SMARTPHONE • TECHNOLOGY</div>
+                <div class="small-title">Digital Minimalism: Streamlining Your Tech...</div>
+            </div>
+            
+            <div class="small-card">
+                <div class="small-vertical-date">29 DEC</div>
+                <div class="small-image wireframe-image">IMAGE: Minimal desk setup with laptop</div>
+                <div class="small-meta">LUXURY • STYLE • DESIGN WATCH</div>
+                <div class="small-title">Minimalist Home Design: Creating Serenity in Small...</div>
+            </div>
+            
+            <div class="small-card">
+                <div class="small-vertical-date">27 DEC</div>
+                <div class="small-image wireframe-image">IMAGE: Clean white chair and desk</div>
+                <div class="small-meta">EDUCATION • TECHNOLOGY • BUSINESS TIPS</div>
+                <div class="small-title">The Art of Decluttering: Finding Peace in...</div>
+            </div>
+            
+            <div class="small-card">
+                <div class="small-vertical-date">25 DEC</div>
+                <div class="small-image wireframe-image image">IMAGE: Modern minimalist interior</div>
+                <div class="small-meta">FAMILY • ART & DESIGN • STYLE WATCH</div>
+                <div class="small-title">Minimalism in Everyday Life: Small Changes, Big...</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- View All Button -->
+    <div class="view-all">
+        <button class="view-all-btn wireframe-element">View all trending articles</button>
+    </div>
+    
+    <!-- Instagram Section -->
+    <div class="instagram-section wireframe-element">
+        <div class="instagram-profile">@</div>
+        <div class="instagram-title">Follow Me On Instagram</div>
+        <div class="instagram-handle">@athena_lifestyle</div>
+        
+        <div class="instagram-grid">
+            <div class="instagram-post wireframe-image">POST</div>
+            <div class="instagram-post wireframe-image">POST</div>
+            <div class="instagram-post wireframe-image">POST</div>
+            <div class="instagram-post wireframe-image">POST</div>
+            <div class="instagram-post wireframe-image">POST</div>
+            <div class="instagram-post wireframe-image">POST</div>
+        </div>
+    </div>
+    
+    <!-- Cookie Bar -->
+    <div class="cookie-bar wireframe-element">
+        <div>Your experience on this site will be improved by allowing cookies.</div>
+        <div class="cookie-buttons">
+            <button class="cookie-btn">Reject</button>
+            <button class="cookie-btn">Customize preferences</button>
+            <button class="cookie-btn">Allow cookies</button>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,5 @@
+{
+  "name": "Gemini Blog Platform",
+  "description": "A feature-rich blog platform with an AI-powered admin dashboard for creating and managing content. This application is a React-based simulation of a full-stack Next.js and Supabase application, using the Gemini API for content and image generation.",
+  "requestFramePermissions": []
+}

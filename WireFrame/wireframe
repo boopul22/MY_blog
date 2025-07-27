@@ -1,0 +1,198 @@
+
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+
+// --- Components ---
+
+const TopBanner: React.FC = () => {
+  return (
+    <div className="bg-rose-100/50 text-gray-700 text-sm py-2 px-4">
+      <div className="max-w-screen-xl mx-auto flex justify-between items-center">
+        <div className="flex items-center gap-4">
+          <div className="w-4 h-4 border-l-2 border-b-2 border-gray-500 transform rotate-45"></div>
+          <div className="w-4 h-4 border-r-2 border-b-2 border-gray-500 transform rotate-[-45deg]"></div>
+          <div className="w-80 h-4 bg-gray-300 rounded"></div>
+        </div>
+        <div className="w-4 h-4 relative">
+          <div className="absolute inset-0 w-full h-0.5 bg-gray-500 transform rotate-45"></div>
+          <div className="absolute inset-0 w-full h-0.5 bg-gray-500 transform -rotate-45"></div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const NavItem: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <li>
+    <a href="#" className="flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-black">
+      <div className="w-2 h-2 rounded-full border border-pink-400"></div>
+      {children}
+    </a>
+  </li>
+);
+
+const Header: React.FC = () => {
+  return (
+    <header className="py-8">
+      <div className="text-center mb-8">
+        <div className="inline-block relative mb-4">
+            <div className="w-16 h-1 bg-gray-300 mx-auto"></div>
+        </div>
+        <h1 className="text-5xl font-serif tracking-widest text-gray-800">Athena</h1>
+        <p className="text-xs tracking-[0.2em] text-gray-500 mt-1">CREATIVE MAGAZINE</p>
+      </div>
+      <div className="flex justify-between items-center border-t border-b border-gray-200 py-4">
+        <div className="flex-1"></div>
+        <nav className="flex-1 flex justify-center">
+          <ul className="flex items-center space-x-8">
+            <NavItem>Home</NavItem>
+            <NavItem>Pages</NavItem>
+            <NavItem>Blog</NavItem>
+            <NavItem>Contact</NavItem>
+          </ul>
+        </nav>
+        <div className="flex-1 flex justify-end items-center space-x-4">
+            <div className="w-6 h-6 border rounded-full border-gray-400"></div>
+            <div className="w-6 h-6 border rounded-full border-gray-400 flex items-center justify-center">
+                <div className="w-2 h-2 border-b-2 border-r-2 border-gray-500 transform rotate-45 -mr-1 -mb-1"></div>
+            </div>
+            <div className="flex items-center gap-2 text-sm">
+                <div className="w-5 h-5 border rounded-full border-gray-400"></div>
+                <div className="w-16 h-4 bg-gray-300 rounded"></div>
+            </div>
+          <div className="w-20 h-9 bg-gray-800 rounded-md"></div>
+        </div>
+      </div>
+    </header>
+  );
+};
+
+const ArticleCard: React.FC = () => {
+  return (
+    <div className="group relative">
+      <div className="absolute top-0 left-0 -ml-10 transform -translate-x-full h-full flex items-center" aria-hidden="true">
+        <p 
+          className="text-xs text-gray-400 font-medium tracking-widest uppercase"
+          style={{ writingMode: 'vertical-rl', textOrientation: 'mixed' }}
+        >
+          Dec 27, 2024
+        </p>
+      </div>
+      
+      <div className="mb-6">
+        <div className="w-full aspect-[4/5] bg-gray-300 border border-gray-200"></div>
+      </div>
+      
+      <div className="space-y-3">
+        <div className="flex items-center space-x-4">
+            <div className="w-24 h-3 bg-gray-300 rounded-full"></div>
+            <div className="w-24 h-3 bg-gray-300 rounded-full"></div>
+        </div>
+        <div className="space-y-2">
+            <div className="w-full h-5 bg-gray-400 rounded"></div>
+            <div className="w-4/5 h-5 bg-gray-400 rounded"></div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const articles = [
+  { id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }, { id: 5 }, { id: 6 }, 
+  { id: 7 }, { id: 8 }, { id: 9 }, { id: 10 }, { id: 11 }, { id: 12 },
+];
+
+const ArticleGrid: React.FC = () => {
+  return (
+    <main className="py-12">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8">
+        {articles.slice(0, 2).map(article => (
+          <div key={article.id} className="lg:col-span-6">
+            <ArticleCard />
+          </div>
+        ))}
+        {articles.slice(2, 12).map(article => (
+          <div key={article.id} className="lg:col-span-4">
+            <ArticleCard />
+          </div>
+        ))}
+      </div>
+      <div className="text-center mt-12">
+        <button className="border border-gray-400 text-gray-600 font-medium py-3 px-8 text-sm hover:bg-gray-100 transition-colors">
+          View all trending articles
+        </button>
+      </div>
+    </main>
+  );
+};
+
+const InstagramFeed: React.FC = () => {
+  return (
+    <section className="py-16">
+      <div className="text-center mb-8">
+        <div className="inline-flex items-center gap-3 text-gray-800 text-lg">
+          <div className="w-6 h-6 border-2 border-gray-400 rounded-md flex items-center justify-center">
+            <div className="w-3 h-3 border-2 border-gray-400 rounded-full"></div>
+          </div>
+          <div className="w-24 h-5 bg-gray-400 rounded"></div>
+        </div>
+        <h2 className="text-3xl font-serif text-gray-800 mt-2">Follow Me On Instagram</h2>
+        <div className="mt-2 h-4 w-48 bg-gray-300 rounded mx-auto"></div>
+      </div>
+      <div className="flex w-full overflow-hidden">
+        {[...Array(6)].map((_, i) => (
+          <div key={i} className="flex-shrink-0 w-1/5">
+            <div className="w-full aspect-square bg-gray-300 border border-white"></div>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+};
+
+const CookieBanner: React.FC = () => {
+  return (
+    <div className="fixed bottom-0 left-0 right-0 bg-black text-white p-4 z-50">
+      <div className="max-w-screen-xl mx-auto flex justify-between items-center">
+        <div className="h-4 w-3/5 bg-gray-500 rounded"></div>
+        <div className="flex items-center space-x-2">
+          <div className="h-9 w-40 bg-gray-700 rounded-md"></div>
+          <div className="h-9 w-20 bg-gray-700 rounded-md"></div>
+          <div className="h-9 w-32 bg-gray-200 rounded-md"></div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+
+// --- App ---
+
+const App: React.FC = () => {
+  return (
+    <div className="bg-white font-sans text-gray-800">
+      <TopBanner />
+      <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
+        <Header />
+        <ArticleGrid />
+      </div>
+      <InstagramFeed />
+      <CookieBanner />
+    </div>
+  );
+};
+
+
+// --- Root Render ---
+
+const rootElement = document.getElementById('root');
+if (!rootElement) {
+  throw new Error("Could not find root element to mount to");
+}
+
+const root = ReactDOM.createRoot(rootElement);
+root.render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+);
