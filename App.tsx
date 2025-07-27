@@ -12,7 +12,9 @@ import DashboardPage from './pages/admin/DashboardPage';
 import PostListPage from './pages/admin/PostListPage';
 import PostEditorPage from './pages/admin/PostEditorPage';
 import CategoryManagerPage from './pages/admin/CategoryManagerPage';
+import Sitemap from './pages/Sitemap';
 import Header from './components/Header';
+import Breadcrumbs from './components/Breadcrumbs';
 
 const ProtectedRoute: React.FC = () => {
   const context = useContext(BlogContext);
@@ -117,11 +119,13 @@ const App: React.FC = () => {
           <Route path="/*" element={
               <div className="font-sans text-dark-text dark:text-light-text">
                   <Header />
-                  <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
+                  <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 pt-4">
+                      <Breadcrumbs />
                       <Routes>
                           <Route path="/" element={<HomePage />} />
                           <Route path="/post/:slug" element={<PostPage />} />
                           <Route path="/category/:slug" element={<CategoryPage />} />
+                          <Route path="/sitemap.xml" element={<Sitemap />} />
                       </Routes>
                   </div>
                 

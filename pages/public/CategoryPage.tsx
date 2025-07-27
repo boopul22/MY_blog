@@ -1,5 +1,6 @@
 
 import React, { useContext } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { useParams } from 'react-router-dom';
 import { BlogContext } from '../../context/SupabaseBlogContext';
 import PostCard from '../../components/PostCard';
@@ -20,6 +21,10 @@ const CategoryPage: React.FC = () => {
         <div>
             {category ? (
                 <>
+                    <Helmet>
+                        <title>{`Posts in ${category.name}`}</title>
+                        <meta name="description" content={`Browse all posts in the ${category.name} category.`} />
+                    </Helmet>
                     <h1 className="text-3xl font-extrabold text-gray-900 dark:text-white mb-6 border-b-2 border-primary pb-2">
                         Posts in: {category.name}
                     </h1>
@@ -32,7 +37,12 @@ const CategoryPage: React.FC = () => {
                     </div>
                 </>
             ) : (
-                <p>Category not found.</p>
+                <>
+                    <Helmet>
+                        <title>Category not found</title>
+                    </Helmet>
+                    <p>Category not found.</p>
+                </>
             )}
         </div>
     );

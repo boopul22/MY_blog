@@ -1,7 +1,8 @@
 
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { HashRouter } from 'react-router-dom';
+import { BrowserRouter } from 'react-router-dom';
+import { HelmetProvider } from 'react-helmet-async';
 import App from './App';
 import { SupabaseBlogProvider } from './context/SupabaseBlogContext';
 
@@ -13,10 +14,12 @@ if (!rootElement) {
 const root = ReactDOM.createRoot(rootElement);
 root.render(
   <React.StrictMode>
-    <HashRouter>
-      <SupabaseBlogProvider>
-        <App />
-      </SupabaseBlogProvider>
-    </HashRouter>
+    <HelmetProvider>
+      <BrowserRouter>
+        <SupabaseBlogProvider>
+          <App />
+        </SupabaseBlogProvider>
+      </BrowserRouter>
+    </HelmetProvider>
   </React.StrictMode>
 );

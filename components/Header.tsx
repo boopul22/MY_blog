@@ -32,7 +32,7 @@ const Header: React.FC = () => {
                     {/* Logo Section */}
                     <div className="text-center py-6 sm:py-8">
                         <div className="inline-block relative mb-2 sm:mb-4">
-                            <div className="w-12 sm:w-16 h-1 bg-slate-300 dark:bg-light-dark mx-auto"></div>
+                            
                         </div>
                         <Link to="/" className="block">
                             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif tracking-widest text-dark-text dark:text-light-text hover:text-primary dark:hover:text-primary transition-colors">
