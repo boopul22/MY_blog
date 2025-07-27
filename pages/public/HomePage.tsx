@@ -1,6 +1,5 @@
 
 import React, { useContext } from 'react';
-import { Helmet } from 'react-helmet-async';
 import { BlogContext } from '../../context/SupabaseBlogContext';
 import PostCard from '../../components/PostCard';
 import { Link } from 'react-router-dom';
@@ -23,10 +22,9 @@ const HomePage: React.FC = () => {
 
     return (
         <>
-            <Helmet>
-                <title>My Awesome Blog</title>
-                <meta name="description" content="Welcome to my awesome blog where I write about cool stuff." />
-            </Helmet>
+            <title>My Awesome Blog</title>
+            <meta name="description" content="Welcome to my awesome blog where I write about cool stuff." />
+            
             {/* Main Article Grid */}
             <main className="py-8 sm:py-12">
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-6 sm:gap-8">

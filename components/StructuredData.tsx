@@ -1,6 +1,5 @@
 
 import React from 'react';
-import { Helmet } from 'react-helmet-async';
 import { Post } from '../types';
 
 interface StructuredDataProps {
@@ -37,11 +36,9 @@ const StructuredData: React.FC<StructuredDataProps> = ({ post }) => {
     };
 
     return (
-        <Helmet>
-            <script type="application/ld+json">
-                {JSON.stringify(structuredData)}
-            </script>
-        </Helmet>
+        <script type="application/ld+json">
+            {JSON.stringify(structuredData)}
+        </script>
     );
 };
 

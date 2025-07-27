@@ -3,7 +3,6 @@ import React, { useContext, useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { BlogContext } from '../../context/SupabaseBlogContext';
 import { useTheme } from '../../context/ThemeContext';
-import { Helmet } from 'react-helmet-async';
 import { Post } from '../../types';
 import StructuredData from '../../components/StructuredData';
 import { 
@@ -37,9 +36,7 @@ const PostPage: React.FC = () => {
     if (!post || !context) {
         return (
             <div className="min-h-screen bg-light dark:bg-dark">
-                <Helmet>
-                    <title>Post not found</title>
-                </Helmet>
+                <title>Post not found</title>
                 <div className="text-center py-20">
                     <h1 className="text-2xl text-dark-text dark:text-light-text">Post not found</h1>
                     <Link to="/" className="text-primary hover:underline mt-4 inline-block">Back to Home</Link>
@@ -250,10 +247,8 @@ const PostPage: React.FC = () => {
 
     return (
         <div className="bg-light dark:bg-dark min-h-screen">
-            <Helmet>
-                <title>{post.seoTitle || post.title}</title>
-                <meta name="description" content={post.metaDescription} />
-            </Helmet>
+            <title>{post.seoTitle || post.title}</title>
+            <meta name="description" content={post.metaDescription} />
             <StructuredData post={post} />
             <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
                 <main className="mt-6 sm:mt-8 lg:mt-12">
