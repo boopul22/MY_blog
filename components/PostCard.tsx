@@ -20,7 +20,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, variant = 'default', isLarge 
 
   if (variant === 'wireframe') {
     return (
-        <div className="group relative flex flex-col sm:flex-row">
+        <div className="group relative flex flex-col sm:flex-row border border-slate-300 dark:border-slate-500 rounded-lg p-4 mb-4 sm:mb-6 bg-white dark:bg-slate-900 hover:border-slate-400 dark:hover:border-slate-400 transition-colors">
             {/* Date positioned vertically within the card boundaries */}
             <div className="flex sm:items-center justify-center sm:pr-4 pb-2 sm:pb-0">
                 <p className="text-xs text-secondary font-medium tracking-widest uppercase sm:vertical-text">
@@ -55,7 +55,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, variant = 'default', isLarge 
                     </div>
                     <div className="space-y-2">
                         <Link to={`/post/${post.slug}`} className="block">
-                            <h3 className={`font-serif font-bold text-dark-text dark:text-light-text hover:text-primary transition-colors leading-tight ${
+                            <h3 className={`font-serif font-bold text-dark-text dark:text-light-text hover:text-primary transition-colors leading-tight text-left ${
                                 isLarge ? 'text-lg sm:text-xl lg:text-2xl' : 'text-base sm:text-lg'
                             }`}>
                                 {post.title}
@@ -73,7 +73,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, variant = 'default', isLarge 
 
   if (variant === 'list') {
     return (
-      <article className="group bg-white dark:bg-slate-900 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden mb-6">
+      <article className="group bg-white dark:bg-slate-900 rounded-lg border border-slate-300 dark:border-slate-500 hover:border-slate-400 dark:hover:border-slate-400 transition-colors duration-300 overflow-hidden mb-6">
         <div className="grid md:grid-cols-3 gap-0 items-stretch">
           <div className="md:col-span-1">
             <Link to={`/post/${post.slug}`} className="block h-full">
@@ -81,7 +81,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, variant = 'default', isLarge 
                 <img 
                   src={post.imageUrl} 
                   alt={post.title}
-                  className="w-full h-48 md:h-full object-cover rounded shadow-md transition-transform duration-300 group-hover:scale-[1.02]"
+                  className="w-full h-48 md:h-full object-cover rounded border border-slate-200 dark:border-slate-600 transition-transform duration-300 group-hover:scale-[1.02]"
                 />
                 <div className="absolute inset-3 bg-black bg-opacity-0 group-hover:bg-opacity-5 transition-all duration-300 rounded"></div>
               </div>
@@ -96,7 +96,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, variant = 'default', isLarge 
               )}
               <span className="uppercase tracking-wider">{formattedDate}</span>
             </div>
-            <h3 className="text-xl font-serif font-bold text-slate-900 dark:text-slate-100 leading-tight group-hover:text-slate-700 dark:group-hover:text-slate-300 transition-colors">
+            <h3 className="text-xl font-serif font-bold text-slate-900 dark:text-slate-100 leading-tight group-hover:text-slate-700 dark:group-hover:text-slate-300 transition-colors text-left">
               <Link to={`/post/${post.slug}`}>
                 {post.title}
               </Link>
@@ -117,14 +117,14 @@ const PostCard: React.FC<PostCardProps> = ({ post, variant = 'default', isLarge 
 
   if (variant === 'grid') {
     return (
-      <article className="group bg-white dark:bg-slate-900 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden">
+      <article className="group bg-white dark:bg-slate-900 rounded-lg border border-slate-300 dark:border-slate-500 hover:border-slate-400 dark:hover:border-slate-400 transition-colors duration-300 overflow-hidden mb-4 sm:mb-6">
         <div className="relative">
           <Link to={`/post/${post.slug}`} className="block">
             <div className="relative bg-slate-50 dark:bg-slate-800 p-3">
               <img 
                 src={post.imageUrl} 
                 alt={post.title}
-                className="w-full h-48 object-cover rounded shadow-md transition-transform duration-300 group-hover:scale-[1.02]"
+                className="w-full h-48 object-cover rounded border border-slate-200 dark:border-slate-600 transition-transform duration-300 group-hover:scale-[1.02]"
               />
               <div className="absolute inset-3 bg-black bg-opacity-0 group-hover:bg-opacity-5 transition-all duration-300 rounded"></div>
             </div>
@@ -139,7 +139,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, variant = 'default', isLarge 
             )}
             <span className="uppercase tracking-wider">{formattedDate}</span>
           </div>
-          <h3 className="text-lg font-serif font-bold text-slate-900 dark:text-slate-100 leading-tight group-hover:text-slate-700 dark:group-hover:text-slate-300 transition-colors">
+          <h3 className="text-lg font-serif font-bold text-slate-900 dark:text-slate-100 leading-tight group-hover:text-slate-700 dark:group-hover:text-slate-300 transition-colors text-left">
             <Link to={`/post/${post.slug}`}>
               {post.title}
             </Link>
@@ -159,7 +159,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, variant = 'default', isLarge 
 
   // Default variant - Gallery-inspired design with contained date
   return (
-    <div className="group bg-white dark:bg-slate-900 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden">
+    <div className="group bg-white dark:bg-slate-900 rounded-lg border border-slate-300 dark:border-slate-500 hover:border-slate-400 dark:hover:border-slate-400 transition-colors duration-300 overflow-hidden mb-4 sm:mb-6">
       <div className="flex">
         {/* Date positioned vertically within the card */}
         <div className="flex items-center justify-center bg-slate-50 dark:bg-slate-800 px-3">
@@ -176,7 +176,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, variant = 'default', isLarge 
           <Link to={`/post/${post.slug}`} className="block">
             <div className="relative bg-slate-50 dark:bg-slate-800 p-4">
               <img 
-                className="w-full h-64 object-cover rounded shadow-md transition-transform duration-300 group-hover:scale-[1.02]" 
+                className="w-full h-64 object-cover rounded border border-slate-200 dark:border-slate-600 transition-transform duration-300 group-hover:scale-[1.02]" 
                 src={post.imageUrl} 
                 alt={post.title} 
               />
@@ -196,7 +196,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, variant = 'default', isLarge 
             </div>
             
             {/* Title */}
-            <h2 className="text-xl font-serif font-bold text-gray-900 dark:text-gray-100 leading-tight group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors">
+            <h2 className="text-xl font-serif font-bold text-gray-900 dark:text-gray-100 leading-tight group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors text-left">
               <Link to={`/post/${post.slug}`}>
                 {post.title}
               </Link>

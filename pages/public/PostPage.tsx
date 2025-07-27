@@ -251,11 +251,11 @@ const PostPage: React.FC = () => {
             <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
                 <main className="mt-6 sm:mt-8 lg:mt-12">
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-x-16">
-                        <div className="lg:col-span-2">
+                        <div className="lg:col-span-2 order-1 lg:order-1">
                             <article className="max-w-none">
                                 {/* Article Header */}
                                 <header className="text-center mb-8 sm:mb-12">
-                                    <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight leading-tight text-dark-text dark:text-light-text px-2">
+                                    <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight leading-tight text-dark-text dark:text-light-text px-2 text-center">
                                         {post.title}
                                     </h1>
                                     <div className="mt-4 sm:mt-6 flex flex-col sm:flex-row justify-center items-center space-y-2 sm:space-y-0 sm:space-x-4">
@@ -372,7 +372,7 @@ const PostPage: React.FC = () => {
                             <CommentSection />
                         </div>
 
-                        <div className="mt-8 sm:mt-12 lg:mt-0 order-first lg:order-last">
+                        <div className="mt-8 sm:mt-12 lg:mt-0 order-2 lg:order-2">
                             <div className="lg:sticky lg:top-8">
                                 <Sidebar />
                             </div>
