@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { BlogContext } from '../../context/SupabaseBlogContext';
 import PostCard from '../../components/PostCard';
 
@@ -30,11 +30,78 @@ const AllPostsPage: React.FC = () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
+    // SEO: Set canonical URL and meta tags
+    useEffect(() => {
+        // Set canonical URL to prevent duplicate content issues
+        const canonicalUrl = `${window.location.origin}/all-posts`;
+
+        // Remove existing canonical link if any
+        const existingCanonical = document.querySelector('link[rel="canonical"]');
+        if (existingCanonical) {
+            existingCanonical.remove();
+        }
+
+        // Add new canonical link
+        const canonicalLink = document.createElement('link');
+        canonicalLink.rel = 'canonical';
+        canonicalLink.href = canonicalUrl;
+        document.head.appendChild(canonicalLink);
+
+        // Set page title and meta description
+        document.title = 'All Articles - Athena Creative Magazine';
+
+        // Update meta description
+        let metaDescription = document.querySelector('meta[name="description"]');
+        if (!metaDescription) {
+            metaDescription = document.createElement('meta');
+            metaDescription.setAttribute('name', 'description');
+            document.head.appendChild(metaDescription);
+        }
+        metaDescription.setAttribute('content', 'Browse all our published articles and stories. Discover insights, trends, and creative content.');
+
+        // Cleanup function
+        return () => {
+            const canonical = document.querySelector('link[rel="canonical"]');
+            if (canonical && canonical.getAttribute('href') === canonicalUrl) {
+                canonical.remove();
+            }
+        };
+    }, []);
+
     return (
         <div className="bg-light dark:bg-dark min-h-screen">
-            <title>All Articles - Athena Creative Magazine</title>
-            <meta name="description" content="Browse all our published articles and stories. Discover insights, trends, and creative content." />
-            
+            {/* Structured Data for SEO */}
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{
+                    __html: JSON.stringify({
+                        "@context": "https://schema.org",
+                        "@type": "CollectionPage",
+                        "name": "All Articles",
+                        "description": "Browse all our published articles and stories. Discover insights, trends, and creative content.",
+                        "url": `${window.location.origin}/all-posts`,
+                        "mainEntity": {
+                            "@type": "ItemList",
+                            "numberOfItems": publishedPosts.length,
+                            "itemListElement": currentPosts.map((post, index) => ({
+                                "@type": "ListItem",
+                                "position": index + 1,
+                                "item": {
+                                    "@type": "Article",
+                                    "headline": post.title,
+                                    "url": `${window.location.origin}/post/${post.slug}`,
+                                    "datePublished": post.createdAt,
+                                    "author": {
+                                        "@type": "Person",
+                                        "name": post.authorName
+                                    }
+                                }
+                            }))
+                        }
+                    })
+                }}
+            />
+
             <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
                 

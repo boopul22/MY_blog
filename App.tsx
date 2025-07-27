@@ -124,6 +124,7 @@ const App: React.FC = () => {
                       <Breadcrumbs />
                       <Routes>
                           <Route path="/" element={<HomePage />} />
+                          <Route path="/post" element={<Navigate to="/all-posts" replace />} />
                           <Route path="/post/:slug" element={<PostPage />} />
                           <Route path="/category/:slug" element={<CategoryPage />} />
                           <Route path="/all-posts" element={<AllPostsPage />} />

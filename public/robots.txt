@@ -1,0 +1,17 @@
+User-agent: *
+Allow: /
+
+# Disallow admin pages
+Disallow: /admin/
+Disallow: /login
+
+# Allow all posts and categories
+Allow: /post/
+Allow: /all-posts
+Allow: /category/
+
+# Sitemap location
+Sitemap: https://yourdomain.com/sitemap.xml
+
+# Crawl delay (optional)
+Crawl-delay: 1

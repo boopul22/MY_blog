@@ -15,6 +15,12 @@ const Breadcrumbs: React.FC = () => {
     return null;
   }
 
+  // Custom display names for specific routes
+  const routeDisplayNames: { [key: string]: string } = {
+    'all-posts': 'All Posts',
+    'post': 'All Posts', // Since /post redirects to /all-posts
+  };
+
   return (
     <nav aria-label="breadcrumb" className="mb-4 text-sm text-gray-500 dark:text-gray-400">
       <ol className="list-none p-0 inline-flex">
@@ -24,8 +30,8 @@ const Breadcrumbs: React.FC = () => {
         {pathnames.map((value, index) => {
           const to = `/${pathnames.slice(0, index + 1).join('/')}`;
           const isLast = index === pathnames.length - 1;
-          // Capitalize the first letter for display
-          const displayValue = value.charAt(0).toUpperCase() + value.slice(1).replace(/-/g, ' ');
+          // Use custom display name if available, otherwise capitalize and format
+          const displayValue = routeDisplayNames[value] || value.charAt(0).toUpperCase() + value.slice(1).replace(/-/g, ' ');
 
           return (
             <li key={to} className="flex items-center">
