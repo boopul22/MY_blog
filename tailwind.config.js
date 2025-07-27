@@ -5,18 +5,19 @@ export default {
     "./src/**/*.{js,ts,jsx,tsx}",
     "./**/*.{js,ts,jsx,tsx}"
   ],
-  darkMode: 'class',
+  darkMode: 'selector',
   theme: {
     extend: {
       colors: {
-        'primary': '#ca4246',
-        'primary-dark': '#b23438',
-        'secondary': '#10b981',
-        'light': '#f3f4f6',
-        'dark': '#111827',
-        'medium-dark': '#1f2937',
-        'light-dark': '#374151',
-        'dark-text': '#1a1a1a',
+        'primary': '#007bff',
+        'primary-dark': '#0056b3',
+        'secondary': '#6c757d',
+        'light': '#f8f9fa',
+        'dark': '#1a202c',
+        'medium-dark': '#2d3748',
+        'light-dark': '#4a5568',
+        'dark-text': '#1a202c',
+        'light-text': '#f7fafc',
       },
       fontFamily: {
         sans: ['Inter', 'sans-serif'],

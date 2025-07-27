@@ -148,22 +148,22 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
             <button
               type="button"
               onClick={handleRemoveImage}
-              className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white rounded-full p-1 transition-colors"
+              className="absolute top-2 right-2 bg-red-600 hover:bg-red-700 text-white rounded-full p-1 transition-colors"
               title="Remove image"
             >
               <XMarkIcon className="w-4 h-4" />
             </button>
           )}
           {isUploading && (
-            <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center rounded-md">
-              <div className="text-white text-center">
+            <div className="absolute inset-0 bg-dark bg-opacity-50 flex items-center justify-center rounded-md">
+              <div className="text-light-text text-center">
                 <Spinner size="md" />
                 {uploadProgress && (
                   <div className="mt-2">
                     <div className="text-sm">{uploadProgress.percentage}%</div>
-                    <div className="w-32 bg-gray-700 rounded-full h-2 mt-1">
+                    <div className="w-32 bg-medium-dark rounded-full h-2 mt-1">
                       <div 
-                        className="bg-blue-500 h-2 rounded-full transition-all duration-300"
+                        className="bg-primary h-2 rounded-full transition-all duration-300"
                         style={{ width: `${uploadProgress.percentage}%` }}
                       />
                     </div>
@@ -181,8 +181,8 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
           className={`
             border-2 border-dashed rounded-lg p-6 text-center transition-colors cursor-pointer
             ${isDragging 
-              ? 'border-blue-400 bg-blue-50 dark:bg-blue-900/20' 
-              : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500'
+              ? 'border-primary bg-blue-50 dark:bg-primary/10' 
+              : 'border-gray-300 dark:border-medium-dark hover:border-gray-400 dark:hover:border-light-dark'
             }
             ${disabled ? 'opacity-50 cursor-not-allowed' : ''}
           `}
@@ -193,8 +193,8 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
         >
           <PhotoIcon className="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500" />
           <div className="mt-4">
-            <p className="text-sm text-gray-600 dark:text-gray-400">
-              <span className="font-medium text-blue-600 dark:text-blue-400">
+            <p className="text-sm text-secondary dark:text-gray-400">
+              <span className="font-medium text-primary dark:text-primary">
                 Click to upload
               </span>
               {' '}or drag and drop
@@ -212,7 +212,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
           type="button"
           onClick={openFileDialog}
           disabled={disabled}
-          className="w-full flex items-center justify-center bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 font-medium py-2 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full flex items-center justify-center bg-gray-100 dark:bg-medium-dark hover:bg-gray-200 dark:hover:bg-light-dark text-dark-text dark:text-light-text font-medium py-2 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <PhotoIcon className="w-5 h-5 mr-2" />
           Replace Image
@@ -231,7 +231,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
 
       {/* Error Message */}
       {error && (
-        <div className="text-red-600 dark:text-red-400 text-sm bg-red-50 dark:bg-red-900/20 p-3 rounded-md">
+        <div className="text-red-600 dark:text-red-400 text-sm bg-red-100 dark:bg-red-900/20 p-3 rounded-md">
           {error}
         </div>
       )}

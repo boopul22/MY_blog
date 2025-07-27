@@ -16,15 +16,15 @@ const AdminLayout: React.FC = () => {
     const navLinkClasses = ({ isActive }: { isActive: boolean }) =>
         `flex items-center px-4 py-3 rounded-lg transition-colors duration-200 ${
         isActive
-            ? 'bg-primary text-white'
-            : 'text-gray-300 hover:bg-light-dark hover:text-white'
+            ? 'bg-primary text-light-text'
+            : 'text-gray-400 hover:bg-medium-dark hover:text-light-text'
         }`;
 
     return (
         <div className="flex h-screen bg-light dark:bg-dark">
-            <aside className="w-64 bg-medium-dark text-gray-200 flex flex-col">
-                <div className="p-6 text-center border-b border-gray-700">
-                    <h1 className="text-2xl font-bold text-white">GeminiBlog</h1>
+            <aside className="w-64 bg-dark text-light-text flex flex-col">
+                <div className="p-6 text-center border-b border-medium-dark">
+                    <h1 className="text-2xl font-bold text-light-text">GeminiBlog</h1>
                     <span className="text-sm text-primary">Admin Panel</span>
                 </div>
                 <nav className="flex-grow p-4 space-y-2">
@@ -38,8 +38,8 @@ const AdminLayout: React.FC = () => {
                         <TagIcon className="w-5 h-5 mr-3" /> Categories & Tags
                     </NavLink>
                 </nav>
-                <div className="p-4 border-t border-gray-700">
-                    <button onClick={handleLogout} className="w-full flex items-center px-4 py-3 rounded-lg text-gray-300 hover:bg-light-dark hover:text-white transition-colors duration-200">
+                <div className="p-4 border-t border-medium-dark">
+                    <button onClick={handleLogout} className="w-full flex items-center px-4 py-3 rounded-lg text-gray-400 hover:bg-medium-dark hover:text-light-text transition-colors duration-200">
                         <ArrowLeftOnRectangleIcon className="w-5 h-5 mr-3" />
                         Logout
                     </button>

@@ -23,7 +23,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, variant = 'default', isLarge 
         <div className="group relative">
             <div className="absolute top-0 left-0 -ml-10 transform -translate-x-full h-full flex items-center" aria-hidden="true">
                 <p 
-                    className="text-xs text-gray-400 font-medium tracking-widest uppercase"
+                    className="text-xs text-secondary font-medium tracking-widest uppercase"
                     style={{ writingMode: 'vertical-rl', textOrientation: 'mixed' }}
                 >
                     {formattedDate}
@@ -32,10 +32,10 @@ const PostCard: React.FC<PostCardProps> = ({ post, variant = 'default', isLarge 
             
             <div className="mb-6">
                 <Link to={`/post/${post.slug}`} className="block">
-                    <div className={`w-full ${isLarge ? 'aspect-[4/3]' : 'aspect-[4/5]'} bg-gray-300 border border-gray-200 overflow-hidden group-hover:opacity-90 transition-opacity`}>
+                    <div className={`w-full ${isLarge ? 'aspect-[4/3]' : 'aspect-[4/5]'} bg-gray-300 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 overflow-hidden group-hover:opacity-90 transition-opacity`}>
                         {post.imageUrl && (
-                            <img 
-                                src={post.imageUrl} 
+                            <img
+                                src={post.imageUrl}
                                 alt={post.title}
                                 className="w-full h-full object-cover"
                             />
@@ -47,21 +47,21 @@ const PostCard: React.FC<PostCardProps> = ({ post, variant = 'default', isLarge 
             <div className="space-y-3">
                 <div className="flex items-center space-x-4">
                     {category && (
-                        <Link to={`/category/${category.slug}`} className="px-3 py-1 bg-gray-200 text-gray-600 rounded-full text-xs font-medium uppercase tracking-wider hover:bg-gray-300">
+                        <Link to={`/category/${category.slug}`} className="px-3 py-1 bg-light dark:bg-medium-dark text-secondary dark:text-gray-300 rounded-full text-xs font-medium uppercase tracking-wider hover:bg-gray-200 dark:hover:bg-light-dark transition-colors">
                             {category.name}
                         </Link>
                     )}
-                    <span className="text-xs text-gray-500">BY {post.authorName.toUpperCase()}</span>
+                    <span className="text-xs text-secondary">BY {post.authorName.toUpperCase()}</span>
                 </div>
                 <div className="space-y-2">
                     <Link to={`/post/${post.slug}`} className="block">
-                        <h3 className={`font-serif font-bold text-gray-800 hover:text-gray-600 transition-colors leading-tight ${
+                        <h3 className={`font-serif font-bold text-dark-text hover:text-primary transition-colors leading-tight ${
                             isLarge ? 'text-xl lg:text-2xl' : 'text-lg'
                         }`}>
                             {post.title}
                         </h3>
                     </Link>
-                    <p className="text-sm text-gray-600 leading-relaxed">
+                    <p className="text-sm text-secondary leading-relaxed">
                         {post.content.substring(0, isLarge ? 150 : 100)}...
                     </p>
                 </div>
@@ -72,7 +72,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, variant = 'default', isLarge 
 
   if (variant === 'list') {
     return (
-      <article className="group border-b border-gray-200 dark:border-gray-700 pb-8 last:border-b-0">
+      <article className="group border-b border-gray-200 dark:border-medium-dark pb-8 last:border-b-0">
         <div className="grid md:grid-cols-3 gap-6 items-center">
           <div className="md:col-span-1">
             <Link to={`/post/${post.slug}`} className="block overflow-hidden rounded-lg">
@@ -84,7 +84,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, variant = 'default', isLarge 
             </Link>
           </div>
           <div className="md:col-span-2 space-y-3">
-            <div className="flex items-center space-x-3 text-xs text-gray-500 dark:text-gray-400">
+            <div className="flex items-center space-x-3 text-xs text-secondary dark:text-gray-400">
               {category && (
                 <Link to={`/category/${category.slug}`} className="uppercase hover:text-primary font-medium tracking-wider">
                   {category.name}
@@ -93,15 +93,15 @@ const PostCard: React.FC<PostCardProps> = ({ post, variant = 'default', isLarge 
               <span>•</span>
               <span className="uppercase tracking-wider">{formattedDate}</span>
             </div>
-            <h3 className="text-xl font-serif font-bold text-dark-text dark:text-white group-hover:text-primary transition-colors">
+            <h3 className="text-xl font-serif font-bold text-dark-text dark:text-light-text group-hover:text-primary transition-colors">
               <Link to={`/post/${post.slug}`}>
                 {post.title}
               </Link>
             </h3>
-            <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">
+            <p className="text-secondary dark:text-gray-300 text-sm leading-relaxed">
               {post.content.substring(0, 120)}...
             </p>
-            <div className="text-xs text-gray-500 dark:text-gray-400">
+            <div className="text-xs text-secondary dark:text-gray-400">
               <span>BY <span className="text-primary font-medium">{post.authorName.toUpperCase()}</span></span>
             </div>
           </div>
@@ -122,7 +122,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, variant = 'default', isLarge 
             />
           </Link>
           <div className="space-y-3">
-            <div className="flex items-center space-x-3 text-xs text-gray-500 dark:text-gray-400">
+            <div className="flex items-center space-x-3 text-xs text-secondary dark:text-gray-400">
               {category && (
                 <Link to={`/category/${category.slug}`} className="uppercase hover:text-primary font-medium tracking-wider">
                   {category.name}
@@ -131,15 +131,15 @@ const PostCard: React.FC<PostCardProps> = ({ post, variant = 'default', isLarge 
               <span>•</span>
               <span className="uppercase tracking-wider">{formattedDate}</span>
             </div>
-            <h3 className="text-xl font-serif font-bold text-dark-text dark:text-white group-hover:text-primary transition-colors leading-tight">
+            <h3 className="text-xl font-serif font-bold text-dark-text dark:text-light-text group-hover:text-primary transition-colors leading-tight">
               <Link to={`/post/${post.slug}`}>
                 {post.title}
               </Link>
             </h3>
-            <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">
+            <p className="text-secondary dark:text-gray-300 text-sm leading-relaxed">
               {post.content.substring(0, 100)}...
             </p>
-            <div className="text-xs text-gray-500 dark:text-gray-400">
+            <div className="text-xs text-secondary dark:text-gray-400">
               <span>BY <span className="text-primary font-medium">{post.authorName.toUpperCase()}</span></span>
             </div>
           </div>
@@ -154,8 +154,8 @@ const PostCard: React.FC<PostCardProps> = ({ post, variant = 'default', isLarge 
       <div className="relative">
         {/* Date */}
         <div className="absolute left-0 top-0 z-10">
-            <div className="absolute top-4 -left-3 transform -rotate-90 origin-bottom-left bg-white dark:bg-dark-text px-2 py-1">
-                <span className="text-xs font-semibold tracking-widest text-gray-500 dark:text-gray-300">{formattedDate}</span>
+            <div className="absolute top-4 -left-3 transform -rotate-90 origin-bottom-left bg-light dark:bg-dark px-2 py-1">
+                <span className="text-xs font-semibold tracking-widest text-secondary dark:text-gray-300">{formattedDate}</span>
             </div>
         </div>
 
@@ -171,7 +171,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, variant = 'default', isLarge 
 
       <div className="pt-6">
         {/* Category and Author */}
-        <div className="text-xs text-gray-500 dark:text-gray-400 font-medium tracking-wider">
+        <div className="text-xs text-secondary dark:text-gray-400 font-medium tracking-wider">
           {category && (
             <Link to={`/category/${category.slug}`} className="uppercase hover:text-primary">{category.name}</Link>
           )}
@@ -180,7 +180,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, variant = 'default', isLarge 
         </div>
         
         {/* Title */}
-        <h2 className="mt-3 text-2xl font-serif font-bold text-dark-text dark:text-white transition-colors group-hover:text-primary">
+        <h2 className="mt-3 text-2xl font-serif font-bold text-dark-text dark:text-light-text transition-colors group-hover:text-primary">
           <Link to={`/post/${post.slug}`}>
             {post.title}
           </Link>

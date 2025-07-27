@@ -129,39 +129,39 @@ const PostEditorPage: React.FC = () => {
 
     return (
         <form onSubmit={handleSubmit}>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">{id ? 'Edit Post' : 'Create New Post'}</h1>
+            <h1 className="text-3xl font-bold text-dark-text dark:text-light-text mb-6">{id ? 'Edit Post' : 'Create New Post'}</h1>
             <div className="grid grid-cols-12 gap-6">
                 <div className="col-span-12 lg:col-span-8 space-y-6">
                     {/* Main Content */}
-                    <div className="p-6 bg-white dark:bg-medium-dark rounded-lg shadow-md">
-                        <label htmlFor="title" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Title</label>
-                        <input type="text" name="title" id="title" value={post.title} onChange={handleInputChange} className="mt-1 block w-full bg-gray-100 dark:bg-light-dark border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary focus:border-primary" required />
+                    <div className="p-6 bg-light dark:bg-dark rounded-lg shadow-md">
+                        <label htmlFor="title" className="block text-sm font-medium text-secondary dark:text-gray-400">Title</label>
+                        <input type="text" name="title" id="title" value={post.title} onChange={handleInputChange} className="mt-1 block w-full bg-gray-200 dark:bg-medium-dark border-gray-400 dark:border-light-dark rounded-md shadow-sm focus:ring-primary focus:border-primary" required />
                     </div>
-                    <div className="p-6 bg-white dark:bg-medium-dark rounded-lg shadow-md">
+                    <div className="p-6 bg-light dark:bg-dark rounded-lg shadow-md">
                         <div className="flex justify-between items-center mb-2">
-                             <label htmlFor="content" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Content</label>
-                             <button type="button" onClick={handleGenerateContent} disabled={isGenerating.content} className="flex items-center text-sm bg-indigo-100 dark:bg-indigo-900/50 text-primary dark:text-indigo-300 hover:bg-indigo-200 dark:hover:bg-indigo-900/80 font-semibold py-1 px-3 rounded-full transition-colors disabled:opacity-50">
+                             <label htmlFor="content" className="block text-sm font-medium text-secondary dark:text-gray-400">Content</label>
+                             <button type="button" onClick={handleGenerateContent} disabled={isGenerating.content} className="flex items-center text-sm bg-primary/10 dark:bg-primary/20 text-primary dark:text-primary hover:bg-primary/20 dark:hover:bg-primary/30 font-semibold py-1 px-3 rounded-full transition-colors disabled:opacity-50">
                                 {isGenerating.content ? <Spinner size="sm"/> : <SparklesIcon className="w-4 h-4 mr-1" />} Generate with AI
                             </button>
                         </div>
-                        <textarea name="content" id="content" value={post.content} onChange={handleInputChange} rows={15} className="mt-1 block w-full bg-gray-100 dark:bg-light-dark border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary focus:border-primary" required />
+                        <textarea name="content" id="content" value={post.content} onChange={handleInputChange} rows={15} className="mt-1 block w-full bg-gray-200 dark:bg-medium-dark border-gray-400 dark:border-light-dark rounded-md shadow-sm focus:ring-primary focus:border-primary" required />
                     </div>
                      {/* SEO Section */}
-                    <div className="p-6 bg-white dark:bg-medium-dark rounded-lg shadow-md">
+                    <div className="p-6 bg-light dark:bg-dark rounded-lg shadow-md">
                          <div className="flex justify-between items-center mb-2">
-                           <h3 className="text-lg font-medium text-gray-900 dark:text-white">SEO Settings</h3>
-                             <button type="button" onClick={handleGenerateSEO} disabled={isGenerating.seo} className="flex items-center text-sm bg-indigo-100 dark:bg-indigo-900/50 text-primary dark:text-indigo-300 hover:bg-indigo-200 dark:hover:bg-indigo-900/80 font-semibold py-1 px-3 rounded-full transition-colors disabled:opacity-50">
+                           <h3 className="text-lg font-medium text-dark-text dark:text-light-text">SEO Settings</h3>
+                             <button type="button" onClick={handleGenerateSEO} disabled={isGenerating.seo} className="flex items-center text-sm bg-primary/10 dark:bg-primary/20 text-primary dark:text-primary hover:bg-primary/20 dark:hover:bg-primary/30 font-semibold py-1 px-3 rounded-full transition-colors disabled:opacity-50">
                                 {isGenerating.seo ? <Spinner size="sm"/> : <SparklesIcon className="w-4 h-4 mr-1" />} Auto-Generate SEO
                             </button>
                          </div>
                          <div className="space-y-4 mt-4">
                             <div>
-                                <label htmlFor="seoTitle" className="block text-sm font-medium text-gray-700 dark:text-gray-300">SEO Title</label>
-                                <input type="text" name="seoTitle" id="seoTitle" value={post.seoTitle} onChange={handleInputChange} className="mt-1 block w-full bg-gray-100 dark:bg-light-dark border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary focus:border-primary" />
+                                <label htmlFor="seoTitle" className="block text-sm font-medium text-secondary dark:text-gray-400">SEO Title</label>
+                                <input type="text" name="seoTitle" id="seoTitle" value={post.seoTitle} onChange={handleInputChange} className="mt-1 block w-full bg-gray-200 dark:bg-medium-dark border-gray-400 dark:border-light-dark rounded-md shadow-sm focus:ring-primary focus:border-primary" />
                             </div>
                             <div>
-                                <label htmlFor="seoDescription" className="block text-sm font-medium text-gray-700 dark:text-gray-300">SEO Description</label>
-                                <textarea name="seoDescription" id="seoDescription" value={post.seoDescription} onChange={handleInputChange} rows={3} className="mt-1 block w-full bg-gray-100 dark:bg-light-dark border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary focus:border-primary" />
+                                <label htmlFor="seoDescription" className="block text-sm font-medium text-secondary dark:text-gray-400">SEO Description</label>
+                                <textarea name="seoDescription" id="seoDescription" value={post.seoDescription} onChange={handleInputChange} rows={3} className="mt-1 block w-full bg-gray-200 dark:bg-medium-dark border-gray-400 dark:border-light-dark rounded-md shadow-sm focus:ring-primary focus:border-primary" />
                             </div>
                          </div>
                     </div>
@@ -169,23 +169,23 @@ const PostEditorPage: React.FC = () => {
 
                 <div className="col-span-12 lg:col-span-4 space-y-6">
                     {/* Publish Actions */}
-                    <div className="p-6 bg-white dark:bg-medium-dark rounded-lg shadow-md">
-                        <h3 className="text-lg font-medium text-gray-900 dark:text-white">Publish</h3>
+                    <div className="p-6 bg-light dark:bg-dark rounded-lg shadow-md">
+                        <h3 className="text-lg font-medium text-dark-text dark:text-light-text">Publish</h3>
                         <div className="mt-4 space-y-4">
                              <div>
-                                <label htmlFor="status" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Status</label>
-                                <select name="status" id="status" value={post.status} onChange={handleInputChange} className="mt-1 block w-full bg-gray-100 dark:bg-light-dark border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary focus:border-primary">
+                                <label htmlFor="status" className="block text-sm font-medium text-secondary dark:text-gray-400">Status</label>
+                                <select name="status" id="status" value={post.status} onChange={handleInputChange} className="mt-1 block w-full bg-gray-200 dark:bg-medium-dark border-gray-400 dark:border-light-dark rounded-md shadow-sm focus:ring-primary focus:border-primary">
                                     <option value="draft">Draft</option>
                                     <option value="published">Published</option>
                                 </select>
                              </div>
-                            <button type="submit" className="w-full bg-primary hover:bg-primary-dark text-white font-bold py-2 px-4 rounded-lg transition-colors">{id ? 'Update Post' : 'Save Post'}</button>
+                            <button type="submit" className="w-full bg-primary hover:bg-primary-dark text-light-text font-bold py-2 px-4 rounded-lg transition-colors">{id ? 'Update Post' : 'Save Post'}</button>
                         </div>
                     </div>
 
                     {/* Image */}
-                    <div className="p-6 bg-white dark:bg-medium-dark rounded-lg shadow-md">
-                        <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Featured Image</h3>
+                    <div className="p-6 bg-light dark:bg-dark rounded-lg shadow-md">
+                        <h3 className="text-lg font-medium text-dark-text dark:text-light-text mb-4">Featured Image</h3>
                         <ImageUpload
                             onImageUpload={handleImageUpload}
                             currentImageUrl={post.imageUrl}
@@ -195,31 +195,31 @@ const PostEditorPage: React.FC = () => {
                     </div>
 
                     {/* Category & Tags */}
-                    <div className="p-6 bg-white dark:bg-medium-dark rounded-lg shadow-md">
+                    <div className="p-6 bg-light dark:bg-dark rounded-lg shadow-md">
                         <div className="space-y-4">
                             <div>
-                                <label htmlFor="categoryId" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Category</label>
-                                <select name="categoryId" id="categoryId" value={post.categoryId} onChange={handleInputChange} className="mt-1 block w-full bg-gray-100 dark:bg-light-dark border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary focus:border-primary" required>
+                                <label htmlFor="categoryId" className="block text-sm font-medium text-secondary dark:text-gray-400">Category</label>
+                                <select name="categoryId" id="categoryId" value={post.categoryId} onChange={handleInputChange} className="mt-1 block w-full bg-gray-200 dark:bg-medium-dark border-gray-400 dark:border-light-dark rounded-md shadow-sm focus:ring-primary focus:border-primary" required>
                                     <option value="">Select a category</option>
                                     {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                                 </select>
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Tags</label>
+                                <label className="block text-sm font-medium text-secondary dark:text-gray-400">Tags</label>
                                 <div className="mt-2 flex flex-wrap gap-2">
                                     {post.tags?.map(tagId => {
                                         const tag = tags.find(t => t.id === tagId);
                                         return tag ? (
-                                            <span key={tagId} className="flex items-center bg-gray-200 dark:bg-light-dark text-gray-800 dark:text-gray-200 text-xs font-medium px-2.5 py-1 rounded-full">
+                                            <span key={tagId} className="flex items-center bg-gray-300 dark:bg-medium-dark text-dark-text dark:text-light-text text-xs font-medium px-2.5 py-1 rounded-full">
                                                 {tag.name}
-                                                <button type="button" onClick={() => handleTagRemove(tagId)} className="ml-1.5 text-gray-500 hover:text-gray-800 dark:hover:text-white">&times;</button>
+                                                <button type="button" onClick={() => handleTagRemove(tagId)} className="ml-1.5 text-secondary hover:text-dark-text dark:hover:text-light-text">&times;</button>
                                             </span>
                                         ) : null;
                                     })}
                                 </div>
                                 <div className="flex mt-2">
-                                    <input type="text" value={newTag} onChange={(e) => setNewTag(e.target.value)} className="flex-grow bg-gray-100 dark:bg-light-dark border-gray-300 dark:border-gray-600 rounded-l-md shadow-sm focus:ring-primary focus:border-primary text-sm"/>
-                                    <button type="button" onClick={handleTagAdd} className="bg-gray-200 dark:bg-light-dark text-gray-700 dark:text-gray-300 font-bold p-2 rounded-r-md hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">+</button>
+                                    <input type="text" value={newTag} onChange={(e) => setNewTag(e.target.value)} className="flex-grow bg-gray-200 dark:bg-medium-dark border-gray-400 dark:border-light-dark rounded-l-md shadow-sm focus:ring-primary focus:border-primary text-sm"/>
+                                    <button type="button" onClick={handleTagAdd} className="bg-gray-300 dark:bg-medium-dark text-secondary dark:text-gray-400 font-bold p-2 rounded-r-md hover:bg-gray-400 dark:hover:bg-light-dark transition-colors">+</button>
                                 </div>
                             </div>
                         </div>

@@ -33,10 +33,10 @@ const LoginPage: React.FC = () => {
     };
 
     return (
-        <div className="flex items-center justify-center min-h-screen bg-gray-100 dark:bg-dark">
-            <div className="w-full max-w-md p-8 space-y-8 bg-white dark:bg-medium-dark rounded-xl shadow-lg">
+        <div className="flex items-center justify-center min-h-screen bg-light dark:bg-dark">
+            <div className="w-full max-w-md p-8 space-y-8 bg-light dark:bg-dark rounded-xl shadow-lg">
                 <h1 className="text-3xl font-bold text-center text-primary">Admin Login</h1>
-                <p className="text-center text-gray-600 dark:text-gray-300">Enter credentials to access the dashboard.</p>
+                <p className="text-center text-secondary dark:text-gray-400">Enter credentials to access the dashboard.</p>
                 <form className="mt-8 space-y-6" onSubmit={handleLogin}>
                     <div className="relative">
                         <input
@@ -47,7 +47,7 @@ const LoginPage: React.FC = () => {
                             required
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
-                            className="w-full px-4 py-3 text-gray-900 bg-gray-100 dark:bg-light-dark dark:text-white border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                            className="w-full px-4 py-3 text-dark-text bg-gray-200 dark:bg-medium-dark dark:text-light-text border border-gray-400 dark:border-light-dark rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
                             placeholder="Email address"
                         />
                     </div>
@@ -60,7 +60,7 @@ const LoginPage: React.FC = () => {
                             required
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            className="w-full px-4 py-3 text-gray-900 bg-gray-100 dark:bg-light-dark dark:text-white border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                            className="w-full px-4 py-3 text-dark-text bg-gray-200 dark:bg-medium-dark dark:text-light-text border border-gray-400 dark:border-light-dark rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
                             placeholder="Password"
                         />
                     </div>
@@ -68,18 +68,18 @@ const LoginPage: React.FC = () => {
                         <button
                             type="submit"
                             disabled={isLoading}
-                            className="w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-light-text bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             {isLoading ? 'Signing in...' : 'Sign in'}
                         </button>
                     </div>
                 </form>
                 {context?.error && (
-                    <div className="text-center text-sm text-red-600 dark:text-red-400">
+                    <div className="text-center text-sm text-red-500 dark:text-red-500">
                         {context.error}
                     </div>
                 )}
-                <p className="text-center text-xs text-gray-500 dark:text-gray-400">
+                <p className="text-center text-xs text-secondary dark:text-gray-400">
                     Use your Supabase admin credentials to sign in.
                 </p>
             </div>

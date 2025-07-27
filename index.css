@@ -2,6 +2,29 @@
 
 /* Athena Blog - Custom Styles */
 
+/* Color scheme support for proper dark mode */
+:root {
+  color-scheme: light;
+}
+
+.dark {
+  color-scheme: dark;
+}
+
+/* Ensure full page dark mode coverage */
+html {
+  background-color: #f8f9fa;
+  transition: background-color 0.2s ease;
+}
+
+html.dark {
+  background-color: #1a202c;
+}
+
+body {
+  background-color: inherit;
+}
+
 /* Smooth scrolling */
 html {
   scroll-behavior: smooth;
@@ -26,12 +49,21 @@ html {
 }
 
 /* Dark mode scrollbar */
+.dark ::-webkit-scrollbar {
+  width: 6px;
+}
+
 .dark ::-webkit-scrollbar-track {
   background: #374151;
 }
 
 .dark ::-webkit-scrollbar-thumb {
   background: #ca4246;
+  border-radius: 3px;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #b23438;
 }
 
 /* Typography enhancements */

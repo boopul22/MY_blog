@@ -100,55 +100,56 @@ const App: React.FC = () => {
 
   return (
     <ThemeProvider>
-      <Routes>
-        <Route path="/login" element={<LoginPage />} />
-        
-        <Route element={<ProtectedRoute />}>
-          <Route path="/admin" element={<AdminLayout />}>
-            <Route index element={<DashboardPage />} />
-            <Route path="posts" element={<PostListPage />} />
-            <Route path="posts/new" element={<PostEditorPage />} />
-            <Route path="posts/edit/:id" element={<PostEditorPage />} />
-            <Route path="categories" element={<CategoryManagerPage />} />
+      <div className="min-h-screen bg-light dark:bg-dark transition-colors duration-200">
+        <Routes>
+          <Route path="/login" element={<LoginPage />} />
+          
+          <Route element={<ProtectedRoute />}>
+            <Route path="/admin" element={<AdminLayout />}>
+              <Route index element={<DashboardPage />} />
+              <Route path="posts" element={<PostListPage />} />
+              <Route path="posts/new" element={<PostEditorPage />} />
+              <Route path="posts/edit/:id" element={<PostEditorPage />} />
+              <Route path="categories" element={<CategoryManagerPage />} />
+            </Route>
           </Route>
-        </Route>
 
-        <Route path="/*" element={
-            <div className="bg-white font-sans text-gray-800">
-                <Header />
-                <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <Routes>
-                        <Route path="/" element={<HomePage />} />
-                        <Route path="/post/:slug" element={<PostPage />} />
-                        <Route path="/category/:slug" element={<CategoryPage />} />
-                    </Routes>
-                </div>
+          <Route path="/*" element={
+              <div className="font-sans text-dark-text dark:text-light-text">
+                  <Header />
+                  <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
+                      <Routes>
+                          <Route path="/" element={<HomePage />} />
+                          <Route path="/post/:slug" element={<PostPage />} />
+                          <Route path="/category/:slug" element={<CategoryPage />} />
+                      </Routes>
+                  </div>
                 
                 {/* Cookie Banner */}
                 {showCookieBanner && (
-                  <div className="fixed bottom-0 left-0 right-0 bg-black text-white p-4 z-50 shadow-lg">
+                  <div className="fixed bottom-0 left-0 right-0 bg-white dark:bg-medium-dark border-t border-gray-200 dark:border-gray-600 p-4 shadow-lg z-50">
                     <div className="max-w-screen-xl mx-auto">
                       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
-                        <div className="text-sm text-gray-300 flex-1">
+                        <div className="text-sm text-gray-700 dark:text-gray-300 flex-1">
                           We use cookies to enhance your browsing experience and provide personalized content. 
                           You can choose which cookies to accept.
                         </div>
                         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-2">
                           <button 
                             onClick={() => setShowCookieSettings(true)}
-                            className="px-4 py-2 bg-gray-700 text-white text-sm rounded-md hover:bg-gray-600 transition-colors whitespace-nowrap"
+                            className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white text-sm rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors whitespace-nowrap"
                           >
                             Cookie Settings
                           </button>
                           <button 
                             onClick={handleDeny}
-                            className="px-3 py-2 bg-gray-700 text-white text-sm rounded-md hover:bg-gray-600 transition-colors whitespace-nowrap"
+                            className="px-3 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white text-sm rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors whitespace-nowrap"
                           >
                             Deny
                           </button>
                           <button 
                             onClick={handleAcceptAll}
-                            className="px-4 py-2 bg-white text-black text-sm rounded-md hover:bg-gray-100 transition-colors whitespace-nowrap"
+                            className="px-4 py-2 bg-primary dark:bg-primary-dark text-white text-sm rounded-md hover:bg-primary-dark dark:hover:bg-primary transition-colors whitespace-nowrap"
                           >
                             Accept All
                           </button>
@@ -161,55 +162,55 @@ const App: React.FC = () => {
                 {/* Cookie Settings Modal */}
                 {showCookieSettings && (
                   <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-                    <div className="bg-white rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+                    <div className="bg-white dark:bg-medium-dark rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
                       <div className="p-6">
-                        <h2 className="text-xl font-bold text-gray-900 mb-4">Cookie Settings</h2>
-                        <p className="text-sm text-gray-600 mb-6">
+                        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Cookie Settings</h2>
+                        <p className="text-sm text-gray-600 dark:text-gray-300 mb-6">
                           Choose which cookies you want to accept. Necessary cookies are required for the website to function properly.
                         </p>
                         
                         <div className="space-y-4">
-                          <div className="flex items-center justify-between p-3 border rounded-lg">
+                          <div className="flex items-center justify-between p-3 border border-gray-200 dark:border-gray-600 rounded-lg">
                             <div>
-                              <h3 className="font-medium text-gray-900">Necessary Cookies</h3>
-                              <p className="text-sm text-gray-600">Required for basic website functionality</p>
+                              <h3 className="font-medium text-gray-900 dark:text-white">Necessary Cookies</h3>
+                              <p className="text-sm text-gray-600 dark:text-gray-300">Required for basic website functionality</p>
                             </div>
                             <div className="flex items-center">
                               <input 
                                 type="checkbox" 
                                 checked={cookieSettings.necessary}
                                 disabled
-                                className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
+                                className="w-4 h-4 text-blue-600 bg-gray-100 dark:bg-gray-600 border-gray-300 dark:border-gray-500 rounded focus:ring-blue-500"
                               />
                             </div>
                           </div>
                           
-                          <div className="flex items-center justify-between p-3 border rounded-lg">
+                          <div className="flex items-center justify-between p-3 border border-gray-200 dark:border-gray-600 rounded-lg">
                             <div>
-                              <h3 className="font-medium text-gray-900">Analytics Cookies</h3>
-                              <p className="text-sm text-gray-600">Help us understand how visitors use our website</p>
+                              <h3 className="font-medium text-gray-900 dark:text-white">Analytics Cookies</h3>
+                              <p className="text-sm text-gray-600 dark:text-gray-300">Help us understand how visitors use our website</p>
                             </div>
                             <div className="flex items-center">
                               <input 
                                 type="checkbox" 
                                 checked={cookieSettings.analytics}
                                 onChange={() => toggleCookieSetting('analytics')}
-                                className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 cursor-pointer"
+                                className="w-4 h-4 text-blue-600 bg-gray-100 dark:bg-gray-600 border-gray-300 dark:border-gray-500 rounded focus:ring-blue-500 cursor-pointer"
                               />
                             </div>
                           </div>
                           
-                          <div className="flex items-center justify-between p-3 border rounded-lg">
+                          <div className="flex items-center justify-between p-3 border border-gray-200 dark:border-gray-600 rounded-lg">
                             <div>
-                              <h3 className="font-medium text-gray-900">Marketing Cookies</h3>
-                              <p className="text-sm text-gray-600">Used to deliver personalized advertisements</p>
+                              <h3 className="font-medium text-gray-900 dark:text-white">Marketing Cookies</h3>
+                              <p className="text-sm text-gray-600 dark:text-gray-300">Used to deliver personalized advertisements</p>
                             </div>
                             <div className="flex items-center">
                               <input 
                                 type="checkbox" 
                                 checked={cookieSettings.marketing}
                                 onChange={() => toggleCookieSetting('marketing')}
-                                className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 cursor-pointer"
+                                className="w-4 h-4 text-blue-600 bg-gray-100 dark:bg-gray-600 border-gray-300 dark:border-gray-500 rounded focus:ring-blue-500 cursor-pointer"
                               />
                             </div>
                           </div>
@@ -218,13 +219,13 @@ const App: React.FC = () => {
                         <div className="flex flex-col sm:flex-row gap-3 mt-6">
                           <button 
                             onClick={() => setShowCookieSettings(false)}
-                            className="flex-1 px-4 py-2 bg-gray-200 text-gray-800 text-sm rounded-md hover:bg-gray-300 transition-colors"
+                            className="flex-1 px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white text-sm rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
                           >
                             Cancel
                           </button>
                           <button 
                             onClick={handleSaveSettings}
-                            className="flex-1 px-4 py-2 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700 transition-colors"
+                            className="flex-1 px-4 py-2 bg-blue-600 dark:bg-blue-700 text-white text-sm rounded-md hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors"
                           >
                             Save Settings
                           </button>
@@ -233,9 +234,10 @@ const App: React.FC = () => {
                     </div>
                   </div>
                 )}
-            </div>
-        } />
-      </Routes>
+              </div>
+          } />
+        </Routes>
+      </div>
     </ThemeProvider>
   );
 };

@@ -15,8 +15,8 @@ const data = [
 
 const AnalyticsChart: React.FC = () => {
   return (
-    <div className="bg-white dark:bg-medium-dark p-6 rounded-lg shadow-md h-96">
-      <h3 className="text-lg font-semibold mb-4 text-gray-800 dark:text-gray-200">Weekly Activity</h3>
+    <div className="bg-light dark:bg-dark p-6 rounded-lg shadow-md h-96">
+      <h3 className="text-lg font-semibold mb-4 text-dark-text dark:text-light-text">Weekly Activity</h3>
       <ResponsiveContainer width="100%" height="100%">
         <LineChart data={data} margin={{ top: 5, right: 20, left: -10, bottom: 5 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="rgba(107, 114, 128, 0.3)" />
@@ -24,16 +24,16 @@ const AnalyticsChart: React.FC = () => {
           <YAxis stroke="#9ca3af" fontSize={12} />
           <Tooltip
             contentStyle={{
-              backgroundColor: 'rgba(31, 41, 55, 0.8)',
-              borderColor: 'rgba(107, 114, 128, 0.5)',
-              color: '#ffffff',
+              backgroundColor: 'rgba(45, 55, 72, 0.8)',
+              borderColor: 'rgba(74, 85, 104, 0.5)',
+              color: '#f7fafc',
               borderRadius: '0.5rem',
             }}
-            cursor={{ fill: 'rgba(107, 114, 128, 0.1)' }}
+            cursor={{ fill: 'rgba(74, 85, 104, 0.1)' }}
           />
           <Legend wrapperStyle={{fontSize: "14px"}} />
-          <Line type="monotone" dataKey="views" stroke="#4f46e5" strokeWidth={2} activeDot={{ r: 8 }} />
-          <Line type="monotone" dataKey="posts" stroke="#10b981" strokeWidth={2} />
+          <Line type="monotone" dataKey="views" stroke="#007bff" strokeWidth={2} activeDot={{ r: 8 }} />
+          <Line type="monotone" dataKey="posts" stroke="#6c757d" strokeWidth={2} />
         </LineChart>
       </ResponsiveContainer>
     </div>
