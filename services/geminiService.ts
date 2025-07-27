@@ -7,10 +7,13 @@ if (!API_KEY) {
   console.warn("API_KEY environment variable not set. Gemini API features will be disabled.");
 }
 
-const ai = new GoogleGenAI({ apiKey: API_KEY! });
+let ai: GoogleGenAI | null = null;
+if (API_KEY) {
+  ai = new GoogleGenAI({ apiKey: API_KEY });
+}
 
 export const generateBlogPostContent = async (topic: string): Promise<string> => {
-    if (!API_KEY) return "Gemini API key not configured. Please add it to your environment variables.";
+    if (!API_KEY || !ai) return "Gemini API key not configured. Please add it to your environment variables.";
     try {
         const response: GenerateContentResponse = await ai.models.generateContent({
             model: "gemini-2.5-flash",
@@ -30,7 +33,7 @@ export const generateBlogPostContent = async (topic: string): Promise<string> =>
 // AI image generation removed - now using Supabase Storage for image management
 
 export const generateSEOMetadata = async (content: string): Promise<{ seoTitle: string; seoDescription: string }> => {
-    if (!API_KEY) return { seoTitle: "", seoDescription: "" };
+    if (!API_KEY || !ai) return { seoTitle: "", seoDescription: "" };
     try {
         const response = await ai.models.generateContent({
             model: "gemini-2.5-flash",
