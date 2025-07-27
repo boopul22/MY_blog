@@ -18,6 +18,8 @@ export default {
         'light-dark': '#4a5568',
         'dark-text': '#1a202c',
         'light-text': '#f7fafc',
+        'accent': '#ca4246',
+        'accent-dark': '#b23438',
       },
       fontFamily: {
         sans: ['Inter', 'sans-serif'],

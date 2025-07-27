@@ -1,4 +1,6 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 /* Athena Blog - Custom Styles */
 
@@ -40,12 +42,11 @@ html {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #ca4246;
-  border-radius: 3px;
+  @apply bg-accent rounded;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #b23438;
+  @apply bg-accent-dark;
 }
 
 /* Dark mode scrollbar */
@@ -58,12 +59,11 @@ html {
 }
 
 .dark ::-webkit-scrollbar-thumb {
-  background: #ca4246;
-  border-radius: 3px;
+  @apply bg-accent rounded;
 }
 
 .dark ::-webkit-scrollbar-thumb:hover {
-  background: #b23438;
+  @apply bg-accent-dark;
 }
 
 /* Typography enhancements */
@@ -97,22 +97,17 @@ html {
 
 /* Focus styles */
 .focus-visible:focus {
-  outline: 2px solid #ca4246;
-  outline-offset: 2px;
+  @apply outline-accent outline-2 outline-offset-2;
 }
 
 /* Selection color */
 ::selection {
-  background-color: #ca4246;
-  color: white;
+  @apply bg-accent text-white;
 }
 
 /* Gradient text */
 .gradient-text {
-  background: linear-gradient(135deg, #ca4246 0%, #b23438 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  @apply bg-gradient-to-r from-accent to-accent-dark text-transparent bg-clip-text;
 }
 
 /* Card hover effects */

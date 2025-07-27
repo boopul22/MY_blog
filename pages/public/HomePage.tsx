@@ -11,7 +11,7 @@ const HomePage: React.FC = () => {
         return <div className="flex items-center justify-center min-h-96">
             <div className="text-center">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-                <p className="text-gray-500 dark:text-gray-400">Loading...</p>
+                <p className="text-slate-500 dark:text-slate-400">Loading...</p>
             </div>
         </div>;
     }
@@ -42,7 +42,7 @@ const HomePage: React.FC = () => {
                 
                 {/* View All Button */}
                 <div className="text-center mt-12">
-                    <button className="border border-gray-400 dark:border-gray-600 text-gray-600 dark:text-gray-300 font-medium py-3 px-8 text-sm hover:bg-gray-100 dark:hover:bg-medium-dark transition-colors">
+                    <button className="border border-slate-400 dark:border-slate-600 text-slate-600 dark:text-slate-300 font-medium py-3 px-8 text-sm hover:bg-slate-100 dark:hover:bg-medium-dark transition-colors">
                         View all trending articles
                     </button>
                 </div>
@@ -51,19 +51,19 @@ const HomePage: React.FC = () => {
             {/* Instagram Feed Section */}
             <section className="py-16">
                 <div className="text-center mb-8">
-                    <div className="inline-flex items-center gap-3 text-gray-800 dark:text-gray-200 text-lg">
-                        <div className="w-6 h-6 border-2 border-gray-400 dark:border-gray-600 rounded-md flex items-center justify-center">
-                            <div className="w-3 h-3 border-2 border-gray-400 dark:border-gray-600 rounded-full"></div>
+                    <div className="inline-flex items-center gap-3 text-slate-800 dark:text-slate-200 text-lg">
+                        <div className="w-6 h-6 border-2 border-slate-400 dark:border-slate-600 rounded-md flex items-center justify-center">
+                            <div className="w-3 h-3 border-2 border-slate-400 dark:border-slate-600 rounded-full"></div>
                         </div>
                         <span className="font-medium">@athena_magazine</span>
                     </div>
-                    <h2 className="text-3xl font-serif text-gray-800 dark:text-gray-200 mt-2">Follow Me On Instagram</h2>
-                    <p className="text-gray-600 dark:text-gray-400 mt-2">Stay updated with our latest stories and behind-the-scenes content</p>
+                    <h2 className="text-3xl font-serif text-slate-800 dark:text-slate-200 mt-2">Follow Me On Instagram</h2>
+                    <p className="text-slate-600 dark:text-slate-400 mt-2">Stay updated with our latest stories and behind-the-scenes content</p>
                 </div>
                 <div className="flex w-full overflow-x-auto space-x-2">
                     {[...Array(6)].map((_, i) => (
                         <div key={i} className="flex-shrink-0 w-1/5">
-                            <div className="w-full aspect-square bg-gray-300 dark:bg-gray-700 border border-white dark:border-gray-600 hover:opacity-80 transition-opacity cursor-pointer"></div>
+                            <div className="w-full aspect-square bg-slate-300 dark:bg-slate-700 border border-white dark:border-slate-600 hover:opacity-80 transition-opacity cursor-pointer"></div>
                         </div>
                     ))}
                 </div>

@@ -35,7 +35,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, variant = 'default', isLarge 
             <div className="flex-1">
                 <div className="mb-6">
                     <Link to={`/post/${post.slug}`} className="block">
-                        <div className={`w-full ${isLarge ? 'aspect-[4/3]' : 'aspect-[4/5]'} bg-gray-300 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 overflow-hidden group-hover:opacity-90 transition-opacity`}>
+                        <div className={`w-full ${isLarge ? 'aspect-[4/3]' : 'aspect-[4/5]'} bg-slate-300 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 overflow-hidden group-hover:opacity-90 transition-opacity`}>
                             {post.imageUrl && (
                                 <img
                                     src={post.imageUrl}
@@ -50,7 +50,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, variant = 'default', isLarge 
                 <div className="space-y-3">
                     <div className="flex items-center space-x-4">
                         {category && (
-                            <Link to={`/category/${category.slug}`} className="px-3 py-1 bg-light dark:bg-medium-dark text-secondary dark:text-gray-300 rounded-full text-xs font-medium uppercase tracking-wider hover:bg-gray-200 dark:hover:bg-light-dark transition-colors">
+                            <Link to={`/category/${category.slug}`} className="px-3 py-1 bg-light dark:bg-medium-dark text-secondary dark:text-slate-300 rounded-full text-xs font-medium uppercase tracking-wider hover:bg-slate-200 dark:hover:bg-light-dark transition-colors">
                                 {category.name}
                             </Link>
                         )}
@@ -76,11 +76,11 @@ const PostCard: React.FC<PostCardProps> = ({ post, variant = 'default', isLarge 
 
   if (variant === 'list') {
     return (
-      <article className="group bg-white dark:bg-gray-900 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden mb-6">
+      <article className="group bg-white dark:bg-slate-900 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden mb-6">
         <div className="grid md:grid-cols-3 gap-0 items-stretch">
           <div className="md:col-span-1">
             <Link to={`/post/${post.slug}`} className="block h-full">
-              <div className="relative bg-gray-50 dark:bg-gray-800 p-3 h-full">
+              <div className="relative bg-slate-50 dark:bg-slate-800 p-3 h-full">
                 <img 
                   src={post.imageUrl} 
                   alt={post.title}
@@ -91,25 +91,25 @@ const PostCard: React.FC<PostCardProps> = ({ post, variant = 'default', isLarge 
             </Link>
           </div>
           <div className="md:col-span-2 p-6 space-y-4">
-            <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 font-medium">
+            <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 font-medium">
               {category && (
-                <Link to={`/category/${category.slug}`} className="uppercase tracking-wider hover:text-gray-700 dark:hover:text-gray-300 transition-colors">
+                <Link to={`/category/${category.slug}`} className="uppercase tracking-wider hover:text-slate-700 dark:hover:text-slate-300 transition-colors">
                   {category.name}
                 </Link>
               )}
               <span className="uppercase tracking-wider">{formattedDate}</span>
             </div>
-            <h3 className="text-xl font-serif font-bold text-gray-900 dark:text-gray-100 leading-tight group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors">
+            <h3 className="text-xl font-serif font-bold text-slate-900 dark:text-slate-100 leading-tight group-hover:text-slate-700 dark:group-hover:text-slate-300 transition-colors">
               <Link to={`/post/${post.slug}`}>
                 {post.title}
               </Link>
             </h3>
-            <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+            <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
               {post.content.substring(0, 120)}...
             </p>
-            <div className="pt-2 border-t border-gray-100 dark:border-gray-700">
-              <span className="text-xs text-gray-500 dark:text-gray-400 font-medium tracking-wider">
-                BY <span className="text-gray-700 dark:text-gray-300">{post.authorName.toUpperCase()}</span>
+            <div className="pt-2 border-t border-slate-100 dark:border-slate-700">
+              <span className="text-xs text-slate-500 dark:text-slate-400 font-medium tracking-wider">
+                BY <span className="text-slate-700 dark:text-slate-300">{post.authorName.toUpperCase()}</span>
               </span>
             </div>
           </div>
@@ -120,10 +120,10 @@ const PostCard: React.FC<PostCardProps> = ({ post, variant = 'default', isLarge 
 
   if (variant === 'grid') {
     return (
-      <article className="group bg-white dark:bg-gray-900 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden">
+      <article className="group bg-white dark:bg-slate-900 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden">
         <div className="relative">
           <Link to={`/post/${post.slug}`} className="block">
-            <div className="relative bg-gray-50 dark:bg-gray-800 p-3">
+            <div className="relative bg-slate-50 dark:bg-slate-800 p-3">
               <img 
                 src={post.imageUrl} 
                 alt={post.title}
@@ -134,25 +134,25 @@ const PostCard: React.FC<PostCardProps> = ({ post, variant = 'default', isLarge 
           </Link>
         </div>
         <div className="p-5 space-y-3">
-          <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 font-medium">
+          <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 font-medium">
             {category && (
-              <Link to={`/category/${category.slug}`} className="uppercase tracking-wider hover:text-gray-700 dark:hover:text-gray-300 transition-colors">
+              <Link to={`/category/${category.slug}`} className="uppercase tracking-wider hover:text-slate-700 dark:hover:text-slate-300 transition-colors">
                 {category.name}
               </Link>
             )}
             <span className="uppercase tracking-wider">{formattedDate}</span>
           </div>
-          <h3 className="text-lg font-serif font-bold text-gray-900 dark:text-gray-100 leading-tight group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors">
+          <h3 className="text-lg font-serif font-bold text-slate-900 dark:text-slate-100 leading-tight group-hover:text-slate-700 dark:group-hover:text-slate-300 transition-colors">
             <Link to={`/post/${post.slug}`}>
               {post.title}
             </Link>
           </h3>
-          <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed line-clamp-2">
+          <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed line-clamp-2">
             {post.content.substring(0, 100)}...
           </p>
-          <div className="pt-2 border-t border-gray-100 dark:border-gray-700">
-            <span className="text-xs text-gray-500 dark:text-gray-400 font-medium tracking-wider">
-              BY <span className="text-gray-700 dark:text-gray-300">{post.authorName.toUpperCase()}</span>
+          <div className="pt-2 border-t border-slate-100 dark:border-slate-700">
+            <span className="text-xs text-slate-500 dark:text-slate-400 font-medium tracking-wider">
+            BY <span className="text-slate-700 dark:text-slate-300">{post.authorName.toUpperCase()}</span>
             </span>
           </div>
         </div>
@@ -162,12 +162,12 @@ const PostCard: React.FC<PostCardProps> = ({ post, variant = 'default', isLarge 
 
   // Default variant - Gallery-inspired design with contained date
   return (
-    <div className="group bg-white dark:bg-gray-900 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden">
+    <div className="group bg-white dark:bg-slate-900 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden">
       <div className="flex">
         {/* Date positioned vertically within the card */}
-        <div className="flex items-center justify-center bg-gray-50 dark:bg-gray-800 px-3">
+        <div className="flex items-center justify-center bg-slate-50 dark:bg-slate-800 px-3">
           <div className="transform -rotate-90">
-            <span className="text-xs font-medium tracking-widest text-gray-600 dark:text-gray-400 uppercase whitespace-nowrap">
+            <span className="text-xs font-medium tracking-widest text-slate-600 dark:text-slate-400 uppercase whitespace-nowrap">
               {formattedDate}
             </span>
           </div>
@@ -177,7 +177,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, variant = 'default', isLarge 
         <div className="flex-1">
           {/* Image with frame-like styling */}
           <Link to={`/post/${post.slug}`} className="block">
-            <div className="relative bg-gray-50 dark:bg-gray-800 p-4">
+            <div className="relative bg-slate-50 dark:bg-slate-800 p-4">
               <img 
                 className="w-full h-64 object-cover rounded shadow-md transition-transform duration-300 group-hover:scale-[1.02]" 
                 src={post.imageUrl} 
@@ -190,9 +190,9 @@ const PostCard: React.FC<PostCardProps> = ({ post, variant = 'default', isLarge 
 
           <div className="p-6 space-y-4">
             {/* Category */}
-            <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">
+            <div className="text-xs text-slate-500 dark:text-slate-400 font-medium">
               {category && (
-                <Link to={`/category/${category.slug}`} className="uppercase tracking-wider hover:text-gray-700 dark:hover:text-gray-300 transition-colors">
+                <Link to={`/category/${category.slug}`} className="uppercase tracking-wider hover:text-slate-700 dark:hover:text-slate-300 transition-colors">
                   {category.name}
                 </Link>
               )}

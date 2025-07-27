@@ -33,20 +33,20 @@ const Header: React.FC = () => {
                     {/* Logo Section */}
                     <div className="text-center py-8">
                         <div className="inline-block relative mb-4">
-                            <div className="w-16 h-1 bg-gray-300 dark:bg-light-dark mx-auto"></div>
+                            <div className="w-16 h-1 bg-slate-300 dark:bg-light-dark mx-auto"></div>
                         </div>
                         <Link to="/" className="block">
                             <h1 className="text-5xl font-serif tracking-widest text-dark-text dark:text-light-text hover:text-primary dark:hover:text-primary transition-colors">
                                 Athena
                             </h1>
-                            <p className="text-xs tracking-[0.2em] text-secondary dark:text-gray-400 mt-1">
+                            <p className="text-xs tracking-[0.2em] text-secondary dark:text-slate-400 mt-1">
                                 CREATIVE MAGAZINE
                             </p>
                         </Link>
                     </div>
                     
                     {/* Navigation Section */}
-                    <div className="flex justify-between items-center border-t border-b border-gray-200 dark:border-light-dark py-4">
+                    <div className="flex justify-between items-center border-t border-b border-slate-200 dark:border-light-dark py-4">
                         <div className="flex-1"></div>
                         
                         <nav className="flex-1 flex justify-center">
@@ -61,7 +61,7 @@ const Header: React.FC = () => {
                         <div className="flex-1 flex justify-end items-center space-x-4">
                             <button 
                                 onClick={toggleDarkMode}
-                                className="w-6 h-6 border rounded-full border-gray-400 dark:border-gray-500 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-medium-dark transition-colors"
+                                className="w-6 h-6 border rounded-full border-slate-400 dark:border-slate-500 flex items-center justify-center hover:bg-slate-100 dark:hover:bg-medium-dark transition-colors"
                                 aria-label="Toggle dark mode"
                             >
                                 {isDarkMode ? 
@@ -70,12 +70,12 @@ const Header: React.FC = () => {
                                 }
                             </button>
                             
-                            <button className="w-6 h-6 border rounded-full border-gray-400 dark:border-gray-500 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-medium-dark transition-colors" aria-label="Search">
+                            <button className="w-6 h-6 border rounded-full border-slate-400 dark:border-slate-500 flex items-center justify-center hover:bg-slate-100 dark:hover:bg-medium-dark transition-colors" aria-label="Search">
                                 <SearchIcon className="w-3 h-3 text-dark-text dark:text-light-text" />
                             </button>
                             
                             <div className="flex items-center gap-2 text-sm">
-                                <button className="w-6 h-6 border rounded-full border-gray-400 dark:border-gray-500 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-medium-dark transition-colors" aria-label="Language">
+                                <button className="w-6 h-6 border rounded-full border-slate-400 dark:border-slate-500 flex items-center justify-center hover:bg-slate-100 dark:hover:bg-medium-dark transition-colors" aria-label="Language">
                                     <GlobeAltIcon className="w-4 h-4 text-dark-text dark:text-light-text" />
                                 </button>
                                 <span className="text-dark-text dark:text-light-text text-xs">EN</span>

@@ -1,0 +1,388 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Athena - Blog Wireframe</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script type="importmap">
+    {
+        "imports": {
+            "react": "https://esm.sh/react@19.1.0",
+            "react-dom/client": "https://esm.sh/react-dom@19.1.0/client"
+        }
+    }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #ffffff;
+            color: #111827;
+        }
+        .wireframe-image-placeholder {
+            border: 2px dashed #9ca3af;
+            background-color: #f3f4f6;
+            position: relative;
+        }
+        .wireframe-image-placeholder::before,
+        .wireframe-image-placeholder::after {
+            content: '';
+            position: absolute;
+            background-color: #9ca3af;
+        }
+        .wireframe-image-placeholder::before {
+            width: 2px;
+            top: 10%;
+            bottom: 10%;
+            left: 50%;
+            transform: translateX(-50%) rotate(45deg);
+        }
+        .wireframe-image-placeholder::after {
+            height: 2px;
+            left: 10%;
+            right: 10%;
+            top: 50%;
+            transform: translateY(-50%) rotate(45deg);
+        }
+
+        .wireframe-avatar {
+            border: 2px solid #9ca3af;
+            background-color: #f3f4f6;
+            border-radius: 9999px;
+            position: relative;
+            overflow: hidden;
+        }
+        .wireframe-avatar::before {
+          content: '';
+          position: absolute;
+          left: 50%;
+          top: 30%;
+          width: 40%;
+          height: 40%;
+          border-radius: 50%;
+          background: #9ca3af;
+          transform: translateX(-50%);
+        }
+        .wireframe-avatar::after {
+          content: '';
+          position: absolute;
+          left: 50%;
+          bottom: -20%;
+          width: 80%;
+          height: 60%;
+          border-radius: 50% 50% 0 0;
+          background: #9ca3af;
+          transform: translateX(-50%);
+        }
+
+        .wireframe-text-line {
+            height: 0.75rem;
+            background-color: #e5e7eb;
+            margin-bottom: 0.6rem;
+            border-radius: 3px;
+        }
+        .wireframe-text-line:last-child { margin-bottom: 0; }
+        
+        .wireframe-input {
+            border: 2px solid #9ca3af;
+            background-color: #fff;
+            padding: 0.65rem 0.75rem;
+            border-radius: 4px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+         .wireframe-textarea {
+            border: 2px solid #9ca3af;
+            background-color: #fff;
+            padding: 0.5rem;
+            border-radius: 4px;
+            width: 100%;
+            box-sizing: border-box;
+            resize: vertical;
+        }
+        .wireframe-button {
+            border: 2px solid #111827;
+            background-color: #fff;
+            color: #111827;
+            padding: 0.5rem 1.25rem;
+            text-align: center;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        .wireframe-button:hover {
+            background-color: #f3f4f6;
+        }
+        .wireframe-button-primary {
+             border: 2px solid #111827;
+             background-color: #111827;
+             color: #fff;
+             padding: 0.75rem 2rem;
+             font-weight: 600;
+             transition: all 0.2s;
+        }
+        .wireframe-button-primary:hover {
+            opacity: 0.85;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    <script type="module">
+        import React from 'react';
+        import { createRoot } from 'react-dom/client';
+
+        // --- ICONS (as React Components) ---
+        const SearchIcon = () => React.createElement('svg', { className: "w-5 h-5", fill: "none", stroke: "currentColor", viewBox: "0 0 24 24", xmlns: "http://www.w3.org/2000/svg" }, React.createElement('path', { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: "2", d: "M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" }));
+        const MoonIcon = () => React.createElement('svg', { className: "w-5 h-5", fill: "none", stroke: "currentColor", viewBox: "0 0 24 24", xmlns: "http://www.w3.org/2000/svg" }, React.createElement('path', { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: "2", d: "M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" }));
+        const FacebookIcon = () => React.createElement('svg', { className: "w-4 h-4", fill: "currentColor", viewBox: "0 0 24 24", xmlns: "http://www.w3.org/2000/svg" }, React.createElement('path', { d: "M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v3.385z" }));
+        const XIcon = () => React.createElement('svg', { className: "w-4 h-4", fill: "currentColor", viewBox: "0 0 16 16", xmlns: "http://www.w3.org/2000/svg" }, React.createElement('path', { d: "M12.6.75h2.454l-5.36 6.142L16 15.25h-4.937l-3.867-5.07-4.425 5.07H.316l5.733-6.57L0 .75h5.063l3.495 4.633L12.601.75Zm-1.78 12.95h1.98L4.03 1.85H1.89l8.93 11.85Z" }));
+        const PinterestIcon = () => React.createElement('svg', { className: "w-4 h-4", fill: "currentColor", viewBox: "0 0 24 24", xmlns: "http://www.w3.org/2000/svg" }, React.createElement('path', { d: "M12 0c-6.627 0-12 5.373-12 12 0 5.084 3.163 9.426 7.627 11.174-.105-.761-.015-1.674.208-2.433.229-.774 1.484-6.278 1.484-6.278s-.378-.755-.378-1.872c0-1.748 1.017-3.052 2.293-3.052 1.086 0 1.613.817 1.613 1.795 0 1.096-.694 2.731-1.045 4.252-.291 1.281.644 2.326 1.926 2.326 2.308 0 4.066-2.453 4.066-6.002 0-3.141-2.259-5.459-5.16-5.459-3.535 0-5.597 2.65-5.597 5.213 0 .991.372 2.051.83 2.656.096.128.113.237.084.364-.029.124-.185.739-.215.869-.036.15-.15.2-.303.133-1.156-.513-1.891-1.996-1.891-3.473 0-2.585 1.868-4.992 5.286-4.992 2.772 0 4.916 1.979 4.916 4.673 0 2.781-1.754 4.996-4.188 4.996-1.352 0-2.623-.746-3.06-1.631l-.977 3.654c-.266 1.004-.972 2.308-1.442 3.093-3.15-1.526-5.359-4.764-5.359-8.544 0-5.514 4.486-10 10-10z" }));
+        const LinkedInIcon = () => React.createElement('svg', { className: "w-4 h-4", fill: "currentColor", viewBox: "0 0 24 24", xmlns: "http://www.w3.org/2000/svg" }, React.createElement('path', { d: "M4.98 3.5c0 1.381-1.11 2.5-2.48 2.5s-2.48-1.119-2.48-2.5c0-1.38 1.11-2.5 2.48-2.5s2.48 1.12 2.48 2.5zm.02 4.5h-5v16h5v-16zm7.982 0h-4.968v16h4.969v-8.399c0-4.67 6.029-5.052 6.029 0v8.399h4.988v-10.131c0-7.88-8.922-7.594-11.018-3.714v-2.155z" }));
+        const WhatsAppIcon = () => React.createElement('svg', { className: "w-4 h-4", fill: "currentColor", viewBox: "0 0 24 24", xmlns: "http://www.w3.org/2000/svg" }, React.createElement('path', { d: "M12.031 6.182c-3.181 0-5.767 2.586-5.767 5.767 0 1.764.784 3.343 2.052 4.425l-1.344 2.956 3.033-1.314c.925.539 1.983.832 3.025.832 3.182 0 5.768-2.586 5.768-5.768.001-3.181-2.585-5.767-5.768-5.767zm0 10.383c-.844 0-1.67-.189-2.41-.553l-2.072.9-1.28-2.81c-1.023-1.28-1.575-2.848-1.575-4.536 0-2.54 2.064-4.603 4.604-4.603s4.604 2.064 4.604 4.604c-.001 2.539-2.064 4.602-4.604 4.602zm5.768-5.768c0 3.182-2.586 5.768-5.768 5.768h-.003c-.996 0-1.977-.253-2.853-.734l-3.399 1.474 1.506-3.324c-1.218-1.34-1.899-3.058-1.899-4.912 0-4.102 3.333-7.435 7.435-7.435s7.435 3.333 7.435 7.435z" }));
+        const MailIcon = () => React.createElement('svg', { className: "w-4 h-4", fill: "currentColor", viewBox: "0 0 24 24", xmlns: "http://www.w3.org/2000/svg" }, React.createElement('path', { d: "M0 3v18h24v-18h-24zm21.518 2l-9.518 7.713-9.518-7.713h19.036zm-19.518 14v-11.817l10 8.104 10-8.104v11.817h-20z" }));
+        const InstagramIcon = () => React.createElement('svg', { className: "w-4 h-4", fill: "currentColor", viewBox: "0 0 24 24", xmlns: "http://www.w3.org/2000/svg" }, React.createElement('path', { d: "M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.85s-.011 3.584-.069 4.85c-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07s-3.584-.012-4.85-.07c-3.252-.148-4.771-1.691-4.919-4.919-.058-1.265-.07-1.645-.07-4.85s.012-3.584.07-4.85c.148-3.225 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.85-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948s.014 3.667.072 4.947c.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072s3.667-.014 4.947-.072c4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.947s-.014-3.667-.072-4.947c-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.689-.073-4.948-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.162 6.162 6.162 6.162-2.759 6.162-6.162-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.441 1.441 1.441 1.441-.645 1.441-1.441-.645-1.44-1.441-1.44z" }));
+
+        // --- WIREFRAME HELPER COMPONENTS ---
+        const WireframeText = ({ lines, shortLastLine = true }) => {
+            return React.createElement('div', null,
+                Array.from({ length: lines }).map((_, i) =>
+                    React.createElement('div', {
+                        key: i,
+                        className: "wireframe-text-line",
+                        style: { width: (i === lines - 1 && shortLastLine) ? '80%' : '100%' }
+                    })
+                )
+            );
+        };
+
+        // --- MAIN PAGE COMPONENTS ---
+        const Header = () => {
+            return React.createElement('header', { className: "py-8 border-b border-gray-300" },
+                React.createElement('div', { className: "flex justify-between items-center" },
+                    React.createElement('div', { className: "lg:hidden" },
+                        React.createElement('button', { className: "p-2 border-2 border-gray-400 rounded" },
+                            React.createElement('svg', { className: "w-6 h-6", fill: "none", stroke: "currentColor", viewBox: "0 0 24 24", xmlns: "http://www.w3.org/2000/svg" }, React.createElement('path', { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: "2", d: "M4 6h16M4 12h16m-7 6h7" }))
+                        )
+                    ),
+                    React.createElement('div', { className: "text-center absolute left-1/2 -translate-x-1/2 lg:static lg:left-auto lg:translate-x-0" },
+                        React.createElement('h1', { className: "text-3xl font-bold tracking-tight" }, "Athena"),
+                        React.createElement('p', { className: "text-sm text-gray-500 tracking-widest" }, "CREATIVE MAGAZINE")
+                    ),
+                    React.createElement('nav', { className: "hidden lg:flex items-center space-x-8" },
+                        React.createElement('a', { href: "#", className: "text-gray-600 hover:text-gray-900 font-medium" }, "Home"),
+                        React.createElement('a', { href: "#", className: "text-gray-600 hover:text-gray-900 font-medium" }, "Pages"),
+                        React.createElement('a', { href: "#", className: "text-gray-600 hover:text-gray-900 font-medium" }, "Blog"),
+                        React.createElement('a', { href: "#", className: "text-gray-600 hover:text-gray-900 font-medium" }, "Contact")
+                    ),
+                    React.createElement('div', { className: "flex items-center space-x-4" },
+                        React.createElement('button', { className: "text-gray-600 hover:text-gray-900", 'aria-label': "Toggle dark mode" }, React.createElement(MoonIcon)),
+                        React.createElement('button', { className: "text-gray-600 hover:text-gray-900", 'aria-label': "Search" }, React.createElement(SearchIcon)),
+                        React.createElement('div', { className: "hidden sm:block" },
+                            React.createElement('a', { href: "#", className: "text-gray-600 hover:text-gray-900 font-medium text-sm" }, "English")
+                        ),
+                        React.createElement('button', { className: "wireframe-button" }, "Login")
+                    )
+                )
+            );
+        };
+
+        const ArticleContent = () => {
+            const socialIcons = [React.createElement(FacebookIcon), React.createElement(XIcon), React.createElement(PinterestIcon), React.createElement(LinkedInIcon), React.createElement(WhatsAppIcon), React.createElement(MailIcon)];
+
+            return React.createElement('article', { className: "max-w-none" },
+                React.createElement('header', { className: "text-center mb-12" },
+                    React.createElement('h1', { className: "text-4xl md:text-5xl font-bold tracking-tight leading-tight" }, "Discover Your Best Self: A Journey to a Vibrant Lifestyle"),
+                    React.createElement('div', { className: "mt-6 flex justify-center items-center space-x-4" },
+                        React.createElement('div', { className: "w-12 h-12 wireframe-avatar" }),
+                        React.createElement('div', { className: "text-left" },
+                            React.createElement('p', { className: "font-semibold" }, "By Marquise Wisozk"),
+                            React.createElement('p', { className: "text-sm text-gray-500" }, "Dec 27, 2024")
+                        )
+                    ),
+                    React.createElement('p', { className: "mt-4 text-sm text-gray-500" }, "Parenting • Photography")
+                ),
+                React.createElement('div', { className: "w-full h-96 wireframe-image-placeholder mb-8", 'aria-label': "Main article image placeholder" }),
+                React.createElement('div', { className: "p-4 border border-gray-200 rounded-md" },
+                    React.createElement(WireframeText, { lines: 3 })
+                ),
+                React.createElement('div', { className: "flex space-x-2 my-8" },
+                    React.createElement('div', { className: "w-1/3 h-40 wireframe-image-placeholder", 'aria-label': "Gallery image placeholder 1" }),
+                    React.createElement('div', { className: "w-1/3 h-40 wireframe-image-placeholder", 'aria-label': "Gallery image placeholder 2" }),
+                    React.createElement('div', { className: "w-1/3 h-40 wireframe-image-placeholder", 'aria-label': "Gallery image placeholder 3" })
+                ),
+                React.createElement(WireframeText, { lines: 6 }),
+                React.createElement('h2', { className: "font-bold text-2xl mt-12 mb-4" }, "What I'm Reading"),
+                React.createElement(WireframeText, { lines: 8 }),
+                React.createElement('blockquote', { className: "border-l-4 border-gray-500 pl-6 my-8" },
+                    React.createElement(WireframeText, { lines: 3 })
+                ),
+                React.createElement(WireframeText, { lines: 5 }),
+                React.createElement('h2', { className: "font-bold text-2xl mt-12 mb-4" }, "The Walkers Guide to Outdoor"),
+                React.createElement(WireframeText, { lines: 10 }),
+                React.createElement('div', { className: "bg-gray-50 rounded-lg p-8 text-center my-12" },
+                    React.createElement('p', { className: "text-lg text-gray-700 mb-4" }, "If you enjoyed reading this story, then we love it if you would share it"),
+                    React.createElement('div', { className: "flex justify-center space-x-4" },
+                        socialIcons.map((icon, index) => React.createElement('a', { key: index, href: "#", className: "w-10 h-10 rounded-full border border-gray-300 flex items-center justify-center text-gray-500 hover:bg-gray-100 transition-colors", 'aria-label': 'Share on social media' }, icon))
+                    )
+                ),
+                React.createElement('div', { className: "border-t border-gray-200 pt-4 text-sm" },
+                    React.createElement('span', { className: "font-semibold" }, "Tags:"), " ",
+                    React.createElement('a', { href: "#", className: "text-gray-600 hover:underline" }, "Design"), " ",
+                    React.createElement('a', { href: "#", className: "text-gray-600 hover:underline" }, "Finance"), " ",
+                    React.createElement('a', { href: "#", className: "text-gray-600 hover:underline" }, "Art")
+                ),
+                React.createElement('div', { className: "mt-16 bg-gray-50 p-8 flex items-center space-x-6 rounded-lg" },
+                    React.createElement('div', { className: "w-24 h-24 wireframe-avatar flex-shrink-0", 'aria-label': "Author avatar" }),
+                    React.createElement('div', { className: 'w-full' },
+                        React.createElement('h3', { className: "text-xl font-bold" }, "Marquise Wisozk"),
+                        React.createElement('div', { className: 'mt-2' }, React.createElement(WireframeText, { lines: 3 })),
+                        React.createElement('div', { className: "mt-4 flex items-center space-x-4 text-gray-500" },
+                            React.createElement('a', { href: "#", className: "hover:text-gray-800", 'aria-label': "Author's Facebook" }, React.createElement(FacebookIcon)),
+                            React.createElement('a', { href: "#", className: "hover:text-gray-800", 'aria-label': "Author's X profile" }, React.createElement(XIcon)),
+                            React.createElement('a', { href: "#", className: "hover:text-gray-800", 'aria-label': "Author's LinkedIn" }, React.createElement(LinkedInIcon))
+                        )
+                    )
+                )
+            );
+        };
+
+        const Sidebar = () => {
+            const popularPosts = [
+                { title: 'The Art of Decluttering: Finding Peace in Minimalism', categories: ['Education', 'Technology'], author: 'Roberto Terry' },
+                { title: 'Minimalist Travel: Embracing Experiences Over...', categories: ['Travel'], author: 'Marquise Wisozk' },
+                { title: 'The Art of Simplifying Life: Exploring Minimalist Living', categories: ['Entertainment', 'Technology'], author: 'Lauryn Sanford' },
+                { title: 'Achieving Harmony: Strategies for Work-Life...', categories: ['Technology', 'Self-Improvement'], author: 'Arne Buckridge' },
+                { title: 'Embracing Simplicity: My Journey to Minimalist Living', categories: ['Photography', 'Fashion'], author: 'Nayeli Kihn' }
+            ];
+
+            const PopularPostCard = ({ post }) => React.createElement('div', { className: "flex items-center space-x-4" },
+                React.createElement('div', { className: "w-20 h-20 wireframe-image-placeholder flex-shrink-0 rounded" }),
+                React.createElement('div', null,
+                    React.createElement('h3', { className: "font-bold text-md leading-tight" },
+                        React.createElement('a', { href: "#", className: 'hover:text-indigo-600' }, post.title)
+                    ),
+                    React.createElement('p', { className: "text-xs text-gray-500 mt-1" },
+                        post.categories.join(' • ').toUpperCase(), " BY ", React.createElement('span', { className: "text-red-500 font-semibold" }, post.author.toUpperCase())
+                    )
+                )
+            );
+
+            return React.createElement('aside', { className: "space-y-12" },
+                React.createElement('div', null,
+                    React.createElement('h2', { className: "text-lg font-bold mb-6 relative after:content-[''] after:absolute after:left-0 after:bottom-[-8px] after:w-8 after:h-0.5 after:bg-gray-800" }, "POPULAR POSTS"),
+                    React.createElement('div', { className: "space-y-6" },
+                        popularPosts.map((post, index) => React.createElement(PopularPostCard, { key: index, post: post }))
+                    )
+                )
+            );
+        };
+
+        const CommentSection = () => {
+            const CommentCard = () => React.createElement('div', { className: "flex space-x-4" },
+                React.createElement('div', { className: "w-16 h-16 wireframe-avatar flex-shrink-0" }),
+                React.createElement('div', { className: 'w-full'},
+                    React.createElement('div', { className: "flex items-center space-x-3" },
+                        React.createElement('h4', { className: "font-bold" }, "Dereck Haag"),
+                        React.createElement('span', { className: "text-sm text-gray-500" }, "7 months ago")
+                    ),
+                    React.createElement('div', { className: "mt-2" }, React.createElement(WireframeText, { lines: 2, shortLastLine: false })),
+                    React.createElement('button', { className: "text-sm font-semibold text-gray-600 mt-2 hover:text-gray-900" }, "Reply")
+                )
+            );
+
+            const CommentForm = () => React.createElement('div', { className: "mt-12" },
+                React.createElement('h3', { className: "text-xl font-bold" }, "Leave a comment"),
+                React.createElement('p', { className: "text-gray-500 text-sm mt-1" }, "Your email address will not be published. Required fields are marked *"),
+                React.createElement('form', { className: "mt-6 space-y-6", onSubmit: e => e.preventDefault() },
+                    React.createElement('div', null,
+                        React.createElement('label', { htmlFor: "comment", className: "block text-sm font-semibold text-gray-700 mb-1" }, "Comment *"),
+                        React.createElement('textarea', { id: "comment", className: "wireframe-textarea h-32", 'aria-label': "Comment textarea" })
+                    ),
+                    React.createElement('div', { className: "grid grid-cols-1 md:grid-cols-2 gap-6" },
+                        React.createElement('div', null,
+                            React.createElement('label', { htmlFor: "name", className: "block text-sm font-semibold text-gray-700 mb-1" }, "Name *"),
+                            React.createElement('input', { type: 'text', id: "name", className: "wireframe-input", 'aria-label': "Name input" })
+                        ),
+                        React.createElement('div', null,
+                            React.createElement('label', { htmlFor: "email", className: "block text-sm font-semibold text-gray-700 mb-1" }, "Email *"),
+                            React.createElement('input', { type: 'email', id: "email", className: "wireframe-input", 'aria-label': "Email input" })
+                        )
+                    ),
+                    React.createElement('div', null,
+                        React.createElement('label', { htmlFor: "website", className: "block text-sm font-semibold text-gray-700 mb-1" }, "Website"),
+                        React.createElement('input', { type: 'text', id: "website", className: "wireframe-input", 'aria-label': "Website input", placeholder:"e.g. https://example.com" })
+                    ),
+                    React.createElement('div', { className: "flex items-center" },
+                        React.createElement('input', { type: 'checkbox', id: "save-info", className: "h-5 w-5 border-2 border-gray-400 rounded-sm mr-2" }),
+                        React.createElement('label', { htmlFor: "save-info", className: "text-sm text-gray-600" }, "Save my name, email, and website in this browser for the next time I comment.")
+                    ),
+                    React.createElement('div', null,
+                        React.createElement('button', { type: "submit", className: "wireframe-button-primary" }, "Post Comment")
+                    )
+                )
+            );
+
+            return React.createElement('div', { className: "mt-16 py-12 border-t border-gray-200" },
+                React.createElement('h2', { className: "text-lg font-bold mb-8" }, "1 COMMENT"),
+                React.createElement('div', { className: "space-y-8" },
+                    React.createElement(CommentCard)
+                ),
+                React.createElement(CommentForm)
+            );
+        };
+
+        const InstagramFeed = () => {
+            const imageCount = 6;
+            return React.createElement('div', { className: "mt-16 py-12 bg-gray-50 border-t" },
+                React.createElement('div', { className: "max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8" },
+                    React.createElement('div', { className: "text-center mb-8" },
+                        React.createElement('h2', { className: "text-2xl font-bold" }, "Follow Me On Instagram"),
+                        React.createElement('a', { href: "#", className: "text-sm text-red-500 font-semibold flex items-center justify-center space-x-1 mt-1" },
+                            React.createElement(InstagramIcon),
+                            React.createElement('span', null, "@athena")
+                        )
+                    ),
+                    React.createElement('div', { className: "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-1" },
+                        Array.from({ length: imageCount }).map((_, index) =>
+                            React.createElement('div', { key: index, className: "w-full aspect-square wireframe-image-placeholder", 'aria-label': `Instagram image ${index + 1} placeholder` })
+                        )
+                    )
+                )
+            );
+        };
+
+        // --- App Root Component ---
+        const App = () => {
+            return React.createElement('div', { className: "bg-white" },
+                React.createElement('div', { className: "max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8" },
+                    React.createElement(Header),
+                    React.createElement('main', { className: "mt-12" },
+                        React.createElement('div', { className: "grid grid-cols-1 lg:grid-cols-3 lg:gap-x-16" },
+                            React.createElement('div', { className: "lg:col-span-2" },
+                                React.createElement(ArticleContent),
+                                React.createElement(CommentSection)
+                            ),
+                            React.createElement('div', { className: "mt-12 lg:mt-0" },
+                                React.createElement(Sidebar)
+                            )
+                        )
+                    )
+                ),
+                React.createElement(InstagramFeed)
+            );
+        };
+
+        // --- React DOM Render ---
+        const rootElement = document.getElementById('root');
+        if (!rootElement) {
+          throw new Error("Could not find root element to mount to");
+        }
+        const root = createRoot(rootElement);
+        root.render(React.createElement(App));
+    </script>
+</body>
+</html>
