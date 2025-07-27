@@ -1,22 +1,22 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { NavLink, Link } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext';
 import { MenuIcon, SearchIcon, MoonIcon, SunIcon, GlobeAltIcon } from './icons';
 
-
-
 const Header: React.FC = () => {
     const { isDarkMode, toggleDarkMode } = useTheme();
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-    const NavItem: React.FC<{ to: string; children: React.ReactNode }> = ({ to, children }) => (
+    const NavItem: React.FC<{ to: string; children: React.ReactNode; mobile?: boolean }> = ({ to, children, mobile = false }) => (
         <li>
             <NavLink
                 to={to}
+                onClick={() => mobile && setIsMobileMenuOpen(false)}
                 className={({ isActive }) =>
                     `flex items-center gap-2 text-sm font-medium text-dark-text dark:text-light-text hover:text-primary dark:hover:text-primary transition-colors ${
                         isActive ? 'text-primary dark:text-primary' : ''
-                    }`
+                    } ${mobile ? 'py-2 px-4 border-b border-slate-200 dark:border-slate-700 last:border-b-0' : ''}`
                 }
             >
                 <div className="w-2 h-2 rounded-full border border-primary dark:border-primary"></div>
@@ -27,16 +27,15 @@ const Header: React.FC = () => {
 
     return (
         <>
-
-            <header className="bg-light dark:bg-dark transition-colors">
+            <header className="bg-light dark:bg-dark transition-colors relative">
                 <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
                     {/* Logo Section */}
-                    <div className="text-center py-8">
-                        <div className="inline-block relative mb-4">
-                            <div className="w-16 h-1 bg-slate-300 dark:bg-light-dark mx-auto"></div>
+                    <div className="text-center py-6 sm:py-8">
+                        <div className="inline-block relative mb-2 sm:mb-4">
+                            <div className="w-12 sm:w-16 h-1 bg-slate-300 dark:bg-light-dark mx-auto"></div>
                         </div>
                         <Link to="/" className="block">
-                            <h1 className="text-5xl font-serif tracking-widest text-dark-text dark:text-light-text hover:text-primary dark:hover:text-primary transition-colors">
+                            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif tracking-widest text-dark-text dark:text-light-text hover:text-primary dark:hover:text-primary transition-colors">
                                 Athena
                             </h1>
                             <p className="text-xs tracking-[0.2em] text-secondary dark:text-slate-400 mt-1">
@@ -47,10 +46,18 @@ const Header: React.FC = () => {
                     
                     {/* Navigation Section */}
                     <div className="flex justify-between items-center border-t border-b border-slate-200 dark:border-light-dark py-4">
-                        <div className="flex-1"></div>
+                        {/* Mobile Menu Button */}
+                        <button 
+                            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                            className="md:hidden w-8 h-8 flex items-center justify-center text-dark-text dark:text-light-text hover:text-primary transition-colors"
+                            aria-label="Toggle mobile menu"
+                        >
+                            <MenuIcon className="w-6 h-6" />
+                        </button>
                         
-                        <nav className="flex-1 flex justify-center">
-                            <ul className="flex items-center space-x-8">
+                        {/* Desktop Navigation */}
+                        <nav className="hidden md:flex flex-1 justify-center">
+                            <ul className="flex items-center space-x-6 lg:space-x-8">
                                 <NavItem to="/">Home</NavItem>
                                 <NavItem to="/category/lifestyle">Pages</NavItem>
                                 <NavItem to="/category/technology">Blog</NavItem>
@@ -58,7 +65,8 @@ const Header: React.FC = () => {
                             </ul>
                         </nav>
                         
-                        <div className="flex-1 flex justify-end items-center space-x-4">
+                        {/* Action Buttons */}
+                        <div className="flex items-center space-x-2 sm:space-x-4">
                             <button 
                                 onClick={toggleDarkMode}
                                 className="w-6 h-6 border rounded-full border-slate-400 dark:border-slate-500 flex items-center justify-center hover:bg-slate-100 dark:hover:bg-medium-dark transition-colors"
@@ -70,11 +78,11 @@ const Header: React.FC = () => {
                                 }
                             </button>
                             
-                            <button className="w-6 h-6 border rounded-full border-slate-400 dark:border-slate-500 flex items-center justify-center hover:bg-slate-100 dark:hover:bg-medium-dark transition-colors" aria-label="Search">
+                            <button className="hidden sm:flex w-6 h-6 border rounded-full border-slate-400 dark:border-slate-500 items-center justify-center hover:bg-slate-100 dark:hover:bg-medium-dark transition-colors" aria-label="Search">
                                 <SearchIcon className="w-3 h-3 text-dark-text dark:text-light-text" />
                             </button>
                             
-                            <div className="flex items-center gap-2 text-sm">
+                            <div className="hidden sm:flex items-center gap-2 text-sm">
                                 <button className="w-6 h-6 border rounded-full border-slate-400 dark:border-slate-500 flex items-center justify-center hover:bg-slate-100 dark:hover:bg-medium-dark transition-colors" aria-label="Language">
                                     <GlobeAltIcon className="w-4 h-4 text-dark-text dark:text-light-text" />
                                 </button>
@@ -83,13 +91,38 @@ const Header: React.FC = () => {
                             
                             <Link 
                                 to="/login" 
-                                className="px-6 py-2 bg-primary dark:bg-primary-dark rounded-md text-white text-sm font-medium hover:bg-primary-dark dark:hover:bg-primary transition-colors"
+                                className="px-3 sm:px-6 py-2 bg-primary dark:bg-primary-dark rounded-md text-white text-xs sm:text-sm font-medium hover:bg-primary-dark dark:hover:bg-primary transition-colors"
                             >
                                 Login
                             </Link>
                         </div>
                     </div>
                 </div>
+                
+                {/* Mobile Navigation Menu */}
+                {isMobileMenuOpen && (
+                    <div className="md:hidden absolute top-full left-0 right-0 bg-light dark:bg-dark border-b border-slate-200 dark:border-slate-700 shadow-lg z-50">
+                        <nav className="max-w-screen-xl mx-auto px-4">
+                            <ul className="py-4">
+                                <NavItem to="/" mobile>Home</NavItem>
+                                <NavItem to="/category/lifestyle" mobile>Pages</NavItem>
+                                <NavItem to="/category/technology" mobile>Blog</NavItem>
+                                <NavItem to="/admin" mobile>Contact</NavItem>
+                            </ul>
+                            <div className="py-4 border-t border-slate-200 dark:border-slate-700 flex items-center justify-center space-x-4">
+                                <button className="w-6 h-6 border rounded-full border-slate-400 dark:border-slate-500 flex items-center justify-center hover:bg-slate-100 dark:hover:bg-medium-dark transition-colors" aria-label="Search">
+                                    <SearchIcon className="w-3 h-3 text-dark-text dark:text-light-text" />
+                                </button>
+                                <div className="flex items-center gap-2 text-sm">
+                                    <button className="w-6 h-6 border rounded-full border-slate-400 dark:border-slate-500 flex items-center justify-center hover:bg-slate-100 dark:hover:bg-medium-dark transition-colors" aria-label="Language">
+                                        <GlobeAltIcon className="w-4 h-4 text-dark-text dark:text-light-text" />
+                                    </button>
+                                    <span className="text-dark-text dark:text-light-text text-xs">EN</span>
+                                </div>
+                            </div>
+                        </nav>
+                    </div>
+                )}
             </header>
         </>
     );

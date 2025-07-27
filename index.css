@@ -141,3 +141,19 @@ html {
     display: none !important;
   }
 }
+
+/* Responsive utilities */
+@media (min-width: 640px) {
+  .sm\:vertical-text {
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+  }
+}
+
+/* Mobile-first responsive text sizing */
+@media (max-width: 639px) {
+  .mobile-text-adjust {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+  }
+}

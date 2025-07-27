@@ -23,47 +23,47 @@ const HomePage: React.FC = () => {
     return (
         <>
             {/* Main Article Grid */}
-            <main className="py-12">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8">
+            <main className="py-8 sm:py-12">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-6 sm:gap-8">
                     {/* First two large articles */}
                     {articles.slice(0, 2).map(article => (
-                        <div key={article.id} className="lg:col-span-6">
+                        <div key={article.id} className="sm:col-span-2 lg:col-span-6">
                             <PostCard post={article} variant="wireframe" isLarge={true} />
                         </div>
                     ))}
                     
                     {/* Remaining smaller articles */}
                     {articles.slice(2, 12).map(article => (
-                        <div key={article.id} className="lg:col-span-4">
+                        <div key={article.id} className="sm:col-span-1 lg:col-span-4">
                             <PostCard post={article} variant="wireframe" />
                         </div>
                     ))}
                 </div>
                 
                 {/* View All Button */}
-                <div className="text-center mt-12">
-                    <button className="border border-slate-400 dark:border-slate-600 text-slate-600 dark:text-slate-300 font-medium py-3 px-8 text-sm hover:bg-slate-100 dark:hover:bg-medium-dark transition-colors">
+                <div className="text-center mt-8 sm:mt-12">
+                    <button className="border border-slate-400 dark:border-slate-600 text-slate-600 dark:text-slate-300 font-medium py-3 px-6 sm:px-8 text-sm hover:bg-slate-100 dark:hover:bg-medium-dark transition-colors">
                         View all trending articles
                     </button>
                 </div>
             </main>
 
             {/* Instagram Feed Section */}
-            <section className="py-16">
-                <div className="text-center mb-8">
-                    <div className="inline-flex items-center gap-3 text-slate-800 dark:text-slate-200 text-lg">
-                        <div className="w-6 h-6 border-2 border-slate-400 dark:border-slate-600 rounded-md flex items-center justify-center">
-                            <div className="w-3 h-3 border-2 border-slate-400 dark:border-slate-600 rounded-full"></div>
+            <section className="py-12 sm:py-16">
+                <div className="text-center mb-6 sm:mb-8">
+                    <div className="inline-flex items-center gap-3 text-slate-800 dark:text-slate-200 text-base sm:text-lg">
+                        <div className="w-5 h-5 sm:w-6 sm:h-6 border-2 border-slate-400 dark:border-slate-600 rounded-md flex items-center justify-center">
+                            <div className="w-2 h-2 sm:w-3 sm:h-3 border-2 border-slate-400 dark:border-slate-600 rounded-full"></div>
                         </div>
                         <span className="font-medium">@athena_magazine</span>
                     </div>
-                    <h2 className="text-3xl font-serif text-slate-800 dark:text-slate-200 mt-2">Follow Me On Instagram</h2>
-                    <p className="text-slate-600 dark:text-slate-400 mt-2">Stay updated with our latest stories and behind-the-scenes content</p>
+                    <h2 className="text-2xl sm:text-3xl font-serif text-slate-800 dark:text-slate-200 mt-2">Follow Me On Instagram</h2>
+                    <p className="text-slate-600 dark:text-slate-400 mt-2 text-sm sm:text-base px-4">Stay updated with our latest stories and behind-the-scenes content</p>
                 </div>
-                <div className="flex w-full overflow-x-auto space-x-2">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2 sm:gap-3">
                     {[...Array(6)].map((_, i) => (
-                        <div key={i} className="flex-shrink-0 w-1/5">
-                            <div className="w-full aspect-square bg-slate-300 dark:bg-slate-700 border border-white dark:border-slate-600 hover:opacity-80 transition-opacity cursor-pointer"></div>
+                        <div key={i} className="aspect-square bg-slate-300 dark:bg-slate-700 border border-white dark:border-slate-600 hover:opacity-80 transition-opacity cursor-pointer rounded-sm overflow-hidden">
+                            {/* Placeholder for Instagram image */}
                         </div>
                     ))}
                 </div>

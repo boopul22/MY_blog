@@ -20,22 +20,19 @@ const PostCard: React.FC<PostCardProps> = ({ post, variant = 'default', isLarge 
 
   if (variant === 'wireframe') {
     return (
-        <div className="group relative flex">
+        <div className="group relative flex flex-col sm:flex-row">
             {/* Date positioned vertically within the card boundaries */}
-            <div className="flex items-center justify-center pr-4">
-                <p 
-                    className="text-xs text-secondary font-medium tracking-widest uppercase"
-                    style={{ writingMode: 'vertical-rl', textOrientation: 'mixed' }}
-                >
+            <div className="flex sm:items-center justify-center sm:pr-4 pb-2 sm:pb-0">
+                <p className="text-xs text-secondary font-medium tracking-widest uppercase sm:vertical-text">
                     {formattedDate}
                 </p>
             </div>
             
             {/* Main content area */}
             <div className="flex-1">
-                <div className="mb-6">
+                <div className="mb-4 sm:mb-6">
                     <Link to={`/post/${post.slug}`} className="block">
-                        <div className={`w-full ${isLarge ? 'aspect-[4/3]' : 'aspect-[4/5]'} bg-slate-300 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 overflow-hidden group-hover:opacity-90 transition-opacity`}>
+                        <div className={`w-full ${isLarge ? 'aspect-[4/3] sm:aspect-[4/3]' : 'aspect-[4/5] sm:aspect-[4/5]'} bg-slate-300 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 overflow-hidden group-hover:opacity-90 transition-opacity`}>
                             {post.imageUrl && (
                                 <img
                                     src={post.imageUrl}
@@ -47,10 +44,10 @@ const PostCard: React.FC<PostCardProps> = ({ post, variant = 'default', isLarge 
                     </Link>
                 </div>
                 
-                <div className="space-y-3">
-                    <div className="flex items-center space-x-4">
+                <div className="space-y-2 sm:space-y-3">
+                    <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
                         {category && (
-                            <Link to={`/category/${category.slug}`} className="px-3 py-1 bg-light dark:bg-medium-dark text-secondary dark:text-slate-300 rounded-full text-xs font-medium uppercase tracking-wider hover:bg-slate-200 dark:hover:bg-light-dark transition-colors">
+                            <Link to={`/category/${category.slug}`} className="inline-block px-3 py-1 bg-light dark:bg-medium-dark text-secondary dark:text-slate-300 rounded-full text-xs font-medium uppercase tracking-wider hover:bg-slate-200 dark:hover:bg-light-dark transition-colors w-fit">
                                 {category.name}
                             </Link>
                         )}
@@ -58,8 +55,8 @@ const PostCard: React.FC<PostCardProps> = ({ post, variant = 'default', isLarge 
                     </div>
                     <div className="space-y-2">
                         <Link to={`/post/${post.slug}`} className="block">
-                            <h3 className={`font-serif font-bold text-dark-text hover:text-primary transition-colors leading-tight ${
-                                isLarge ? 'text-xl lg:text-2xl' : 'text-lg'
+                            <h3 className={`font-serif font-bold text-dark-text dark:text-light-text hover:text-primary transition-colors leading-tight ${
+                                isLarge ? 'text-lg sm:text-xl lg:text-2xl' : 'text-base sm:text-lg'
                             }`}>
                                 {post.title}
                             </h3>
