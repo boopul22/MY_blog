@@ -4,14 +4,18 @@ import { Post } from '../types';
 interface FAQItem {
   question: string;
   answer: string;
+  author?: string;
+  dateCreated?: string;
+  upvoteCount?: number;
 }
 
 interface FAQSchemaProps {
   post: Post;
   faqs?: FAQItem[];
+  pageUrl?: string;
 }
 
-const FAQSchema: React.FC<FAQSchemaProps> = ({ post, faqs }) => {
+const FAQSchema: React.FC<FAQSchemaProps> = ({ post, faqs, pageUrl }) => {
   // Generate default FAQs based on post content if none provided
   const defaultFAQs: FAQItem[] = [
     {
@@ -38,13 +42,23 @@ const FAQSchema: React.FC<FAQSchemaProps> = ({ post, faqs }) => {
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
-    "mainEntity": faqItems.map(faq => ({
+    "@id": pageUrl ? `${pageUrl}#faq` : undefined,
+    "mainEntity": faqItems.map((faq, index) => ({
       "@type": "Question",
+      "@id": pageUrl ? `${pageUrl}#faq-${index + 1}` : undefined,
       "name": faq.question,
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": faq.answer
-      }
+        "text": faq.answer,
+        "dateCreated": faq.dateCreated ? new Date(faq.dateCreated).toISOString() : undefined,
+        "upvoteCount": faq.upvoteCount,
+        "author": faq.author ? {
+          "@type": "Person",
+          "name": faq.author
+        } : undefined
+      },
+      "answerCount": 1,
+      "dateCreated": faq.dateCreated ? new Date(faq.dateCreated).toISOString() : undefined
     }))
   };
 

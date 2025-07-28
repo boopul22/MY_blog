@@ -27,6 +27,7 @@ CREATE TABLE IF NOT EXISTS posts (
   status VARCHAR(20) NOT NULL DEFAULT 'draft' CHECK (status IN ('published', 'draft')),
   seo_title VARCHAR(500) NOT NULL,
   seo_description TEXT NOT NULL,
+  meta_keywords TEXT,
   category_id UUID NOT NULL REFERENCES categories(id) ON DELETE CASCADE,
   author_name VARCHAR(255) NOT NULL DEFAULT 'Admin',
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
@@ -211,4 +212,336 @@ INSERT INTO post_tags (post_id, tag_id) VALUES
   ('550e8400-e29b-41d4-a716-446655440023', '550e8400-e29b-41d4-a716-446655440013'), -- Post 3 -> Web Dev
   ('550e8400-e29b-41d4-a716-446655440024', '550e8400-e29b-41d4-a716-446655440014')  -- Post 4 -> UX
 ON CONFLICT (post_id, tag_id) DO NOTHING;
+
+-- Enhanced WordPress-like features
+
+-- Create post types table for custom post types
+CREATE TABLE IF NOT EXISTS post_types (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  name VARCHAR(100) UNIQUE NOT NULL,
+  label VARCHAR(100) NOT NULL,
+  description TEXT,
+  public BOOLEAN DEFAULT true,
+  hierarchical BOOLEAN DEFAULT false,
+  supports TEXT[] DEFAULT '{"title", "content", "author", "thumbnail", "excerpt", "comments"}',
+  menu_position INTEGER DEFAULT 5,
+  menu_icon VARCHAR(100),
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Insert default post types
+INSERT INTO post_types (name, label, description, public, hierarchical, supports) VALUES
+('post', 'Posts', 'Blog posts and articles', true, false, '{"title", "content", "author", "thumbnail", "excerpt", "comments", "tags", "categories"}'),
+('page', 'Pages', 'Static pages', true, true, '{"title", "content", "author", "thumbnail", "excerpt"}'),
+('portfolio', 'Portfolio', 'Portfolio items', true, false, '{"title", "content", "author", "thumbnail", "excerpt"}')
+ON CONFLICT (name) DO NOTHING;
+
+-- Create post revisions table for version control
+CREATE TABLE IF NOT EXISTS post_revisions (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  post_id UUID NOT NULL REFERENCES posts(id) ON DELETE CASCADE,
+  title VARCHAR(500) NOT NULL,
+  content TEXT NOT NULL,
+  excerpt TEXT,
+  seo_title VARCHAR(500),
+  seo_description TEXT,
+  meta_keywords TEXT,
+  custom_fields JSONB DEFAULT '{}',
+  revision_type VARCHAR(20) DEFAULT 'revision' CHECK (revision_type IN ('revision', 'autosave')),
+  author_name VARCHAR(255) NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Create post meta table for custom fields
+CREATE TABLE IF NOT EXISTS post_meta (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  post_id UUID NOT NULL REFERENCES posts(id) ON DELETE CASCADE,
+  meta_key VARCHAR(255) NOT NULL,
+  meta_value TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Create scheduled posts table for publishing workflow
+CREATE TABLE IF NOT EXISTS scheduled_posts (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  post_id UUID NOT NULL REFERENCES posts(id) ON DELETE CASCADE,
+  scheduled_at TIMESTAMP WITH TIME ZONE NOT NULL,
+  status VARCHAR(20) DEFAULT 'pending' CHECK (status IN ('pending', 'published', 'failed')),
+  attempts INTEGER DEFAULT 0,
+  last_attempt_at TIMESTAMP WITH TIME ZONE,
+  error_message TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Create content templates table
+CREATE TABLE IF NOT EXISTS content_templates (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  name VARCHAR(255) NOT NULL,
+  description TEXT,
+  template_type VARCHAR(50) DEFAULT 'post' CHECK (template_type IN ('post', 'page', 'email', 'custom')),
+  content TEXT NOT NULL,
+  thumbnail_url TEXT,
+  is_active BOOLEAN DEFAULT true,
+  usage_count INTEGER DEFAULT 0,
+  created_by VARCHAR(255),
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Create reusable blocks table
+CREATE TABLE IF NOT EXISTS reusable_blocks (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  name VARCHAR(255) NOT NULL,
+  description TEXT,
+  block_type VARCHAR(50) DEFAULT 'custom' CHECK (block_type IN ('text', 'image', 'video', 'code', 'quote', 'custom')),
+  content TEXT NOT NULL,
+  settings JSONB DEFAULT '{}',
+  is_active BOOLEAN DEFAULT true,
+  usage_count INTEGER DEFAULT 0,
+  created_by VARCHAR(255),
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Add new columns to existing posts table (if they don't exist)
+DO $$
+BEGIN
+  -- Add excerpt column
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'posts' AND column_name = 'excerpt') THEN
+    ALTER TABLE posts ADD COLUMN excerpt TEXT;
+  END IF;
+
+  -- Add post_type column
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'posts' AND column_name = 'post_type') THEN
+    ALTER TABLE posts ADD COLUMN post_type VARCHAR(100) DEFAULT 'post';
+  END IF;
+
+  -- Add parent_id column for hierarchical posts
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'posts' AND column_name = 'parent_id') THEN
+    ALTER TABLE posts ADD COLUMN parent_id UUID REFERENCES posts(id) ON DELETE SET NULL;
+  END IF;
+
+  -- Add menu_order column
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'posts' AND column_name = 'menu_order') THEN
+    ALTER TABLE posts ADD COLUMN menu_order INTEGER DEFAULT 0;
+  END IF;
+
+  -- Add comment_status column
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'posts' AND column_name = 'comment_status') THEN
+    ALTER TABLE posts ADD COLUMN comment_status VARCHAR(20) DEFAULT 'open' CHECK (comment_status IN ('open', 'closed'));
+  END IF;
+
+  -- Add password column for protected posts
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'posts' AND column_name = 'password') THEN
+    ALTER TABLE posts ADD COLUMN password VARCHAR(255);
+  END IF;
+
+  -- Add scheduled_at column
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'posts' AND column_name = 'scheduled_at') THEN
+    ALTER TABLE posts ADD COLUMN scheduled_at TIMESTAMP WITH TIME ZONE;
+  END IF;
+
+  -- Add published_at column
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'posts' AND column_name = 'published_at') THEN
+    ALTER TABLE posts ADD COLUMN published_at TIMESTAMP WITH TIME ZONE;
+  END IF;
+
+  -- Add custom_fields column
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'posts' AND column_name = 'custom_fields') THEN
+    ALTER TABLE posts ADD COLUMN custom_fields JSONB DEFAULT '{}';
+  END IF;
+
+  -- Update status check constraint to include new statuses
+  ALTER TABLE posts DROP CONSTRAINT IF EXISTS posts_status_check;
+  ALTER TABLE posts ADD CONSTRAINT posts_status_check CHECK (status IN ('published', 'draft', 'scheduled', 'private', 'archived', 'trash'));
+END $$;
+
+-- Create indexes for new tables
+CREATE INDEX IF NOT EXISTS idx_post_revisions_post_id ON post_revisions(post_id);
+CREATE INDEX IF NOT EXISTS idx_post_revisions_created_at ON post_revisions(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_post_meta_post_id ON post_meta(post_id);
+CREATE INDEX IF NOT EXISTS idx_post_meta_key ON post_meta(meta_key);
+CREATE INDEX IF NOT EXISTS idx_scheduled_posts_scheduled_at ON scheduled_posts(scheduled_at);
+CREATE INDEX IF NOT EXISTS idx_scheduled_posts_status ON scheduled_posts(status);
+CREATE INDEX IF NOT EXISTS idx_posts_post_type ON posts(post_type);
+CREATE INDEX IF NOT EXISTS idx_posts_parent_id ON posts(parent_id);
+CREATE INDEX IF NOT EXISTS idx_posts_scheduled_at ON posts(scheduled_at);
+CREATE INDEX IF NOT EXISTS idx_posts_published_at ON posts(published_at DESC);
+
+-- Create triggers for updated_at columns
+CREATE TRIGGER update_post_types_updated_at BEFORE UPDATE ON post_types
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_post_meta_updated_at BEFORE UPDATE ON post_meta
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_scheduled_posts_updated_at BEFORE UPDATE ON scheduled_posts
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_content_templates_updated_at BEFORE UPDATE ON content_templates
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_reusable_blocks_updated_at BEFORE UPDATE ON reusable_blocks
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+-- Function to create post revision
+CREATE OR REPLACE FUNCTION create_post_revision(
+  p_post_id UUID,
+  p_revision_type VARCHAR DEFAULT 'revision'
+)
+RETURNS UUID
+LANGUAGE plpgsql
+AS $
+DECLARE
+  revision_id UUID;
+  post_record RECORD;
+BEGIN
+  -- Get current post data
+  SELECT * INTO post_record FROM posts WHERE id = p_post_id;
+
+  IF NOT FOUND THEN
+    RAISE EXCEPTION 'Post not found';
+  END IF;
+
+  -- Create revision
+  INSERT INTO post_revisions (
+    post_id, title, content, excerpt, seo_title, seo_description,
+    meta_keywords, custom_fields, revision_type, author_name
+  ) VALUES (
+    p_post_id, post_record.title, post_record.content, post_record.excerpt,
+    post_record.seo_title, post_record.seo_description, post_record.meta_keywords,
+    post_record.custom_fields, p_revision_type, post_record.author_name
+  ) RETURNING id INTO revision_id;
+
+  RETURN revision_id;
+END;
+$;
+
+-- Function to restore post from revision
+CREATE OR REPLACE FUNCTION restore_post_from_revision(
+  p_post_id UUID,
+  p_revision_id UUID
+)
+RETURNS BOOLEAN
+LANGUAGE plpgsql
+AS $
+DECLARE
+  revision_record RECORD;
+BEGIN
+  -- Get revision data
+  SELECT * INTO revision_record FROM post_revisions
+  WHERE id = p_revision_id AND post_id = p_post_id;
+
+  IF NOT FOUND THEN
+    RAISE EXCEPTION 'Revision not found';
+  END IF;
+
+  -- Create current revision before restoring
+  PERFORM create_post_revision(p_post_id, 'revision');
+
+  -- Update post with revision data
+  UPDATE posts SET
+    title = revision_record.title,
+    content = revision_record.content,
+    excerpt = revision_record.excerpt,
+    seo_title = revision_record.seo_title,
+    seo_description = revision_record.seo_description,
+    meta_keywords = revision_record.meta_keywords,
+    custom_fields = revision_record.custom_fields,
+    updated_at = NOW()
+  WHERE id = p_post_id;
+
+  RETURN TRUE;
+END;
+$;
+
+-- Function to publish scheduled posts
+CREATE OR REPLACE FUNCTION publish_scheduled_posts()
+RETURNS INTEGER
+LANGUAGE plpgsql
+AS $
+DECLARE
+  published_count INTEGER := 0;
+  scheduled_post RECORD;
+BEGIN
+  -- Get posts that should be published
+  FOR scheduled_post IN
+    SELECT sp.*, p.id as post_id
+    FROM scheduled_posts sp
+    JOIN posts p ON sp.post_id = p.id
+    WHERE sp.status = 'pending'
+    AND sp.scheduled_at <= NOW()
+    AND p.status = 'scheduled'
+  LOOP
+    BEGIN
+      -- Update post status to published
+      UPDATE posts SET
+        status = 'published',
+        published_at = NOW(),
+        updated_at = NOW()
+      WHERE id = scheduled_post.post_id;
+
+      -- Update scheduled post status
+      UPDATE scheduled_posts SET
+        status = 'published',
+        last_attempt_at = NOW(),
+        updated_at = NOW()
+      WHERE id = scheduled_post.id;
+
+      published_count := published_count + 1;
+
+    EXCEPTION WHEN OTHERS THEN
+      -- Log error and mark as failed
+      UPDATE scheduled_posts SET
+        status = 'failed',
+        attempts = attempts + 1,
+        last_attempt_at = NOW(),
+        error_message = SQLERRM,
+        updated_at = NOW()
+      WHERE id = scheduled_post.id;
+    END;
+  END LOOP;
+
+  RETURN published_count;
+END;
+$;
+
+-- Enable RLS for new tables
+ALTER TABLE post_types ENABLE ROW LEVEL SECURITY;
+ALTER TABLE post_revisions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE post_meta ENABLE ROW LEVEL SECURITY;
+ALTER TABLE scheduled_posts ENABLE ROW LEVEL SECURITY;
+ALTER TABLE content_templates ENABLE ROW LEVEL SECURITY;
+ALTER TABLE reusable_blocks ENABLE ROW LEVEL SECURITY;
+
+-- Create policies for new tables
+CREATE POLICY "Allow public read access to post_types" ON post_types
+  FOR SELECT USING (public = true);
+
+CREATE POLICY "Allow authenticated users full access to post_types" ON post_types
+  FOR ALL USING (auth.role() = 'authenticated');
+
+CREATE POLICY "Allow authenticated users full access to post_revisions" ON post_revisions
+  FOR ALL USING (auth.role() = 'authenticated');
+
+CREATE POLICY "Allow authenticated users full access to post_meta" ON post_meta
+  FOR ALL USING (auth.role() = 'authenticated');
+
+CREATE POLICY "Allow authenticated users full access to scheduled_posts" ON scheduled_posts
+  FOR ALL USING (auth.role() = 'authenticated');
+
+CREATE POLICY "Allow public read access to content_templates" ON content_templates
+  FOR SELECT USING (is_active = true);
+
+CREATE POLICY "Allow authenticated users full access to content_templates" ON content_templates
+  FOR ALL USING (auth.role() = 'authenticated');
+
+CREATE POLICY "Allow public read access to reusable_blocks" ON reusable_blocks
+  FOR SELECT USING (is_active = true);
+
+CREATE POLICY "Allow authenticated users full access to reusable_blocks" ON reusable_blocks
+  FOR ALL USING (auth.role() = 'authenticated');
 

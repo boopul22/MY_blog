@@ -14,6 +14,7 @@ const convertDbPostToPost = (dbPost: Tables<'posts'>, tags: Tag[] = []): Post =>
     status: dbPost.status,
     seoTitle: dbPost.seo_title,
     seoDescription: dbPost.seo_description,
+    metaKeywords: dbPost.meta_keywords || undefined,
     categoryId: dbPost.category_id,
     tags: tags.map(tag => tag.id),
     createdAt: dbPost.created_at,
@@ -147,25 +148,34 @@ export const postsService = {
 
   // Add new post
   async addPost(post: Omit<Post, 'id' | 'createdAt' | 'slug' | 'authorName'>): Promise<Post> {
+    console.log('postsService.addPost called with:', post);
     const slug = slugify(post.title);
-    
+    console.log('Generated slug:', slug);
+
+    const insertData = {
+      title: post.title,
+      content: post.content,
+      slug,
+      image_url: post.imageUrl || null,
+      status: post.status,
+      seo_title: post.seoTitle,
+      seo_description: post.seoDescription,
+      category_id: post.categoryId,
+      author_name: 'Admin',
+    };
+    console.log('Insert data:', insertData);
+
     const { data: newPost, error } = await supabase
       .from('posts')
-      .insert({
-        title: post.title,
-        content: post.content,
-        slug,
-        image_url: post.imageUrl || null,
-        status: post.status,
-        seo_title: post.seoTitle,
-        seo_description: post.seoDescription,
-        category_id: post.categoryId,
-        author_name: 'Admin',
-      })
+      .insert(insertData)
       .select()
       .single();
 
-    if (error) throw error;
+    console.log('Supabase insert result:', { data: newPost, error });
+    if (error) {
+      console.error('Supabase insert error:', error);
+      throw error;
+    }
 
     // Add tags if any
     if (post.tags && post.tags.length > 0) {

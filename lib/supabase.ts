@@ -34,6 +34,7 @@ export interface Database {
           status: 'published' | 'draft';
           seo_title: string;
           seo_description: string;
+          meta_keywords: string | null;
           category_id: string;
           author_name: string;
           created_at: string;
@@ -49,6 +50,7 @@ export interface Database {
           status?: 'published' | 'draft';
           seo_title: string;
           seo_description: string;
+          meta_keywords?: string | null;
           category_id: string;
           author_name: string;
           created_at?: string;

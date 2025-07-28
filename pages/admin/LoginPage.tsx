@@ -6,8 +6,8 @@ import { BlogContext } from '../../context/SupabaseBlogContext';
 const LoginPage: React.FC = () => {
     const context = useContext(BlogContext);
     const navigate = useNavigate();
-    const [email, setEmail] = useState('admin@example.com');
-    const [password, setPassword] = useState('password');
+    const [email, setEmail] = useState('adityapathak1501@gmail.com');
+    const [password, setPassword] = useState('bipul281B#@#');
     const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {

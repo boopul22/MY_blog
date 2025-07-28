@@ -148,12 +148,17 @@ export const SupabaseBlogProvider: React.FC<{ children: ReactNode }> = ({ childr
 
   const addPost = async (post: Omit<Post, 'id' | 'createdAt' | 'slug' | 'authorName'>) => {
     try {
+      console.log('SupabaseBlogContext.addPost called with:', post);
+      console.log('Current isAdmin state:', isAdmin);
       setError(null);
       const newPost = await postsService.addPost(post);
+      console.log('Post service returned:', newPost);
       setPosts(prev => [newPost, ...prev]);
       return newPost;
     } catch (err) {
-      console.error('Failed to add post:', err);
+      console.error('Failed to add post in context:', err);
+      console.error('Error type:', typeof err);
+      console.error('Error message:', err instanceof Error ? err.message : 'Unknown error');
       setError(err instanceof Error ? err.message : 'Failed to add post');
       throw err;
     }

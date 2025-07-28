@@ -3,6 +3,7 @@ import React, { useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { Post } from '../types';
 import { BlogContext } from '../context/SupabaseBlogContext';
+import { createExcerpt } from '../utils/textUtils';
 
 interface PostCardProps {
   post: Post;
@@ -17,6 +18,11 @@ const PostCard: React.FC<PostCardProps> = ({ post, variant = 'default', isLarge 
   const formattedDate = new Date(post.createdAt)
     .toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
     .toUpperCase();
+
+  // Use excerpt if available, otherwise generate from content
+  const getExcerpt = (maxLength: number) => {
+    return post.excerpt || createExcerpt(post.content, maxLength);
+  };
 
   if (variant === 'wireframe') {
     return (
@@ -62,7 +68,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, variant = 'default', isLarge 
                             </h3>
                         </Link>
                         <p className="text-sm text-secondary leading-relaxed">
-                            {post.content.substring(0, isLarge ? 150 : 100)}...
+                            {getExcerpt(isLarge ? 150 : 100)}
                         </p>
                     </div>
                 </div>
@@ -102,7 +108,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, variant = 'default', isLarge 
               </Link>
             </h3>
             <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
-              {post.content.substring(0, 120)}...
+              {getExcerpt(120)}
             </p>
             <div className="pt-2 border-t border-slate-100 dark:border-slate-700">
               <span className="text-xs text-slate-500 dark:text-slate-400 font-medium tracking-wider">
@@ -145,7 +151,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, variant = 'default', isLarge 
             </Link>
           </h3>
           <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed line-clamp-2">
-            {post.content.substring(0, 100)}...
+            {getExcerpt(100)}
           </p>
           <div className="pt-2 border-t border-slate-100 dark:border-slate-700">
             <span className="text-xs text-slate-500 dark:text-slate-400 font-medium tracking-wider">
@@ -204,7 +210,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, variant = 'default', isLarge 
 
             {/* Content Preview */}
             <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed line-clamp-3">
-              {post.content.substring(0, 120)}...
+              {getExcerpt(120)}
             </p>
 
             {/* Author */}
