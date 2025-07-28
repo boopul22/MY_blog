@@ -1,255 +1,222 @@
-/* Rich Text Editor Styles */
-.rich-text-editor {
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  overflow: hidden;
-  background: white;
-  transition: border-color 0.2s ease;
-}
-
-.rich-text-editor:focus-within {
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-}
-
-/* Lexical Editor Container */
-.lexical-editor-container {
+/* TinyMCE Editor Styling */
+.tinymce-editor-container {
+  width: 100%;
   position: relative;
+}
+
+.editor-wrapper {
   background: white;
   border-radius: 8px;
-}
-
-/* Lexical Content Editable */
-.lexical-content-editable {
-  border: none;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-  font-size: 14px;
-  line-height: 1.6;
-  resize: none;
-  cursor: text;
-  tab-size: 1;
-}
-
-.lexical-content-editable:focus {
-  outline: none;
-}
-
-/* Placeholder */
-.lexical-placeholder {
-  color: #9ca3af;
   overflow: hidden;
-  position: absolute;
-  text-overflow: ellipsis;
-  top: 16px;
-  left: 16px;
-  font-size: 14px;
-  user-select: none;
-  display: inline-block;
-  pointer-events: none;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  border: 1px solid #e5e7eb;
 }
 
-/* Lexical Toolbar */
-.lexical-toolbar {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  padding: 8px 12px;
-  border-bottom: 1px solid #e2e8f0;
-  background: #f8fafc;
-  flex-wrap: wrap;
+/* TinyMCE Toolbar Styling */
+.tox .tox-toolbar {
+  background: #f9fafb !important;
+  border-bottom: 1px solid #e5e7eb !important;
+  padding: 8px 12px !important;
 }
 
-.lexical-toolbar-button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  border: none;
-  border-radius: 4px;
-  background: transparent;
-  color: #374151;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 500;
-  transition: background-color 0.2s ease;
+.tox .tox-toolbar__group {
+  border: none !important;
 }
 
-.lexical-toolbar-button:hover {
-  background-color: #e2e8f0;
+.tox .tox-tbtn {
+  border-radius: 4px !important;
+  margin: 0 2px !important;
+  color: #374151 !important;
 }
 
-.lexical-toolbar-button:active {
-  background-color: #d1d5db;
+.tox .tox-tbtn:hover {
+  background: #e5e7eb !important;
+  color: #1f2937 !important;
 }
 
-.lexical-toolbar-divider {
-  width: 1px;
-  height: 24px;
-  background-color: #d1d5db;
-  margin: 0 4px;
+.tox .tox-tbtn--enabled {
+  background: #3b82f6 !important;
+  color: white !important;
 }
 
-/* Lexical Text Styles */
-.lexical-text-bold {
-  font-weight: bold;
+.tox .tox-tbtn--enabled:hover {
+  background: #2563eb !important;
 }
 
-.lexical-text-italic {
-  font-style: italic;
+/* Editor Content Area */
+.tox .tox-edit-area {
+  border: none !important;
 }
 
-.lexical-text-underline {
-  text-decoration: underline;
+.tox .tox-edit-area__iframe {
+  background: white !important;
 }
 
-.lexical-text-strikethrough {
-  text-decoration: line-through;
+/* Status Bar */
+.tox .tox-statusbar {
+  background: #f9fafb !important;
+  border-top: 1px solid #e5e7eb !important;
+  color: #6b7280 !important;
+  font-size: 12px !important;
+  padding: 8px 12px !important;
 }
 
-.lexical-text-code {
-  background-color: #f3f4f6;
-  padding: 2px 4px;
-  border-radius: 3px;
-  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
-  font-size: 0.9em;
+/* Dropdown Menus */
+.tox .tox-collection__item {
+  color: #374151 !important;
 }
 
-/* Lexical Heading Styles */
-.lexical-heading-h1 {
-  font-size: 2em;
-  font-weight: 700;
-  margin: 1em 0 0.5em 0;
-  line-height: 1.2;
+.tox .tox-collection__item:hover {
+  background: #f3f4f6 !important;
 }
 
-.lexical-heading-h2 {
-  font-size: 1.5em;
-  font-weight: 600;
-  margin: 1em 0 0.5em 0;
-  line-height: 1.3;
+.tox .tox-collection__item--active {
+  background: #3b82f6 !important;
+  color: white !important;
 }
 
-.lexical-heading-h3 {
-  font-size: 1.25em;
-  font-weight: 600;
-  margin: 1em 0 0.5em 0;
-  line-height: 1.4;
+/* Dialog Styling */
+.tox .tox-dialog {
+  border-radius: 8px !important;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
 }
 
-.lexical-heading-h4,
-.lexical-heading-h5,
-.lexical-heading-h6 {
-  font-weight: 600;
-  margin: 1em 0 0.5em 0;
-  line-height: 1.4;
+.tox .tox-dialog__header {
+  background: #f9fafb !important;
+  border-bottom: 1px solid #e5e7eb !important;
 }
 
-/* Lexical Quote Styles */
-.lexical-quote {
-  border-left: 4px solid #3b82f6;
-  padding-left: 16px;
-  margin: 16px 0;
-  color: #6b7280;
-  font-style: italic;
+.tox .tox-dialog__title {
+  color: #1f2937 !important;
+  font-weight: 600 !important;
 }
 
-/* Lexical Code Styles */
-.lexical-code {
-  background-color: #1f2937;
-  color: #f9fafb;
-  padding: 16px;
-  border-radius: 6px;
-  overflow-x: auto;
-  margin: 16px 0;
-  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+.tox .tox-button {
+  border-radius: 6px !important;
+  font-weight: 500 !important;
 }
 
-/* Lexical List Styles */
-.lexical-list-ol,
-.lexical-list-ul {
-  margin: 16px 0;
-  padding-left: 24px;
+.tox .tox-button--primary {
+  background: #3b82f6 !important;
+  border-color: #3b82f6 !important;
 }
 
-.lexical-listitem {
-  margin: 4px 0;
+.tox .tox-button--primary:hover {
+  background: #2563eb !important;
+  border-color: #2563eb !important;
 }
 
-.lexical-nested-listitem {
-  list-style-type: none;
-}
-
-/* Lexical Link Styles */
-.lexical-link {
-  color: #3b82f6;
-  text-decoration: underline;
-}
-
-.lexical-link:hover {
-  color: #1d4ed8;
-}
-
-/* Lexical Paragraph */
-.lexical-paragraph {
-  margin: 0 0 16px 0;
-}</anical:parameter>
-<parameter name="old_str_start_line_number">106
-
-/* Disabled State */
-.rich-text-editor .ql-container.ql-disabled .ql-editor {
-  background-color: #f9fafb;
-  color: #6b7280;
-}
-
-.rich-text-editor .ql-toolbar.ql-disabled {
-  background-color: #f3f4f6;
-}
-
-.rich-text-editor .ql-toolbar.ql-disabled button,
-.rich-text-editor .ql-toolbar.ql-disabled .ql-picker {
-  opacity: 0.5;
-  pointer-events: none;
+/* Loading State */
+.tox .tox-throbber {
+  background: rgba(255, 255, 255, 0.8) !important;
 }
 
 /* Focus States */
-.rich-text-editor .ql-editor:focus {
-  outline: none;
+.tox.tox-tinymce:focus-within {
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+  border-color: #3b82f6 !important;
 }
 
-/* Responsive Design */
+/* Mobile Responsiveness */
 @media (max-width: 768px) {
-  .rich-text-editor .ql-toolbar {
-    padding: 6px 8px;
+  .tox .tox-toolbar {
+    padding: 6px 8px !important;
   }
   
-  .rich-text-editor .ql-toolbar .ql-formats {
-    margin-right: 8px;
+  .tox .tox-tbtn {
+    margin: 0 1px !important;
+    padding: 6px !important;
   }
   
-  .rich-text-editor .ql-editor {
-    padding: 12px;
+  .tox .tox-toolbar__group {
+    margin: 0 4px 0 0 !important;
   }
 }
 
 /* Dark Mode Support */
 @media (prefers-color-scheme: dark) {
-  .rich-text-editor {
+  .editor-wrapper {
+    background: #1f2937;
     border-color: #374151;
-    background: #1f2937;
   }
   
-  .rich-text-editor .ql-toolbar {
-    background: #111827;
-    border-bottom-color: #374151;
+  .tox .tox-toolbar {
+    background: #374151 !important;
+    border-bottom-color: #4b5563 !important;
   }
   
-  .rich-text-editor .ql-container {
-    background: #1f2937;
-    color: #f9fafb;
+  .tox .tox-tbtn {
+    color: #e5e7eb !important;
   }
   
-  .rich-text-editor .ql-editor.ql-blank::before {
-    color: #6b7280;
+  .tox .tox-tbtn:hover {
+    background: #4b5563 !important;
+    color: #f9fafb !important;
   }
+  
+  .tox .tox-statusbar {
+    background: #374151 !important;
+    border-top-color: #4b5563 !important;
+    color: #9ca3af !important;
+  }
+}
+
+/* Custom Animations */
+.tox .tox-toolbar,
+.tox .tox-statusbar {
+  transition: all 0.2s ease-in-out;
+}
+
+.tox .tox-tbtn {
+  transition: all 0.15s ease-in-out;
+}
+
+/* WordPress-like Styling */
+.tinymce-editor-container .editor-wrapper {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+}
+
+/* Statistics Display */
+.editor-stats {
+  background: #f9fafb;
+  border-top: 1px solid #e5e7eb;
+  padding: 8px 12px;
+  font-size: 12px;
+  color: #6b7280;
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.editor-stats span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Loading Indicator */
+.tinymce-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 400px;
+  background: #f9fafb;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.tinymce-loading::before {
+  content: '';
+  width: 20px;
+  height: 20px;
+  border: 2px solid #e5e7eb;
+  border-top: 2px solid #3b82f6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-right: 8px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }

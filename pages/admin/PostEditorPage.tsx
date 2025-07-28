@@ -559,6 +559,25 @@ const PostEditorPage: React.FC = () => {
                                                         placeholder="Start writing your blog post content..."
                                                         autoHeight={true}
                                                         className="h-full"
+                                                        enableAutoSave={true}
+                                                        autoSaveDelay={30000}
+                                                        onAutoSave={async (content) => {
+                                                            // Auto-save the post content
+                                                            if (post.id) {
+                                                                try {
+                                                                    await updatePost(post.id, { ...post, content });
+                                                                    console.log('Auto-saved post content');
+                                                                } catch (error) {
+                                                                    console.error('Auto-save failed:', error);
+                                                                }
+                                                            }
+                                                        }}
+                                                        showWordCount={true}
+                                                        showDetailedStats={false}
+                                                        enableKeyboardShortcuts={true}
+                                                        enableMediaUpload={true}
+                                                        enableLinking={true}
+                                                        enableTables={true}
                                                     />
                                                 </div>
                                             </FormField>

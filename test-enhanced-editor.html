@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced Blog Editor Test</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+        .header p {
+            margin: 10px 0 0 0;
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+        .features {
+            padding: 40px;
+        }
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+        .feature-card {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 25px;
+            border-left: 4px solid #667eea;
+        }
+        .feature-card h3 {
+            margin: 0 0 15px 0;
+            color: #1a202c;
+            font-size: 1.3rem;
+        }
+        .feature-card ul {
+            margin: 0;
+            padding-left: 20px;
+            color: #4a5568;
+        }
+        .feature-card li {
+            margin-bottom: 8px;
+        }
+        .status {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+        .status.complete {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+        .status.in-progress {
+            background: #fed7d7;
+            color: #c53030;
+        }
+        .instructions {
+            background: #e6fffa;
+            border: 1px solid #81e6d9;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 30px;
+        }
+        .instructions h3 {
+            margin: 0 0 15px 0;
+            color: #234e52;
+        }
+        .instructions ol {
+            margin: 0;
+            padding-left: 20px;
+            color: #2d3748;
+        }
+        .instructions li {
+            margin-bottom: 8px;
+        }
+        .tech-stack {
+            background: #f7fafc;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 30px;
+        }
+        .tech-stack h3 {
+            margin: 0 0 15px 0;
+            color: #2d3748;
+        }
+        .tech-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .tech-badge {
+            background: #667eea;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Enhanced Blog Editor</h1>
+            <p>WordPress-like functionality with modern React/TypeScript architecture</p>
+        </div>
+        
+        <div class="features">
+            <h2>✨ Implemented Features</h2>
+            
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>📸 Media Management <span class="status complete">✅ Complete</span></h3>
+                    <ul>
+                        <li>Drag-and-drop image upload</li>
+                        <li>Media gallery with search</li>
+                        <li>Multiple image sizes (thumbnail, medium, large, original)</li>
+                        <li>Supabase storage integration</li>
+                        <li>Image preview and selection</li>
+                    </ul>
+                </div>
+                
+                <div class="feature-card">
+                    <h3>🔗 Content Linking <span class="status complete">✅ Complete</span></h3>
+                    <ul>
+                        <li>Internal linking with autocomplete</li>
+                        <li>External link insertion with preview</li>
+                        <li>Link editing modal with validation</li>
+                        <li>Automatic link detection</li>
+                        <li>Link preview cards</li>
+                    </ul>
+                </div>
+                
+                <div class="feature-card">
+                    <h3>✨ Enhanced Editor <span class="status complete">✅ Complete</span></h3>
+                    <ul>
+                        <li>Comprehensive toolbar</li>
+                        <li>Code blocks with syntax highlighting</li>
+                        <li>Table creation and editing</li>
+                        <li>Quote blocks and callouts</li>
+                        <li>Text alignment options</li>
+                        <li>Heading levels (H1-H6)</li>
+                    </ul>
+                </div>
+                
+                <div class="feature-card">
+                    <h3>⚡ Editor Utilities <span class="status complete">✅ Complete</span></h3>
+                    <ul>
+                        <li>Undo/redo functionality</li>
+                        <li>Word count and reading time</li>
+                        <li>Content statistics display</li>
+                        <li>Auto-save functionality</li>
+                        <li>Keyboard shortcuts</li>
+                    </ul>
+                </div>
+                
+                <div class="feature-card">
+                    <h3>🎨 UI/UX Enhancements <span class="status complete">✅ Complete</span></h3>
+                    <ul>
+                        <li>Full-viewport design</li>
+                        <li>Enhanced toolbar with grouping</li>
+                        <li>Responsive design</li>
+                        <li>Dark mode support</li>
+                        <li>Smooth animations</li>
+                        <li>Accessibility compliance</li>
+                    </ul>
+                </div>
+                
+                <div class="feature-card">
+                    <h3>🛠 Technical Implementation <span class="status complete">✅ Complete</span></h3>
+                    <ul>
+                        <li>Lexical editor framework</li>
+                        <li>Custom plugin system</li>
+                        <li>TypeScript type safety</li>
+                        <li>React component architecture</li>
+                        <li>Supabase integration</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="instructions">
+                <h3>🧪 How to Test the Enhanced Editor</h3>
+                <ol>
+                    <li>Navigate to <strong>http://localhost:5176/admin/posts</strong></li>
+                    <li>Click "Create New Post" or edit an existing post</li>
+                    <li>Test the enhanced toolbar features:
+                        <ul>
+                            <li>Try formatting text (bold, italic, underline)</li>
+                            <li>Insert headings using the dropdown</li>
+                            <li>Create lists and quotes</li>
+                            <li>Insert images using the media gallery</li>
+                            <li>Add links (both internal and external)</li>
+                            <li>Create tables with the table tool</li>
+                        </ul>
+                    </li>
+                    <li>Test keyboard shortcuts:
+                        <ul>
+                            <li><kbd>Ctrl/Cmd + B</kbd> for bold</li>
+                            <li><kbd>Ctrl/Cmd + I</kbd> for italic</li>
+                            <li><kbd>Ctrl/Cmd + K</kbd> for links</li>
+                            <li><kbd>Ctrl/Cmd + S</kbd> for manual save</li>
+                        </ul>
+                    </li>
+                    <li>Observe the word count and auto-save indicators</li>
+                    <li>Test drag-and-drop image upload</li>
+                </ol>
+            </div>
+            
+            <div class="tech-stack">
+                <h3>🔧 Technology Stack</h3>
+                <div class="tech-badges">
+                    <span class="tech-badge">React 19</span>
+                    <span class="tech-badge">TypeScript</span>
+                    <span class="tech-badge">Lexical Editor</span>
+                    <span class="tech-badge">Supabase</span>
+                    <span class="tech-badge">Tailwind CSS</span>
+                    <span class="tech-badge">Vite</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

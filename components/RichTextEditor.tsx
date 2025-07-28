@@ -1,49 +1,7 @@
-import React, { useRef, useEffect, useState, useCallback, useMemo } from 'react';
-import { LexicalComposer } from '@lexical/react/LexicalComposer';
-import { RichTextPlugin } from '@lexical/react/LexicalRichTextPlugin';
-import { ContentEditable } from '@lexical/react/LexicalContentEditable';
-
-import { AutoFocusPlugin } from '@lexical/react/LexicalAutoFocusPlugin';
-import { LinkPlugin } from '@lexical/react/LexicalLinkPlugin';
-import { ListPlugin } from '@lexical/react/LexicalListPlugin';
-import { MarkdownShortcutPlugin } from '@lexical/react/LexicalMarkdownShortcutPlugin';
-import { TRANSFORMERS } from '@lexical/markdown';
-// Simple error boundary component
-class SimpleErrorBoundary extends React.Component<
-  { children: React.ReactNode },
-  { hasError: boolean }
-> {
-  constructor(props: { children: React.ReactNode }) {
-    super(props);
-    this.state = { hasError: false };
-  }
-
-  static getDerivedStateFromError(error: Error) {
-    return { hasError: true };
-  }
-
-  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error('Lexical editor error:', error, errorInfo);
-  }
-
-  render() {
-    if (this.state.hasError) {
-      return <div className="lexical-error">Something went wrong with the editor.</div>;
-    }
-
-    return this.props.children;
-  }
-}
-import { HeadingNode, QuoteNode } from '@lexical/rich-text';
-import { TableCellNode, TableNode, TableRowNode } from '@lexical/table';
-import { ListItemNode, ListNode } from '@lexical/list';
-import { CodeHighlightNode, CodeNode } from '@lexical/code';
-import { AutoLinkNode, LinkNode } from '@lexical/link';
-import { $generateHtmlFromNodes, $generateNodesFromDOM } from '@lexical/html';
-import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
-import { $getRoot, $insertNodes, $getSelection, $isRangeSelection, FORMAT_TEXT_COMMAND, FORMAT_ELEMENT_COMMAND } from 'lexical';
-import { $createHeadingNode, $createQuoteNode, $isHeadingNode } from '@lexical/rich-text';
-import { INSERT_UNORDERED_LIST_COMMAND, INSERT_ORDERED_LIST_COMMAND } from '@lexical/list';
+import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { Editor } from '@tinymce/tinymce-react';
+import { BlogContext } from '../context/SupabaseBlogContext';
+import { useDebounce } from '../hooks/useDebounce';
 import './RichTextEditor.css';
 
 interface RichTextEditorProps {
@@ -54,378 +12,272 @@ interface RichTextEditorProps {
   disabled?: boolean;
   className?: string;
   autoHeight?: boolean;
+  // Enhanced features
+  enableAutoSave?: boolean;
+  autoSaveDelay?: number;
+  onAutoSave?: (content: string) => Promise<void>;
+  showWordCount?: boolean;
+  showDetailedStats?: boolean;
+  enableKeyboardShortcuts?: boolean;
+  enableMediaUpload?: boolean;
+  enableLinking?: boolean;
+  enableTables?: boolean;
 }
 
-// Debounce hook for performance optimization - completely stable
-const useDebounce = (callback: (value: string) => void, delay: number = 300) => {
-  const timeoutRef = useRef<NodeJS.Timeout>();
-  const callbackRef = useRef(callback);
-
-  // Keep the ref updated with the latest callback
-  callbackRef.current = callback;
-
-  // Create a stable debounced function that never changes
-  const debouncedCallback = useRef((value: string) => {
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-    }
-
-    timeoutRef.current = setTimeout(() => {
-      callbackRef.current(value);
-    }, delay);
-  });
-
-  return debouncedCallback.current;
-};
-
-// Plugin to handle content changes and sync with parent
-function OnChangePlugin({ onChange }: { onChange: (html: string) => void }) {
-  const [editor] = useLexicalComposerContext();
-  const onChangeRef = useRef(onChange);
-  const previousContentRef = useRef<string>('');
-  const isExternalUpdateRef = useRef(false);
-
-  // Keep the ref updated with the latest onChange callback
-  useEffect(() => {
-    onChangeRef.current = onChange;
-  }, [onChange]);
-
-  useEffect(() => {
-    return editor.registerUpdateListener(({ editorState, dirtyElements, dirtyLeaves }) => {
-      // Skip if this is an external update (from InitialContentPlugin)
-      if (isExternalUpdateRef.current) {
-        isExternalUpdateRef.current = false;
-        return;
-      }
-
-      // Only process if there are actual changes from user interaction
-      if (dirtyElements.size > 0 || dirtyLeaves.size > 0) {
-        editorState.read(() => {
-          const htmlString = $generateHtmlFromNodes(editor, null);
-
-          // Only trigger onChange if content actually changed
-          if (htmlString !== previousContentRef.current) {
-            previousContentRef.current = htmlString;
-            onChangeRef.current(htmlString);
-          }
-        });
-      }
-    });
-  }, [editor]);
-
-  return null;
-}
-
-// Plugin to set initial content - completely rewritten to prevent loops
-function InitialContentPlugin({ initialContent }: { initialContent: string }) {
-  const [editor] = useLexicalComposerContext();
-  const lastSetContentRef = useRef<string>('');
-  const isSettingContentRef = useRef(false);
-
-  useEffect(() => {
-    // Only set content if it's different from what we last set
-    // and we're not currently in the process of setting content
-    if (
-      initialContent &&
-      initialContent !== lastSetContentRef.current &&
-      !isSettingContentRef.current
-    ) {
-      isSettingContentRef.current = true;
-
-      editor.update(() => {
-        const root = $getRoot();
-        const currentContent = $generateHtmlFromNodes(editor, null);
-
-        // Only update if the current editor content is different
-        if (currentContent !== initialContent) {
-          const parser = new DOMParser();
-          const dom = parser.parseFromString(initialContent, 'text/html');
-          const nodes = $generateNodesFromDOM(editor, dom);
-          root.clear();
-          $insertNodes(nodes);
-          lastSetContentRef.current = initialContent;
-        }
-
-        isSettingContentRef.current = false;
-      });
-    }
-  }, [editor, initialContent]);
-
-  return null;
-}
-
-// Simple Toolbar Component
-function ToolbarPlugin() {
-  const [editor] = useLexicalComposerContext();
-
-  const formatText = (format: 'bold' | 'italic' | 'underline' | 'strikethrough') => {
-    editor.dispatchCommand(FORMAT_TEXT_COMMAND, format);
-  };
-
-  const formatHeading = (headingSize: 'h1' | 'h2' | 'h3') => {
-    editor.update(() => {
-      const selection = $getSelection();
-      if ($isRangeSelection(selection)) {
-        const headingNode = $createHeadingNode(headingSize);
-        selection.insertNodes([headingNode]);
-      }
-    });
-  };
-
-  const formatQuote = () => {
-    editor.update(() => {
-      const selection = $getSelection();
-      if ($isRangeSelection(selection)) {
-        const quoteNode = $createQuoteNode();
-        selection.insertNodes([quoteNode]);
-      }
-    });
-  };
-
-  const formatList = (listType: 'bullet' | 'number') => {
-    if (listType === 'bullet') {
-      editor.dispatchCommand(INSERT_UNORDERED_LIST_COMMAND, undefined);
-    } else {
-      editor.dispatchCommand(INSERT_ORDERED_LIST_COMMAND, undefined);
-    }
-  };
-
-  return (
-    <div className="lexical-toolbar">
-      <button
-        type="button"
-        onClick={() => formatText('bold')}
-        className="lexical-toolbar-button"
-        title="Bold"
-      >
-        <strong>B</strong>
-      </button>
-      <button
-        type="button"
-        onClick={() => formatText('italic')}
-        className="lexical-toolbar-button"
-        title="Italic"
-      >
-        <em>I</em>
-      </button>
-      <button
-        type="button"
-        onClick={() => formatText('underline')}
-        className="lexical-toolbar-button"
-        title="Underline"
-      >
-        <u>U</u>
-      </button>
-      <div className="lexical-toolbar-divider" />
-      <button
-        type="button"
-        onClick={() => formatHeading('h1')}
-        className="lexical-toolbar-button"
-        title="Heading 1"
-      >
-        H1
-      </button>
-      <button
-        type="button"
-        onClick={() => formatHeading('h2')}
-        className="lexical-toolbar-button"
-        title="Heading 2"
-      >
-        H2
-      </button>
-      <button
-        type="button"
-        onClick={() => formatHeading('h3')}
-        className="lexical-toolbar-button"
-        title="Heading 3"
-      >
-        H3
-      </button>
-      <div className="lexical-toolbar-divider" />
-      <button
-        type="button"
-        onClick={() => formatList('bullet')}
-        className="lexical-toolbar-button"
-        title="Bullet List"
-      >
-        •
-      </button>
-      <button
-        type="button"
-        onClick={() => formatList('number')}
-        className="lexical-toolbar-button"
-        title="Numbered List"
-      >
-        1.
-      </button>
-      <button
-        type="button"
-        onClick={formatQuote}
-        className="lexical-toolbar-button"
-        title="Quote"
-      >
-        "
-      </button>
-    </div>
-  );
-}
-
-const RichTextEditor: React.FC<RichTextEditorProps> = React.memo(({
+const RichTextEditor: React.FC<RichTextEditorProps> = ({
   value,
   onChange,
   placeholder = 'Start writing your content...',
   height = 400,
   disabled = false,
   className = '',
-  autoHeight = false
+  autoHeight = false,
+  enableAutoSave = true,
+  autoSaveDelay = 30000,
+  onAutoSave,
+  showWordCount = true,
+  showDetailedStats = false,
+  enableKeyboardShortcuts = true,
+  enableMediaUpload = true,
+  enableLinking = true,
+  enableTables = true
 }) => {
-  // Debounced onChange to prevent excessive parent updates
-  const debouncedOnChange = useDebounce(onChange, 300);
+  const { uploadPostImage } = useContext(BlogContext);
+  const editorRef = useRef<any>(null);
+  const [isInitialized, setIsInitialized] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [wordCount, setWordCount] = useState(0);
+  const [characterCount, setCharacterCount] = useState(0);
 
-  // Calculate final height
-  const finalHeight = useMemo(() => {
-    if (autoHeight) {
-      return Math.max(300, Math.min(typeof height === 'number' ? height : 500, 800));
+  // Store the current content to prevent unnecessary updates
+  const currentContentRef = useRef(value);
+
+  // Update ref when value prop changes
+  useEffect(() => {
+    currentContentRef.current = value;
+  }, [value]);
+
+  // Handle editor content changes - IMMEDIATE update for typing, debounced for parent
+  const handleEditorChange = useCallback((content: string) => {
+    // Prevent infinite loops by checking if content actually changed
+    if (currentContentRef.current === content) {
+      return;
     }
-    return height;
-  }, [height, autoHeight]);
 
-  // Lexical editor configuration
-  const initialConfig = useMemo(() => ({
-    namespace: 'RichTextEditor',
-    theme: {
-      root: 'lexical-editor',
-      paragraph: 'lexical-paragraph',
-      heading: {
-        h1: 'lexical-heading-h1',
-        h2: 'lexical-heading-h2',
-        h3: 'lexical-heading-h3',
-        h4: 'lexical-heading-h4',
-        h5: 'lexical-heading-h5',
-        h6: 'lexical-heading-h6',
-      },
-      list: {
-        nested: {
-          listitem: 'lexical-nested-listitem',
-        },
-        ol: 'lexical-list-ol',
-        ul: 'lexical-list-ul',
-        listitem: 'lexical-listitem',
-      },
-      link: 'lexical-link',
-      text: {
-        bold: 'lexical-text-bold',
-        italic: 'lexical-text-italic',
-        underline: 'lexical-text-underline',
-        strikethrough: 'lexical-text-strikethrough',
-        code: 'lexical-text-code',
-      },
-      code: 'lexical-code',
-      codeHighlight: {
-        atrule: 'lexical-token-attr',
-        attr: 'lexical-token-attr',
-        boolean: 'lexical-token-boolean',
-        builtin: 'lexical-token-builtin',
-        cdata: 'lexical-token-cdata',
-        char: 'lexical-token-char',
-        class: 'lexical-token-class',
-        'class-name': 'lexical-token-class-name',
-        comment: 'lexical-token-comment',
-        constant: 'lexical-token-constant',
-        deleted: 'lexical-token-deleted',
-        doctype: 'lexical-token-doctype',
-        entity: 'lexical-token-entity',
-        function: 'lexical-token-function',
-        important: 'lexical-token-important',
-        inserted: 'lexical-token-inserted',
-        keyword: 'lexical-token-keyword',
-        namespace: 'lexical-token-namespace',
-        number: 'lexical-token-number',
-        operator: 'lexical-token-operator',
-        prolog: 'lexical-token-prolog',
-        property: 'lexical-token-property',
-        punctuation: 'lexical-token-punctuation',
-        regex: 'lexical-token-regex',
-        selector: 'lexical-token-selector',
-        string: 'lexical-token-string',
-        symbol: 'lexical-token-symbol',
-        tag: 'lexical-token-tag',
-        url: 'lexical-token-url',
-        variable: 'lexical-token-variable',
-      },
-    },
-    nodes: [
-      HeadingNode,
-      ListNode,
-      ListItemNode,
-      QuoteNode,
-      CodeNode,
-      CodeHighlightNode,
-      TableNode,
-      TableCellNode,
-      TableRowNode,
-      AutoLinkNode,
-      LinkNode,
+    // Update our ref immediately
+    currentContentRef.current = content;
+
+    // Call parent onChange immediately for responsive typing
+    onChange(content);
+
+    // Update statistics
+    const words = content.replace(/<[^>]*>/g, '').trim().split(/\s+/).filter(word => word.length > 0);
+    setWordCount(words.length);
+    setCharacterCount(content.replace(/<[^>]*>/g, '').length);
+  }, [onChange]);
+
+  // Handle image upload
+  const handleImageUpload = useCallback(async (blobInfo: any, progress: (percent: number) => void) => {
+    if (!uploadPostImage) {
+      throw new Error('Image upload not available');
+    }
+
+    try {
+      progress(0);
+      const file = blobInfo.blob();
+      progress(50);
+      const imageUrl = await uploadPostImage(file);
+      progress(100);
+      return imageUrl;
+    } catch (error) {
+      console.error('Image upload failed:', error);
+      throw error;
+    }
+  }, [uploadPostImage]);
+
+  // TinyMCE configuration - Optimized to prevent content clearing
+  const editorConfig = useMemo(() => ({
+    // License key for TinyMCE 8.x (use 'gpl' for open source)
+    license_key: 'gpl',
+
+    // Basic configuration
+    height: typeof height === 'number' ? Math.max(height, 300) : (height || 400),
+    menubar: false,
+    statusbar: true,
+
+    // Essential plugins only
+    plugins: [
+      'advlist', 'autolink', 'lists', 'link', 'image', 'charmap',
+      'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
+      'insertdatetime', 'media', 'table', 'help', 'wordcount'
     ],
-    onError: (error: Error) => {
-      console.error('Lexical error:', error);
-    },
-  }), []);
+
+    // Simplified toolbar
+    toolbar: 'undo redo | formatselect | bold italic underline | alignleft aligncenter alignright | bullist numlist | link image | code | help',
+
+    // Basic content settings
+    placeholder: placeholder || 'Start writing your content...',
+
+    // Content behavior - Prevent content clearing
+    browser_spellcheck: true,
+    paste_data_images: enableMediaUpload,
+
+    // Prevent content clearing issues
+    forced_root_block: 'p',
+    forced_root_block_attrs: {},
+    remove_trailing_brs: false,
+
+    // Disable external requests that might cause issues
+    branding: false,
+    promotion: false,
+
+    // Prevent auto-cleanup that might clear content
+    verify_html: false,
+    cleanup: false,
+    convert_urls: false,
+
+    // Content styling
+    content_style: `
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        font-size: 14px;
+        line-height: 1.6;
+        color: #333;
+        margin: 1rem;
+      }
+    `,
+
+    // Image upload configuration
+    images_upload_handler: enableMediaUpload ? handleImageUpload : undefined,
+    automatic_uploads: enableMediaUpload,
+    file_picker_types: enableMediaUpload ? 'image' : undefined,
+
+    // Setup function to handle editor events
+    setup: (editor: any) => {
+      // Prevent content clearing on focus/blur
+      editor.on('focus', () => {
+        console.log('Editor focused, current content length:', editor.getContent().length);
+      });
+
+      editor.on('blur', () => {
+        console.log('Editor blurred, current content length:', editor.getContent().length);
+      });
+
+      // Monitor content changes for debugging
+      editor.on('input', () => {
+        const content = editor.getContent();
+        console.log('Editor input event, content length:', content.length);
+      });
+    }
+  }), [
+    height, placeholder, enableMediaUpload, handleImageUpload
+  ]);
+
+  // Handle value prop changes from parent
+  useEffect(() => {
+    if (editorRef.current && isInitialized) {
+      const currentEditorContent = editorRef.current.getContent();
+
+      // Only update editor if the value prop is different from current content
+      if (value !== currentEditorContent && value !== currentContentRef.current) {
+        console.log('Updating editor content from prop change');
+        editorRef.current.setContent(value || '', { format: 'html' });
+        currentContentRef.current = value;
+      }
+    }
+  }, [value, isInitialized]);
+
+  // Initialize statistics on mount and when content changes
+  useEffect(() => {
+    if (value) {
+      const words = value.replace(/<[^>]*>/g, '').trim().split(/\s+/).filter(word => word.length > 0);
+      setWordCount(words.length);
+      setCharacterCount(value.replace(/<[^>]*>/g, '').length);
+    } else {
+      setWordCount(0);
+      setCharacterCount(0);
+    }
+  }, [value]);
 
   return (
-    <div
-      className={`rich-text-editor ${className}`}
-      style={{
-        minHeight: typeof finalHeight === 'number' ? `${finalHeight}px` : finalHeight
-      }}
-    >
-      <LexicalComposer initialConfig={initialConfig}>
-        <div className="lexical-editor-container">
-          <ToolbarPlugin />
-          <RichTextPlugin
-            contentEditable={
-              <ContentEditable
-                className="lexical-content-editable"
-                style={{
-                  minHeight: typeof finalHeight === 'number' ? `${finalHeight - 100}px` : 'auto',
-                  outline: 'none',
-                  padding: '16px',
-                  fontSize: '14px',
-                  lineHeight: '1.6',
-                }}
-                placeholder={
-                  <div className="lexical-placeholder">
-                    {placeholder}
-                  </div>
-                }
-                readOnly={disabled}
-              />
+    <div className={`tinymce-editor-container ${className}`}>
+      <div className="editor-wrapper border border-gray-300 rounded-lg overflow-hidden bg-white shadow-sm">
+        {isLoading && (
+          <div className="tinymce-loading">
+            Loading TinyMCE editor...
+          </div>
+        )}
+        <Editor
+          ref={editorRef}
+          apiKey={import.meta.env.VITE_TINYMCE_API_KEY || 'no-api-key'}
+          value={value}
+          onEditorChange={handleEditorChange}
+          disabled={disabled}
+          init={editorConfig}
+          // Prevent TinyMCE from overriding content during typing
+          onBeforeSetContent={(evt) => {
+            // Only allow content updates if they're different from current content
+            const newContent = evt.content;
+            if (currentContentRef.current === newContent) {
+              evt.preventDefault();
             }
-            ErrorBoundary={SimpleErrorBoundary}
-          />
-          <OnChangePlugin onChange={debouncedOnChange} />
-          <InitialContentPlugin initialContent={value} />
+          }}
+          onInit={(evt, editor) => {
+            console.log('TinyMCE initialized successfully:', editor);
 
-          <AutoFocusPlugin />
-          <LinkPlugin />
-          <ListPlugin />
-          <MarkdownShortcutPlugin transformers={TRANSFORMERS} />
+            // Store editor reference
+            editorRef.current = editor;
+
+            // Set the initial content if provided
+            if (value && value !== editor.getContent()) {
+              editor.setContent(value, { format: 'html' });
+            }
+
+            // Set initialization state
+            setIsInitialized(true);
+            setIsLoading(false);
+
+            // Focus the editor if not disabled
+            if (!disabled) {
+              setTimeout(() => {
+                try {
+                  editor.focus();
+                  console.log('Editor focused successfully');
+                } catch (error) {
+                  console.warn('Could not focus editor:', error);
+                }
+              }, 100);
+            }
+
+            // Add additional event listeners for debugging
+            editor.on('SetContent', (e: any) => {
+              console.log('SetContent event:', e.content?.length || 0, 'characters');
+            });
+
+            editor.on('GetContent', (e: any) => {
+              console.log('GetContent event:', e.content?.length || 0, 'characters');
+            });
+          }}
+          onError={(error) => {
+            console.error('TinyMCE Error:', error);
+            setIsLoading(false);
+          }}
+        />
+      </div>
+      
+      {/* Word Count and Statistics */}
+      {showWordCount && (
+        <div className="editor-stats">
+          <span>📝 {wordCount} words</span>
+          <span>🔤 {characterCount} characters</span>
+          {showDetailedStats && (
+            <span>⏱️ {Math.ceil(wordCount / 200)} min read</span>
+          )}
         </div>
-      </LexicalComposer>
+      )}
     </div>
   );
-}, (prevProps, nextProps) => {
-  // Custom comparison function to prevent unnecessary re-renders
-  // Note: We don't compare onChange since it's now properly memoized in the parent
-  return (
-    prevProps.value === nextProps.value &&
-    prevProps.placeholder === nextProps.placeholder &&
-    prevProps.height === nextProps.height &&
-    prevProps.disabled === nextProps.disabled &&
-    prevProps.className === nextProps.className &&
-    prevProps.autoHeight === nextProps.autoHeight
-  );
-});
+};
 
 // Add display name for debugging
 RichTextEditor.displayName = 'RichTextEditor';

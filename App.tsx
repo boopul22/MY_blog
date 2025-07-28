@@ -16,6 +16,7 @@ import DashboardPage from './pages/admin/DashboardPage';
 import PostListPage from './pages/admin/PostListPage';
 import PostEditorPage from './pages/admin/PostEditorPage';
 import CategoryManagerPage from './pages/admin/CategoryManagerPage';
+import EditorTestPage from './pages/admin/EditorTestPage';
 import Sitemap from './pages/Sitemap';
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -46,6 +47,7 @@ const App: React.FC = () => {
               <Route path="posts/new" element={<PostEditorPage />} />
               <Route path="posts/edit/:id" element={<PostEditorPage />} />
               <Route path="categories" element={<CategoryManagerPage />} />
+              <Route path="test-editor" element={<EditorTestPage />} />
             </Route>
           </Route>
 

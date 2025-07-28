@@ -257,8 +257,118 @@ const PostEditorPage: React.FC = () => {
                                 </Tab>
                             </TabList>
                         </div>
+
+                        {/* Tab Panels */}
+                        <div className="px-6 pb-6">
+                            <TabPanel id="content">
+                                <div className="space-y-6">
+                                    {/* Title */}
+                                    <FormField
+                                        label="Title"
+                                        required
+                                        error={validationErrors.title}
+                                        hint="Enter a compelling title for your blog post"
+                                    >
+                                        <input
+                                            type="text"
+                                            value={post.title || ''}
+                                            onChange={(e) => setPost(prev => ({ ...prev, title: e.target.value }))}
+                                            placeholder="Enter post title..."
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                                        />
+                                    </FormField>
+
+                                    {/* Excerpt */}
+                                    <FormField
+                                        label="Excerpt"
+                                        error={validationErrors.excerpt}
+                                        hint="Brief description of your post (optional)"
+                                    >
+                                        <textarea
+                                            value={post.excerpt || ''}
+                                            onChange={(e) => setPost(prev => ({ ...prev, excerpt: e.target.value }))}
+                                            placeholder="Enter a brief excerpt..."
+                                            rows={3}
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                                        />
+                                    </FormField>
+
+                                    {/* Content Editor */}
+                                    <FormField
+                                        label="Content"
+                                        required
+                                        error={validationErrors.content}
+                                        hint="Write your blog post content using the rich text editor"
+                                    >
+                                        <div className="min-h-[400px]">
+                                            <RichTextEditor
+                                                key="post-content-editor"
+                                                value={post.content || ''}
+                                                onChange={(content) => setPost(prev => ({ ...prev, content }))}
+                                                placeholder="Start writing your blog post content..."
+                                                height={400}
+                                                enableAutoSave={true}
+                                                autoSaveDelay={30000}
+                                                onAutoSave={async (content) => {
+                                                    if (post.id && context) {
+                                                        try {
+                                                            await context.updatePost(post.id, { ...post, content });
+                                                            console.log('Auto-saved post content');
+                                                        } catch (error) {
+                                                            console.error('Auto-save failed:', error);
+                                                        }
+                                                    }
+                                                }}
+                                                showWordCount={true}
+                                                enableKeyboardShortcuts={true}
+                                                enableMediaUpload={true}
+                                                enableLinking={true}
+                                                enableTables={true}
+                                            />
+                                        </div>
+                                    </FormField>
+                                </div>
+                            </TabPanel>
+
+                            <TabPanel id="seo">
+                                <div className="space-y-6">
+                                    <p className="text-gray-600 dark:text-gray-400">SEO and metadata settings will be added here.</p>
+                                </div>
+                            </TabPanel>
+
+                            <TabPanel id="publishing">
+                                <div className="space-y-6">
+                                    <p className="text-gray-600 dark:text-gray-400">Publishing settings will be added here.</p>
+                                </div>
+                            </TabPanel>
+
+                            <TabPanel id="advanced">
+                                <div className="space-y-6">
+                                    <p className="text-gray-600 dark:text-gray-400">Advanced settings will be added here.</p>
+                                </div>
+                            </TabPanel>
+                        </div>
                     </TabValidationWrapper>
                 </TabContainer>
+
+                {/* Action Buttons */}
+                <div className="mt-6 flex justify-end space-x-3">
+                    <button
+                        type="button"
+                        onClick={() => navigate('/admin/posts')}
+                        className="px-4 py-2 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-600 focus:ring-2 focus:ring-blue-500"
+                    >
+                        Cancel
+                    </button>
+                    <button
+                        type="submit"
+                        disabled={isSaving}
+                        className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
+                    >
+                        {isSaving && <Spinner size="sm" />}
+                        <span>{isSaving ? 'Saving...' : (id ? 'Update Post' : 'Create Post')}</span>
+                    </button>
+                </div>
             </form>
         </div>
     );

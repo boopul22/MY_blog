@@ -132,8 +132,9 @@ const AdminLayout: React.FC = () => {
 
             {/* Main Content */}
             <main className={`flex-1 overflow-hidden transition-all duration-300 ${isCollapsed ? 'xl:ml-16' : 'xl:ml-64'} xl:ml-0`}>
-                <div className="h-full overflow-y-auto">
-                    <div className="p-4 md:p-6 lg:p-8 xl:p-6 pt-16 xl:pt-8 min-h-full">
+                <div className="h-full flex flex-col">
+                    {/* Content Area with optimized padding for editor */}
+                    <div className="flex-1 overflow-hidden pt-16 xl:pt-4">
                         <Outlet />
                     </div>
                 </div>
