@@ -15,14 +15,14 @@ const Footer: React.FC = () => {
                     <div className="md:col-span-1">
                         <Link to="/" className="block mb-4">
                             <h2 className="text-2xl font-serif tracking-widest text-dark-text dark:text-light-text hover:text-primary dark:hover:text-primary transition-colors">
-                                Athena
+                                behindyourbrain
                             </h2>
                             <p className="text-xs tracking-[0.2em] text-secondary dark:text-slate-400 mt-1">
                                 CREATIVE MAGAZINE
                             </p>
                         </Link>
                         <p className="text-sm text-secondary dark:text-slate-400">
-                            Athena is a creative magazine dedicated to sharing inspiring stories, beautiful photography, and thought-provoking articles from around the world.
+                            behindyourbrain is a creative magazine dedicated to sharing inspiring stories, beautiful photography, and thought-provoking articles from around the world.
                         </p>
                     </div>
 
@@ -63,7 +63,7 @@ const Footer: React.FC = () => {
                 {/* Bottom Bar */}
                 <div className="mt-8 pt-8 border-t border-slate-200 dark:border-light-dark flex flex-col sm:flex-row justify-between items-center">
                     <p className="text-sm text-secondary dark:text-slate-400 text-center sm:text-left">
-                        &copy; {new Date().getFullYear()} Athena Creative Magazine. All Rights Reserved.
+                        &copy; {new Date().getFullYear()} behindyourbrain Creative Magazine. All Rights Reserved.
                     </p>
                     <div className="flex space-x-4 mt-4 sm:mt-0">
                         <a href="#" className="text-xs text-secondary dark:text-slate-400 hover:text-primary dark:hover:text-primary transition-colors">Terms of Use</a>

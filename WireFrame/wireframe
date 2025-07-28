@@ -4,7 +4,7 @@ import ReactDOM from 'react-dom/client';
 
 // --- Components ---
 
-const TopBanner: React.FC = () => {
+const TopBanner = () => {
   return (
     <div className="bg-rose-100/50 text-gray-700 text-sm py-2 px-4">
       <div className="max-w-screen-xl mx-auto flex justify-between items-center">
@@ -22,7 +22,7 @@ const TopBanner: React.FC = () => {
   );
 };
 
-const NavItem: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+const NavItem = ({ children }) => (
   <li>
     <a href="#" className="flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-black">
       <div className="w-2 h-2 rounded-full border border-pink-400"></div>
@@ -31,14 +31,14 @@ const NavItem: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   </li>
 );
 
-const Header: React.FC = () => {
+const Header = () => {
   return (
     <header className="py-8">
       <div className="text-center mb-8">
         <div className="inline-block relative mb-4">
             <div className="w-16 h-1 bg-gray-300 mx-auto"></div>
         </div>
-        <h1 className="text-5xl font-serif tracking-widest text-gray-800">Athena</h1>
+        <h1 className="text-5xl font-serif tracking-widest text-gray-800">behindyourbrain</h1>
         <p className="text-xs tracking-[0.2em] text-gray-500 mt-1">CREATIVE MAGAZINE</p>
       </div>
       <div className="flex justify-between items-center border-t border-b border-gray-200 py-4">
@@ -67,7 +67,7 @@ const Header: React.FC = () => {
   );
 };
 
-const ArticleCard: React.FC = () => {
+const ArticleCard = () => {
   return (
     <div className="group relative">
       <div className="absolute top-0 left-0 -ml-10 transform -translate-x-full h-full flex items-center" aria-hidden="true">
@@ -102,7 +102,7 @@ const articles = [
   { id: 7 }, { id: 8 }, { id: 9 }, { id: 10 }, { id: 11 }, { id: 12 },
 ];
 
-const ArticleGrid: React.FC = () => {
+const ArticleGrid = () => {
   return (
     <main className="py-12">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8">
@@ -126,7 +126,7 @@ const ArticleGrid: React.FC = () => {
   );
 };
 
-const InstagramFeed: React.FC = () => {
+const InstagramFeed = () => {
   return (
     <section className="py-16">
       <div className="text-center mb-8">
@@ -150,7 +150,7 @@ const InstagramFeed: React.FC = () => {
   );
 };
 
-const CookieBanner: React.FC = () => {
+const CookieBanner = () => {
   return (
     <div className="fixed bottom-0 left-0 right-0 bg-black text-white p-4 z-50">
       <div className="max-w-screen-xl mx-auto flex justify-between items-center">
@@ -168,7 +168,7 @@ const CookieBanner: React.FC = () => {
 
 // --- App ---
 
-const App: React.FC = () => {
+const App = () => {
   return (
     <div className="bg-white font-sans text-gray-800">
       <TopBanner />

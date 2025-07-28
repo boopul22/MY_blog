@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useCallback } from 'react';
 
 interface TabContextType {
   activeTab: string;
@@ -23,11 +23,11 @@ export const TabContainer: React.FC<TabContainerProps> = ({
   const [activeTab, setActiveTab] = useState(defaultTab);
   const [tabErrors, setTabErrors] = useState<Record<string, boolean>>({});
 
-  const hasError = (tab: string) => tabErrors[tab] || false;
-  
-  const setTabError = (tab: string, hasError: boolean) => {
+  const hasError = useCallback((tab: string) => tabErrors[tab] || false, [tabErrors]);
+
+  const setTabError = useCallback((tab: string, hasError: boolean) => {
     setTabErrors(prev => ({ ...prev, [tab]: hasError }));
-  };
+  }, []);
 
   return (
     <TabContext.Provider value={{ activeTab, setActiveTab, hasError, setTabError }}>

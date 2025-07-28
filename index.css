@@ -1,7 +1,7 @@
 @import "tailwindcss";
 @config "./tailwind.config.js";
 
-/* Athena Blog - Custom Styles */
+/* behindyourbrain Blog - Custom Styles */
 
 /* Color scheme support for proper dark mode */
 :root {
@@ -687,4 +687,54 @@ html {
 
 .dark .tox .tox-collection__item:hover {
   background-color: #4a5568 !important;
+}
+
+/* Enhanced Rich Text Editor Stability */
+.rich-text-editor {
+  position: relative;
+  contain: layout style;
+}
+
+.rich-text-editor .tox {
+  transition: opacity 0.2s ease;
+}
+
+/* Prevent layout shifts during editor initialization */
+.rich-text-editor .tox-tinymce {
+  min-height: 300px;
+}
+
+/* Improved focus management */
+.rich-text-editor .tox-edit-area__iframe {
+  scroll-behavior: auto !important;
+}
+
+/* Cross-browser compatibility improvements */
+@supports (-webkit-appearance: none) {
+  /* Safari-specific fixes */
+  .rich-text-editor {
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+  }
+}
+
+@supports (-moz-appearance: none) {
+  /* Firefox-specific fixes */
+  .rich-text-editor {
+    will-change: auto;
+  }
+}
+
+/* Prevent viewport jumping on mobile */
+@media (max-width: 768px) {
+  .rich-text-editor .tox-edit-area__iframe {
+    -webkit-overflow-scrolling: touch;
+    overflow-scrolling: touch;
+  }
+
+  /* Prevent zoom on input focus in iOS */
+  .rich-text-editor input,
+  .rich-text-editor textarea {
+    font-size: 16px !important;
+  }
 }

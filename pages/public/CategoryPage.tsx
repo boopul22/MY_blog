@@ -28,7 +28,7 @@ const CategoryPage: React.FC = () => {
         <div className="bg-light dark:bg-dark min-h-screen">
             {category ? (
                 <>
-                    <title>{`${category.name} - Athena Creative Magazine`}</title>
+                    <title>{`${category.name} - behindyourbrain Creative Magazine`}</title>
                     <meta name="description" content={`Browse all posts in the ${category.name} category. Discover insightful articles and stories.`} />
                     
                     <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -69,7 +69,7 @@ const CategoryPage: React.FC = () => {
                 </>
             ) : (
                 <>
-                    <title>Category not found - Athena Creative Magazine</title>
+                    <title>Category not found - behindyourbrain Creative Magazine</title>
                     <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
                         <div className="text-center">
                             <h1 className="text-3xl font-bold text-dark-text dark:text-light-text mb-4">

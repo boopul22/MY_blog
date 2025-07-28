@@ -48,7 +48,7 @@ const AllPostsPage: React.FC = () => {
         document.head.appendChild(canonicalLink);
 
         // Set page title and meta description
-        document.title = 'All Articles - Athena Creative Magazine';
+        document.title = 'All Articles - behindyourbrain Creative Magazine';
 
         // Update meta description
         let metaDescription = document.querySelector('meta[name="description"]');

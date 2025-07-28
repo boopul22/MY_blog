@@ -11,12 +11,23 @@ if (!rootElement) {
 }
 
 const root = ReactDOM.createRoot(rootElement);
+
+// Conditionally disable StrictMode in development to prevent editor double-render issues
+const isDevelopment = import.meta.env.DEV;
+const AppWrapper = () => (
+  <BrowserRouter>
+    <SupabaseBlogProvider>
+      <App />
+    </SupabaseBlogProvider>
+  </BrowserRouter>
+);
+
 root.render(
-  <React.StrictMode>
-      <BrowserRouter>
-        <SupabaseBlogProvider>
-          <App />
-        </SupabaseBlogProvider>
-      </BrowserRouter>
-  </React.StrictMode>
+  isDevelopment ? (
+    <AppWrapper />
+  ) : (
+    <React.StrictMode>
+      <AppWrapper />
+    </React.StrictMode>
+  )
 );

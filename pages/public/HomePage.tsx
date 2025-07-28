@@ -63,7 +63,7 @@ const HomePage: React.FC = () => {
                         <div className="w-5 h-5 sm:w-6 sm:h-6 border-2 border-slate-400 dark:border-slate-600 rounded-md flex items-center justify-center">
                             <div className="w-2 h-2 sm:w-3 sm:h-3 border-2 border-slate-400 dark:border-slate-600 rounded-full"></div>
                         </div>
-                        <span className="font-medium">@athena_magazine</span>
+                        <span className="font-medium">@behindyourbrain_magazine</span>
                     </div>
                     <h2 className="text-2xl sm:text-3xl font-serif text-slate-800 dark:text-slate-200 mt-2">Follow Me On Instagram</h2>
                     <p className="text-slate-600 dark:text-slate-400 mt-2 text-sm sm:text-base px-4">Stay updated with our latest stories and behind-the-scenes content</p>

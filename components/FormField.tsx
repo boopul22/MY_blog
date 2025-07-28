@@ -10,7 +10,7 @@ interface FormFieldProps {
   className?: string;
 }
 
-const FormField: React.FC<FormFieldProps> = ({
+const FormField: React.FC<FormFieldProps> = React.memo(({
   label,
   htmlFor,
   required = false,
@@ -44,6 +44,9 @@ const FormField: React.FC<FormFieldProps> = ({
       )}
     </div>
   );
-};
+});
+
+// Add display name for debugging
+FormField.displayName = 'FormField';
 
 export default FormField;

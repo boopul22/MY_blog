@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect, useCallback } from 'react';
+import React, { useState, useContext, useEffect, useCallback, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { BlogContext } from '../../context/SupabaseBlogContext';
 import { Post } from '../../types';
@@ -71,27 +71,33 @@ const PostEditorPage: React.FC = () => {
         return Object.keys(errors).length === 0;
     };
     
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
         setPost(prev => ({ ...prev, [name]: value }));
-        
+
         // Clear validation error when user starts typing
-        if (validationErrors[name]) {
-            setValidationErrors(prev => ({ ...prev, [name]: '' }));
-        }
+        setValidationErrors(prev => {
+            if (prev[name]) {
+                return { ...prev, [name]: '' };
+            }
+            return prev;
+        });
 
         // Auto-generate slug from title
         if (name === 'title') {
             setUrlSlug(generateSlug(value));
         }
-    };
+    }, []); // No dependencies needed as we use functional updates
 
-    const handleContentChange = (content: string) => {
+    const handleContentChange = useCallback((content: string) => {
         setPost(prev => ({ ...prev, content }));
-        if (validationErrors.content) {
-            setValidationErrors(prev => ({ ...prev, content: '' }));
-        }
-    };
+        setValidationErrors(prev => {
+            if (prev.content) {
+                return { ...prev, content: '' };
+            }
+            return prev;
+        });
+    }, []); // No dependencies needed as we use functional updates
 
     const handleInsertLink = (url: string, anchorText: string) => {
         // This would integrate with the rich text editor to insert a link

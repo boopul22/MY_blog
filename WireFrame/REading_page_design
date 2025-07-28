@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Athena - Blog Wireframe</title>
+    <title>behindyourbrain - Blog Wireframe</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -169,7 +169,7 @@
                         )
                     ),
                     React.createElement('div', { className: "text-center absolute left-1/2 -translate-x-1/2 lg:static lg:left-auto lg:translate-x-0" },
-                        React.createElement('h1', { className: "text-3xl font-bold tracking-tight" }, "Athena"),
+                        React.createElement('h1', { className: "text-3xl font-bold tracking-tight" }, "behindyourbrain"),
                         React.createElement('p', { className: "text-sm text-gray-500 tracking-widest" }, "CREATIVE MAGAZINE")
                     ),
                     React.createElement('nav', { className: "hidden lg:flex items-center space-x-8" },
@@ -343,7 +343,7 @@
                         React.createElement('h2', { className: "text-2xl font-bold" }, "Follow Me On Instagram"),
                         React.createElement('a', { href: "#", className: "text-sm text-red-500 font-semibold flex items-center justify-center space-x-1 mt-1" },
                             React.createElement(InstagramIcon),
-                            React.createElement('span', null, "@athena")
+                            React.createElement('span', null, "@behindyourbrain")
                         )
                     ),
                     React.createElement('div', { className: "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-1" },

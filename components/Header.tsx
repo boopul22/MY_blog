@@ -54,7 +54,7 @@ const Header: React.FC = () => {
                         </div>
                         <Link to="/" className="block">
                             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif tracking-widest text-dark-text dark:text-light-text hover:text-primary dark:hover:text-primary transition-colors">
-                                Athena
+                                behindyourbrain
                             </h1>
                             <p className="text-xs tracking-[0.2em] text-secondary dark:text-slate-400 mt-1">
                                 CREATIVE MAGAZINE

@@ -1,7 +1,8 @@
 
-import React, { useState, useContext, useEffect, useCallback } from 'react';
+import React, { useState, useContext, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { BlogContext } from '../../context/SupabaseBlogContext';
+import { useNotifications } from '../../context/NotificationProvider';
 import { Post } from '../../types';
 import { generateBlogPostContent, generateSEOMetadata } from '../../services/geminiService';
 import { SparklesIcon, DocumentTextIcon, GlobeAltIcon, CogIcon, RocketLaunchIcon } from '../../components/icons';
@@ -17,7 +18,9 @@ const PostEditorPage: React.FC = () => {
     const { id } = useParams<{ id?: string }>();
     const navigate = useNavigate();
     const context = useContext(BlogContext);
+    const { showSuccess, showError, showInfo } = useNotifications();
 
+    // Simple state management for the post
     const [post, setPost] = useState<Partial<Post>>({
         title: '',
         content: '',
@@ -27,12 +30,23 @@ const PostEditorPage: React.FC = () => {
         seoTitle: '',
         seoDescription: '',
     });
-    const [isGenerating, setIsGenerating] = useState({ content: false, seo: false });
+
+    const [isGenerating, setIsGenerating] = useState(() => ({ content: false, seo: false }));
     const [newTag, setNewTag] = useState('');
     const [focusKeyword, setFocusKeyword] = useState('');
     const [urlSlug, setUrlSlug] = useState('');
-    const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
+    const [validationErrors, setValidationErrors] = useState<Record<string, string>>(() => ({}));
     const [isSaving, setIsSaving] = useState(false);
+
+    // Generate URL slug from title - moved outside component to prevent re-creation
+    const generateSlug = useMemo(() => {
+        return (title: string) => {
+            return title
+                .toLowerCase()
+                .replace(/[^a-z0-9]+/g, '-')
+                .replace(/^-|-$/g, '');
+        };
+    }, []);
 
     useEffect(() => {
         if (id && context?.getPost) {
@@ -42,18 +56,26 @@ const PostEditorPage: React.FC = () => {
                 setUrlSlug(existingPost.title ? generateSlug(existingPost.title) : '');
             }
         }
-    }, [id, context]);
+    }, [id, context?.getPost]); // Removed generateSlug from dependencies
 
-    // Generate URL slug from title
-    const generateSlug = (title: string) => {
-        return title
-            .toLowerCase()
-            .replace(/[^a-z0-9]+/g, '-')
-            .replace(/^-|-$/g, '');
-    };
+    // Prevent accidental navigation away from unsaved content
+    useEffect(() => {
+        const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+            if (post.title || post.content) {
+                e.preventDefault();
+                e.returnValue = 'You have unsaved changes. Are you sure you want to leave?';
+                return e.returnValue;
+            }
+        };
+
+        window.addEventListener('beforeunload', handleBeforeUnload);
+        return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+    }, [post.title, post.content]);
+
+
 
     // Validation logic
-    const validateForm = () => {
+    const validateForm = useCallback(() => {
         const errors: Record<string, string> = {};
 
         if (!post.title?.trim()) {
@@ -70,29 +92,52 @@ const PostEditorPage: React.FC = () => {
 
         setValidationErrors(errors);
         return Object.keys(errors).length === 0;
-    };
+    }, [post.title, post.content, post.categoryId]);
 
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
-        setPost(prev => ({ ...prev, [name]: value }));
+
+        // Simple state update
+        setPost(prev => ({
+            ...prev,
+            [name]: value
+        }));
 
         // Clear validation error when user starts typing
-        if (validationErrors[name]) {
-            setValidationErrors(prev => ({ ...prev, [name]: '' }));
-        }
+        setValidationErrors(prev => {
+            if (prev[name]) {
+                return { ...prev, [name]: '' };
+            }
+            return prev;
+        });
 
         // Auto-generate slug from title
         if (name === 'title') {
             setUrlSlug(generateSlug(value));
         }
-    };
+    }, []); // Removed generateSlug dependency - using stable reference from useMemo
 
-    const handleContentChange = (content: string) => {
-        setPost(prev => ({ ...prev, content }));
-        if (validationErrors.content) {
-            setValidationErrors(prev => ({ ...prev, content: '' }));
-        }
-    };
+    // Simplified content change handler with proper memoization
+    const handleContentChange = useCallback((content: string) => {
+        // Only update if content actually changed
+        setPost(prev => {
+            if (prev.content === content) {
+                return prev; // No change, return same object to prevent re-render
+            }
+            return {
+                ...prev,
+                content
+            };
+        });
+
+        // Clear validation error only if there was one
+        setValidationErrors(prev => {
+            if (prev.content) {
+                return { ...prev, content: '' };
+            }
+            return prev; // No change, return same object
+        });
+    }, []); // No dependencies needed since we use functional updates
 
     const handleInsertLink = (url: string, anchorText: string) => {
         // This would integrate with the rich text editor to insert a link
@@ -123,10 +168,9 @@ const PostEditorPage: React.FC = () => {
 
     const handleImageUpload = useCallback(async (file: File): Promise<ImageSizes> => {
         if (!context) throw new Error('Context not available');
-        
+
         try {
             const imageSizes = await context.uploadPostImage(file, id);
-            // Use the large size as the main image URL
             setPost(prev => ({ ...prev, imageUrl: imageSizes.large }));
             return imageSizes;
         } catch (error) {
@@ -156,7 +200,7 @@ const PostEditorPage: React.FC = () => {
         }
     }, [post.content]);
 
-    const handleTagAdd = async () => {
+    const handleTagAdd = useCallback(async () => {
         if (newTag && context && !post.tags?.includes(newTag)) {
             const existingTag = context.tags.find(t => t.name.toLowerCase() === newTag.toLowerCase());
             if (existingTag) {
@@ -174,50 +218,135 @@ const PostEditorPage: React.FC = () => {
             }
             setNewTag('');
         }
-    };
+    }, [newTag, context, post.tags]);
     
-    const handleTagRemove = (tagId: string) => {
+    const handleTagRemove = useCallback((tagId: string) => {
         setPost(prev => ({ ...prev, tags: prev.tags?.filter(t => t !== tagId) }));
-    };
+    }, []);
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-
+    const handleSave = useCallback(async (status: 'draft' | 'published', shouldRedirect = true) => {
         if (!validateForm()) {
-            alert("Please fix the validation errors before saving.");
+            showError("Validation Error", "Please fix the validation errors before saving.");
             return;
         }
 
         setIsSaving(true);
+        const postData = { ...post, status };
+
         try {
             if (id) {
-                await context?.updatePost(id, post);
+                await context?.updatePost(id, postData);
+                if (status === 'published') {
+                    showSuccess(
+                        "Post Published!",
+                        "Your post has been successfully published and is now live.",
+                        6000
+                    );
+                } else {
+                    showSuccess("Draft Saved", "Your post has been saved as a draft.");
+                }
             } else {
-                await context?.addPost(post as Omit<Post, 'id' | 'createdAt' | 'slug'>);
+                await context?.addPost(postData as Omit<Post, 'id' | 'createdAt' | 'slug'>);
+                if (status === 'published') {
+                    showSuccess(
+                        "Post Published!",
+                        "Your new post has been successfully published and is now live.",
+                        6000
+                    );
+                } else {
+                    showSuccess("Draft Created", "Your new post has been saved as a draft.");
+                }
             }
-            navigate('/admin/posts');
+
+            if (shouldRedirect) {
+                // Small delay to let user see the success message
+                setTimeout(() => {
+                    navigate('/admin/posts');
+                }, 1500);
+            }
         } catch (error) {
             console.error('Error saving post:', error);
-            alert('Failed to save post. Please try again.');
+            showError(
+                "Save Failed",
+                error instanceof Error ? error.message : "Failed to save post. Please try again.",
+                10000
+            );
         } finally {
             setIsSaving(false);
         }
+    }, [validateForm, showError, post, id, context, showSuccess, navigate]);
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        await handleSave('published');
     };
 
-    // Tab validation component
-    const TabValidationWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-        const { setTabError } = useTabContext();
+    const handleSaveDraft = useCallback(async () => {
+        await handleSave('draft', false);
+    }, [handleSave]);
 
-        useEffect(() => {
-            // Update tab error states based on validation
-            setTabError('content', !!(validationErrors.title || validationErrors.content));
-            setTabError('seo', false); // SEO fields are optional
-            setTabError('publishing', !!validationErrors.categoryId);
-            setTabError('advanced', false); // Advanced fields are optional
-        }, [validationErrors, setTabError]);
+    const handlePublish = useCallback(async () => {
+        // Show confirmation for first-time publish
+        if (post.status !== 'published' && !id) {
+            const confirmed = window.confirm(
+                "Are you ready to publish this post? Once published, it will be visible to all visitors on your blog."
+            );
+            if (!confirmed) return;
+        }
+        await handleSave('published');
+    }, [handleSave, post.status, id]);
 
-        return <>{children}</>;
+    const handleViewPost = () => {
+        if (post.slug) {
+            window.open(`/post/${post.slug}`, '_blank');
+        } else if (id) {
+            // If no slug, try to construct one from title
+            const slug = post.title?.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+            if (slug) {
+                window.open(`/post/${slug}`, '_blank');
+            }
+        }
     };
+
+    // Keyboard shortcuts - moved here after function definitions
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            // Cmd/Ctrl + S to save draft
+            if ((e.metaKey || e.ctrlKey) && e.key === 's') {
+                e.preventDefault();
+                if (!isSaving) {
+                    handleSaveDraft();
+                }
+            }
+            // Cmd/Ctrl + Shift + P to publish
+            if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key === 'P') {
+                e.preventDefault();
+                if (!isSaving) {
+                    handlePublish();
+                }
+            }
+        };
+
+        document.addEventListener('keydown', handleKeyDown);
+        return () => document.removeEventListener('keydown', handleKeyDown);
+    }, [isSaving, handleSaveDraft, handlePublish]);
+
+    // Tab validation component - memoized to prevent unnecessary re-renders
+    const TabValidationWrapper = useMemo(() => {
+        return ({ children }: { children: React.ReactNode }) => {
+            const { setTabError } = useTabContext();
+
+            useEffect(() => {
+                // Update tab error states based on validation
+                setTabError('content', !!(validationErrors.title || validationErrors.content));
+                setTabError('seo', false); // SEO fields are optional
+                setTabError('publishing', !!validationErrors.categoryId);
+                setTabError('advanced', false); // Advanced fields are optional
+            }, [validationErrors, setTabError]);
+
+            return <>{children}</>;
+        };
+    }, [validationErrors]);
 
     if (!context) return <Spinner />;
     const { categories, tags } = context;
@@ -228,43 +357,79 @@ const PostEditorPage: React.FC = () => {
             <div className="flex-shrink-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4">
                 <div className="flex items-center justify-between">
                     <div>
-                        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-                            {id ? 'Edit Post' : 'Create New Post'}
-                        </h1>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                        <div className="flex items-center space-x-3">
+                            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+                                {id ? 'Edit Post' : 'Create New Post'}
+                            </h1>
+                            {/* Status Badge */}
+                            <span className={`px-2 py-1 text-xs font-medium rounded-full ${
+                                post.status === 'published'
+                                    ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400'
+                                    : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400'
+                            }`}>
+                                {post.status === 'published' ? 'Published' : 'Draft'}
+                            </span>
+                        </div>
+                        <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
                             {id ? 'Update your blog post content and settings' : 'Create a new blog post with content and SEO optimization'}
+                            <span className="ml-2 text-xs text-gray-500 dark:text-gray-500">
+                                • Ctrl+S save draft • Ctrl+Shift+P publish
+                            </span>
                         </p>
                     </div>
 
                     {/* Action Buttons in Header */}
-                    <div className="flex space-x-3">
+                    <div className="flex items-center space-x-3">
+
+
                         <button
                             type="button"
                             onClick={() => navigate('/admin/posts')}
-                            className="px-4 py-2 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 focus:ring-2 focus:ring-blue-500 transition-colors"
+                            disabled={isSaving}
+                            className="px-4 py-2 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 focus:ring-2 focus:ring-blue-500 disabled:opacity-50 transition-colors"
                         >
                             Cancel
                         </button>
 
                         <button
                             type="button"
-                            onClick={() => {
-                                setPost(prev => ({ ...prev, status: 'draft' }));
-                                handleSubmit(new Event('submit') as any);
-                            }}
+                            onClick={handleSaveDraft}
                             disabled={isSaving}
                             className="px-4 py-2 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 focus:ring-2 focus:ring-blue-500 disabled:opacity-50 transition-colors"
                         >
-                            {isSaving ? <Spinner size="sm" /> : 'Save Draft'}
+                            {isSaving && post.status === 'draft' ? (
+                                <div className="flex items-center space-x-2">
+                                    <Spinner size="sm" />
+                                    <span>Saving...</span>
+                                </div>
+                            ) : 'Save Draft'}
                         </button>
 
+                        {/* View Post Button - only show for published posts */}
+                        {post.status === 'published' && id && (
+                            <button
+                                type="button"
+                                onClick={handleViewPost}
+                                className="px-4 py-2 text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/30 focus:ring-2 focus:ring-blue-500 transition-colors"
+                            >
+                                View Post
+                            </button>
+                        )}
+
                         <button
-                            type="submit"
-                            form="post-form"
+                            type="button"
+                            onClick={handlePublish}
                             disabled={isSaving}
                             className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 disabled:opacity-50 transition-colors font-medium"
                         >
-                            {isSaving ? <Spinner size="sm" /> : (id ? 'Update Post' : 'Publish Post')}
+                            {isSaving && post.status === 'published' ? (
+                                <div className="flex items-center space-x-2">
+                                    <Spinner size="sm" />
+                                    <span>Publishing...</span>
+                                </div>
+                            ) : (
+                                post.status === 'published' ? 'Update Post' : 'Publish Post'
+                            )}
                         </button>
                     </div>
                 </div>
@@ -297,9 +462,9 @@ const PostEditorPage: React.FC = () => {
                             <div className="flex-1 overflow-hidden">
                                 {/* Content Tab */}
                                 <TabPanel id="content" className="h-full">
-                                    <div className="h-full flex">
+                                    <div className="h-full flex flex-col lg:flex-row">
                                         {/* Left Column - Title and Controls */}
-                                        <div className="w-80 flex-shrink-0 p-6 border-r border-gray-200 dark:border-gray-700 space-y-4">
+                                        <div className="w-full lg:w-80 xl:w-96 flex-shrink-0 p-4 md:p-6 border-b lg:border-b-0 lg:border-r border-gray-200 dark:border-gray-700 space-y-4">
                                             <FormField
                                                 label="Title"
                                                 htmlFor="title"
@@ -379,7 +544,7 @@ const PostEditorPage: React.FC = () => {
                                         </div>
 
                                         {/* Right Column - Content Editor */}
-                                        <div className="flex-1 p-6">
+                                        <div className="flex-1 p-4 md:p-6 min-h-0">
                                             <FormField
                                                 label="Content"
                                                 required
@@ -388,10 +553,12 @@ const PostEditorPage: React.FC = () => {
                                             >
                                                 <div className="h-full">
                                                     <RichTextEditor
+                                                        key="post-content-editor"
                                                         value={post.content || ''}
                                                         onChange={handleContentChange}
                                                         placeholder="Start writing your blog post content..."
-                                                        height={window.innerHeight - 300}
+                                                        autoHeight={true}
+                                                        className="h-full"
                                                     />
                                                 </div>
                                             </FormField>

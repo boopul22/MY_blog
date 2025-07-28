@@ -3,6 +3,9 @@ import React from 'react';
 import { Routes, Route, Navigate, Outlet } from 'react-router-dom';
 import { BlogContext } from './context/SupabaseBlogContext';
 import { ThemeProvider } from './context/ThemeContext';
+import { NotificationProvider } from './context/NotificationProvider';
+import { SidebarProvider } from './context/SidebarContext';
+import NotificationContainer from './components/NotificationContainer';
 import HomePage from './pages/public/HomePage';
 import PostPage from './pages/public/PostPage';
 import CategoryPage from './pages/public/CategoryPage';
@@ -30,8 +33,10 @@ const ProtectedRoute: React.FC = () => {
 const App: React.FC = () => {
   return (
     <ThemeProvider>
-      <div className="min-h-screen bg-light dark:bg-dark transition-colors duration-200 flex flex-col">
-        <Routes>
+      <NotificationProvider>
+        <SidebarProvider>
+          <div className="min-h-screen bg-light dark:bg-dark transition-colors duration-200 flex flex-col">
+            <Routes>
           <Route path="/login" element={<LoginPage />} />
           
           <Route element={<ProtectedRoute />}>
@@ -63,8 +68,11 @@ const App: React.FC = () => {
                   <Footer />
               </div>
           } />
-        </Routes>
-      </div>
+            </Routes>
+            <NotificationContainer />
+          </div>
+        </SidebarProvider>
+      </NotificationProvider>
     </ThemeProvider>
   );
 };

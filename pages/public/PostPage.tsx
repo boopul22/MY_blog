@@ -259,7 +259,7 @@ const PostPage: React.FC = () => {
                     <h2 className="text-2xl font-bold text-dark-text dark:text-light-text">Follow Me On Instagram</h2>
                     <a href="#" className="text-sm text-primary font-semibold flex items-center justify-center space-x-1 mt-1">
                         <InstagramIcon className="w-4 h-4" />
-                        <span>@athena</span>
+                        <span>@behindyourbrain</span>
                     </a>
                 </div>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-1">
