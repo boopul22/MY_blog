@@ -22,6 +22,15 @@ interface RichTextEditorProps {
   enableMediaUpload?: boolean;
   enableLinking?: boolean;
   enableTables?: boolean;
+  // WordPress-like features
+  enableFullScreen?: boolean;
+  enableSourceCode?: boolean;
+  enableAdvancedFormatting?: boolean;
+  enableCustomStyles?: boolean;
+  enableEmbeds?: boolean;
+  enableAnchorLinks?: boolean;
+  posts?: Array<{id: string; title: string; slug: string}>; // For internal linking
+  onExcerptGenerate?: (excerpt: string) => void;
 }
 
 const RichTextEditor: React.FC<RichTextEditorProps> = ({
@@ -40,7 +49,15 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
   enableKeyboardShortcuts = true,
   enableMediaUpload = true,
   enableLinking = true,
-  enableTables = true
+  enableTables = true,
+  enableFullScreen = true,
+  enableSourceCode = true,
+  enableAdvancedFormatting = true,
+  enableCustomStyles = true,
+  enableEmbeds = true,
+  enableAnchorLinks = true,
+  posts = [],
+  onExcerptGenerate
 }) => {
   const { uploadPostImage } = useContext(BlogContext);
   const editorRef = useRef<any>(null);

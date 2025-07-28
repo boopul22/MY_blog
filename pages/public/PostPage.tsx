@@ -9,7 +9,7 @@ import TableOfContents from '../../components/TableOfContents';
 import FAQSchema from '../../components/FAQSchema';
 import AuthorInfo from '../../components/AuthorInfo';
 import SocialMetaTags from '../../components/SocialMetaTags';
-import Breadcrumbs from '../../components/Breadcrumbs';
+
 import { useEnhancedCodeBlocks } from '../../utils/contentRenderer';
 
 import { 
@@ -66,12 +66,7 @@ const PostPage: React.FC = () => {
         { name: post.title, url: `https://myawesomeblog.com/post/${post.slug}` }
     ];
 
-    // Generate custom breadcrumbs for the component
-    const customBreadcrumbs = [
-        { name: 'Home', url: '/', isActive: false },
-        ...(category ? [{ name: category.name, url: `/category/${category.slug}`, isActive: false }] : []),
-        { name: post.title, url: `/post/${post.slug}`, isActive: true }
-    ];
+
 
     const socialIcons = [
         { icon: FacebookIcon, label: 'Facebook' },
@@ -282,11 +277,6 @@ const PostPage: React.FC = () => {
                 breadcrumbs={breadcrumbs}
             />
             <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
-                {/* Breadcrumbs */}
-                <div className="mt-4">
-                    <Breadcrumbs customBreadcrumbs={customBreadcrumbs} />
-                </div>
-
                 <main className="mt-6 sm:mt-8 lg:mt-12">
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-x-16">
                         <div className="lg:col-span-2 order-1 lg:order-1">

@@ -17,19 +17,31 @@ CREATE TABLE IF NOT EXISTS tags (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- Create posts table with vector column for semantic search
+-- Create posts table with vector column for semantic search and WordPress-like features
 CREATE TABLE IF NOT EXISTS posts (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   title VARCHAR(500) NOT NULL,
   content TEXT NOT NULL,
+  excerpt TEXT, -- WordPress-like excerpt
   slug VARCHAR(500) NOT NULL UNIQUE,
-  image_url TEXT,
-  status VARCHAR(20) NOT NULL DEFAULT 'draft' CHECK (status IN ('published', 'draft')),
+  image_url TEXT, -- Featured image
+  image_caption TEXT, -- Featured image caption
+  image_alt_text TEXT, -- Featured image alt text
+  status VARCHAR(20) NOT NULL DEFAULT 'draft' CHECK (status IN ('published', 'draft', 'private', 'scheduled')),
   seo_title VARCHAR(500) NOT NULL,
   seo_description TEXT NOT NULL,
   meta_keywords TEXT,
+  focus_keyword TEXT, -- SEO focus keyword
   category_id UUID NOT NULL REFERENCES categories(id) ON DELETE CASCADE,
   author_name VARCHAR(255) NOT NULL DEFAULT 'Admin',
+  word_count INTEGER DEFAULT 0, -- Automatic word count
+  reading_time INTEGER DEFAULT 0, -- Estimated reading time in minutes
+  allow_comments BOOLEAN DEFAULT true,
+  is_featured BOOLEAN DEFAULT false, -- Featured post flag
+  template VARCHAR(100) DEFAULT 'default', -- Post template
+  custom_css TEXT, -- Custom CSS for the post
+  custom_js TEXT, -- Custom JavaScript for the post
+  scheduled_at TIMESTAMP WITH TIME ZONE, -- For scheduled posts
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   content_vector vector(1536) -- OpenAI embedding dimension
@@ -41,6 +53,37 @@ CREATE TABLE IF NOT EXISTS post_tags (
   tag_id UUID NOT NULL REFERENCES tags(id) ON DELETE CASCADE,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   PRIMARY KEY (post_id, tag_id)
+);
+
+-- Create media library table for WordPress-like media management
+CREATE TABLE IF NOT EXISTS media_library (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  filename VARCHAR(255) NOT NULL,
+  original_filename VARCHAR(255) NOT NULL,
+  file_url TEXT NOT NULL,
+  file_type VARCHAR(100) NOT NULL, -- image/jpeg, image/png, etc.
+  file_size INTEGER NOT NULL, -- Size in bytes
+  mime_type VARCHAR(100) NOT NULL,
+  width INTEGER, -- For images
+  height INTEGER, -- For images
+  alt_text TEXT,
+  caption TEXT,
+  description TEXT,
+  title VARCHAR(255),
+  uploaded_by VARCHAR(255) DEFAULT 'Admin',
+  is_featured BOOLEAN DEFAULT false,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Create media usage tracking table
+CREATE TABLE IF NOT EXISTS media_usage (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  media_id UUID NOT NULL REFERENCES media_library(id) ON DELETE CASCADE,
+  post_id UUID REFERENCES posts(id) ON DELETE CASCADE,
+  usage_type VARCHAR(50) NOT NULL, -- 'featured_image', 'content_image', 'gallery', etc.
+  usage_context TEXT, -- Additional context about how the media is used
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
 -- Create indexes for better performance

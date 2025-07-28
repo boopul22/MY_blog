@@ -8,7 +8,7 @@ import { generateBlogPostContent, generateSEOMetadata } from '../../services/gem
 import { SparklesIcon, DocumentTextIcon, GlobeAltIcon, CogIcon, RocketLaunchIcon } from '../../components/icons';
 import Spinner from '../../components/Spinner';
 import ImageUpload from '../../components/ImageUpload';
-import RichTextEditor from '../../components/RichTextEditor';
+import EnhancedRichTextEditor from '../../components/EnhancedRichTextEditor';
 import { TabContainer, TabList, Tab, TabPanel, useTabContext } from '../../components/Tabs';
 import FormField from '../../components/FormField';
 import Card from '../../components/Card';
@@ -552,7 +552,7 @@ const PostEditorPage: React.FC = () => {
                                                 hint="Write your blog post content using the rich text editor"
                                             >
                                                 <div className="h-full">
-                                                    <RichTextEditor
+                                                    <EnhancedRichTextEditor
                                                         key="post-content-editor"
                                                         value={post.content || ''}
                                                         onChange={handleContentChange}
@@ -573,11 +573,26 @@ const PostEditorPage: React.FC = () => {
                                                             }
                                                         }}
                                                         showWordCount={true}
-                                                        showDetailedStats={false}
+                                                        showDetailedStats={true}
                                                         enableKeyboardShortcuts={true}
                                                         enableMediaUpload={true}
                                                         enableLinking={true}
                                                         enableTables={true}
+                                                        enableFullScreen={true}
+                                                        enableSourceCode={true}
+                                                        enableAdvancedFormatting={true}
+                                                        enableCustomStyles={true}
+                                                        enableEmbeds={true}
+                                                        enableAnchorLinks={true}
+                                                        posts={context?.posts?.filter(p => p.status === 'published').map(p => ({
+                                                            id: p.id,
+                                                            title: p.title,
+                                                            slug: p.slug
+                                                        })) || []}
+                                                        onExcerptGenerate={(excerpt) => {
+                                                            setPost(prev => ({ ...prev, seoDescription: excerpt }));
+                                                            showInfo('Excerpt generated and added to SEO description');
+                                                        }}
                                                     />
                                                 </div>
                                             </FormField>

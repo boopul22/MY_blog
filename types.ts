@@ -6,6 +6,8 @@ export interface Post {
   excerpt?: string;
   slug: string;
   imageUrl?: string;
+  imageCaption?: string;
+  imageAltText?: string;
   status: 'published' | 'draft' | 'scheduled' | 'private' | 'archived' | 'trash';
   postType?: string;
   authorName: string;
@@ -22,8 +24,16 @@ export interface Post {
   seoTitle: string;
   seoDescription: string;
   metaKeywords?: string;
+  focusKeyword?: string;
   categoryId?: string;
   tags: string[];
+  wordCount?: number;
+  readingTime?: number;
+  allowComments?: boolean;
+  isFeatured?: boolean;
+  template?: string;
+  customCss?: string;
+  customJs?: string;
   customFields?: Record<string, any>;
 }
 
@@ -36,6 +46,35 @@ export interface Category {
 export interface Tag {
   id: string;
   name: string;
+}
+
+export interface MediaItem {
+  id: string;
+  filename: string;
+  originalFilename: string;
+  fileUrl: string;
+  fileType: string;
+  fileSize: number;
+  mimeType: string;
+  width?: number;
+  height?: number;
+  altText?: string;
+  caption?: string;
+  description?: string;
+  title?: string;
+  uploadedBy: string;
+  isFeatured: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface MediaUsage {
+  id: string;
+  mediaId: string;
+  postId?: string;
+  usageType: 'featured_image' | 'content_image' | 'gallery' | 'attachment';
+  usageContext?: string;
+  createdAt: string;
 }
 
 export interface PostType {

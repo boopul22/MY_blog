@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import RichTextEditor from '../../components/RichTextEditor';
+import EnhancedRichTextEditor from '../../components/EnhancedRichTextEditor';
 import FormField from '../../components/FormField';
 
 const EditorTestPage: React.FC = () => {
@@ -80,17 +80,24 @@ const EditorTestPage: React.FC = () => {
               required
               hint="Test the TinyMCE rich text editor"
             >
-              <RichTextEditor
+              <EnhancedRichTextEditor
                 value={content}
                 onChange={handleContentChange}
                 placeholder="Start typing in the rich text editor..."
                 height={400}
                 enableAutoSave={false}
                 showWordCount={true}
+                showDetailedStats={true}
                 enableKeyboardShortcuts={true}
                 enableMediaUpload={true}
                 enableLinking={true}
                 enableTables={true}
+                enableFullScreen={true}
+                enableSourceCode={true}
+                enableAdvancedFormatting={true}
+                enableCustomStyles={true}
+                enableEmbeds={true}
+                enableAnchorLinks={true}
               />
             </FormField>
             <div className="mt-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-md">
