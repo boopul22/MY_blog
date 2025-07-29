@@ -18,6 +18,8 @@ import PostEditorPage from './pages/admin/PostEditorPage';
 import CategoryManagerPage from './pages/admin/CategoryManagerPage';
 import EditorTestPage from './pages/admin/EditorTestPage';
 import EditorDebugPage from './pages/EditorDebugPage';
+import EditorDiagnosticPage from './pages/EditorDiagnosticPage';
+import PostEditorComparison from './pages/PostEditorComparison';
 import Sitemap from './pages/Sitemap';
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -65,6 +67,8 @@ const App: React.FC = () => {
                             <Route path="/category/:slug" element={<CategoryPage />} />
                             <Route path="/all-posts" element={<AllPostsPage />} />
                             <Route path="/editor-debug" element={<EditorDebugPage />} />
+          <Route path="/editor-diagnostic" element={<EditorDiagnosticPage />} />
+          <Route path="/editor-comparison" element={<PostEditorComparison />} />
                             <Route path="/sitemap.xml" element={<Sitemap />} />
                         </Routes>
                     </div>

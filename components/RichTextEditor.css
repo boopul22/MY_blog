@@ -17,6 +17,9 @@
   background: #f9fafb !important;
   border-bottom: 1px solid #e5e7eb !important;
   padding: 8px 12px !important;
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
 }
 
 .tox .tox-toolbar__group {
@@ -169,6 +172,90 @@
 
 .tox .tox-tbtn {
   transition: all 0.15s ease-in-out;
+}
+
+/* Ensure toolbar is always visible - Fix for toolbar visibility issues */
+.tox .tox-toolbar-overlord {
+  display: block !important;
+}
+
+.tox .tox-toolbar__primary {
+  display: flex !important;
+  visibility: visible !important;
+}
+
+.tox .tox-toolbar__overflow {
+  display: flex !important;
+  visibility: visible !important;
+}
+
+/* Force toolbar visibility on initialization */
+.tox .tox-toolbar {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  min-height: 40px !important;
+}
+
+/* Prevent toolbar from being hidden by parent containers */
+.tox .tox-toolbar,
+.tox .tox-toolbar__primary,
+.tox .tox-toolbar__overflow {
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+/* Fix for Radix UI Tabs content persistence */
+[data-radix-tabs-content] .tox {
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+[data-radix-tabs-content][data-state="inactive"] .tox {
+  visibility: visible !important;
+  opacity: 1 !important;
+  position: absolute !important;
+  left: -9999px !important;
+  top: 0 !important;
+}
+
+[data-radix-tabs-content][data-state="active"] .tox {
+  position: relative !important;
+  left: auto !important;
+  top: auto !important;
+}
+
+/* PostEditorPage specific fixes */
+.tox-tinymce {
+  min-height: 500px !important;
+  height: 500px !important;
+}
+
+.tox .tox-toolbar-overlord {
+  position: relative !important;
+  z-index: 10 !important;
+}
+
+/* Ensure toolbar is never clipped by parent containers */
+.tox .tox-toolbar,
+.tox .tox-toolbar__primary,
+.tox .tox-toolbar__overflow {
+  overflow: visible !important;
+  position: relative !important;
+  z-index: 10 !important;
+  min-height: 40px !important;
+}
+
+/* Fix for flex layout issues in PostEditorPage */
+.tox {
+  display: block !important;
+  width: 100% !important;
+  height: 500px !important;
+}
+
+/* Prevent content area from being too small */
+.tox .tox-edit-area {
+  min-height: 400px !important;
 }
 
 /* WordPress-like Styling */

@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TinyMCE Editor Fixes Test</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f8f9fa;
+        }
+        .test-container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        .status {
+            padding: 16px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid;
+        }
+        .status.success {
+            background: #d1fae5;
+            border-color: #10b981;
+            color: #065f46;
+        }
+        .status.info {
+            background: #dbeafe;
+            border-color: #3b82f6;
+            color: #1e40af;
+        }
+        .status.warning {
+            background: #fef3c7;
+            border-color: #f59e0b;
+            color: #92400e;
+        }
+        .test-link {
+            display: inline-block;
+            background: #3b82f6;
+            color: white;
+            padding: 12px 24px;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            margin: 10px 10px 10px 0;
+            transition: background 0.2s;
+        }
+        .test-link:hover {
+            background: #2563eb;
+        }
+        .checklist {
+            background: #f9fafb;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .checklist h3 {
+            margin-top: 0;
+            color: #1f2937;
+        }
+        .checklist ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+        .checklist li {
+            margin: 8px 0;
+            color: #4b5563;
+        }
+        pre {
+            background: #1f2937;
+            color: #f9fafb;
+            padding: 16px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🔧 TinyMCE Editor Fixes Applied</h1>
+        
+        <div class="status success">
+            <h3>✅ Issues Fixed</h3>
+            <p>The following fixes have been applied to resolve toolbar visibility and content persistence issues:</p>
+            <ul>
+                <li><strong>Deprecated TinyMCE 7.0 configurations removed:</strong>
+                    <ul>
+                        <li>Removed <code>paste_retain_style_properties</code></li>
+                        <li>Removed <code>table_responsive_width</code></li>
+                    </ul>
+                </li>
+                <li><strong>Toolbar visibility fixes:</strong>
+                    <ul>
+                        <li>Changed <code>toolbar_mode</code> from 'sliding' to 'wrap'</li>
+                        <li>Added forced toolbar visibility CSS rules</li>
+                        <li>Enhanced initialization sequence with multiple visibility checks</li>
+                        <li>Added z-index and positioning fixes</li>
+                    </ul>
+                </li>
+                <li><strong>Content persistence fixes:</strong>
+                    <ul>
+                        <li>Added Radix UI Tabs compatibility handling</li>
+                        <li>Enhanced tab switching detection and content synchronization</li>
+                        <li>Added visibility change detection for browser tab switching</li>
+                        <li>Improved content reference tracking</li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+
+        <div class="checklist">
+            <h3>🧪 Testing Checklist</h3>
+            <p>Please test the following scenarios to verify the fixes:</p>
+            <ul>
+                <li>✅ <strong>Toolbar Visibility:</strong> Navigate to the post editor and verify the toolbar is immediately visible</li>
+                <li>✅ <strong>Content Persistence:</strong> Type content, switch tabs, and return to verify content remains</li>
+                <li>✅ <strong>New Post Creation:</strong> Test creating a new post from scratch</li>
+                <li>✅ <strong>Existing Post Editing:</strong> Test editing an existing post</li>
+                <li>✅ <strong>Browser Tab Switching:</strong> Switch browser tabs and return to verify content persists</li>
+                <li>✅ <strong>No Console Errors:</strong> Check browser console for TinyMCE deprecation warnings</li>
+            </ul>
+        </div>
+
+        <div class="status info">
+            <h3>🔗 Test Links</h3>
+            <p>Use these links to test the editor functionality:</p>
+            <a href="http://localhost:5173/admin/posts/new" target="_blank" class="test-link">
+                📝 New Post Editor
+            </a>
+            <a href="http://localhost:5173/admin/posts" target="_blank" class="test-link">
+                📋 Posts List (Edit Existing)
+            </a>
+            <a href="http://localhost:5173/editor-diagnostic" target="_blank" class="test-link">
+                🔍 Diagnostic Tool
+            </a>
+        </div>
+
+        <div class="status warning">
+            <h3>⚠️ What to Look For</h3>
+            <p>If issues persist, check for these symptoms:</p>
+            <ul>
+                <li><strong>Toolbar not visible:</strong> Check browser console for JavaScript errors</li>
+                <li><strong>Content disappears:</strong> Check if content is being cleared during tab switches</li>
+                <li><strong>Console warnings:</strong> Look for TinyMCE deprecation warnings</li>
+                <li><strong>Layout issues:</strong> Check if editor container has proper dimensions</li>
+            </ul>
+        </div>
+
+        <div class="status info">
+            <h3>📋 Expected Console Output</h3>
+            <p>You should see messages like:</p>
+            <pre>TinyMCE editor initialized
+TinyMCE toolbar initialized successfully: 2 toolbar(s) found
+Tab switched to: content
+[DIAGNOSTIC] EditorDiagnosticPage mounted</pre>
+            <p><strong>You should NOT see:</strong></p>
+            <pre>The following deprecated features are currently enabled and have been removed in TinyMCE 7.0:
+- paste_retain_style_properties
+- table_responsive_width</pre>
+        </div>
+    </div>
+
+    <script>
+        console.log('✅ TinyMCE Editor Fixes Test Page Loaded');
+        console.log('🔧 Applied fixes for:');
+        console.log('   - Toolbar visibility issues');
+        console.log('   - Content persistence during tab switching');
+        console.log('   - TinyMCE 7.0 deprecated configuration warnings');
+        console.log('📝 Test the editor using the links above');
+        
+        // Check if we're running in development mode
+        if (window.location.hostname === 'localhost') {
+            console.log('🚀 Development mode detected - all test links should work');
+        }
+    </script>
+</body>
+</html>

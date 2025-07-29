@@ -65,6 +65,7 @@ const EnhancedRichTextEditor: React.FC<EnhancedRichTextEditorProps> = ({
   const [characterCount, setCharacterCount] = useState(0);
   const [isFullScreen, setIsFullScreen] = useState(false);
   const currentContentRef = useRef<string>(value);
+  const isTabVisibleRef = useRef<boolean>(true); // Track tab visibility
 
   // Handle image upload
   const handleImageUpload = useCallback(async (blobInfo: any, progress: (percent: number) => void) => {
@@ -171,7 +172,7 @@ const EnhancedRichTextEditor: React.FC<EnhancedRichTextEditorProps> = ({
       // Multi-row toolbar with improved organization
       toolbar1: toolbars[0],
       toolbar2: toolbars[1],
-      toolbar_mode: 'sliding',
+      toolbar_mode: 'wrap', // Changed from 'sliding' to 'wrap' for immediate visibility
       toolbar_sticky: true, // Keep toolbar visible when scrolling
 
       // Content settings - Enhanced for better UX
@@ -180,7 +181,7 @@ const EnhancedRichTextEditor: React.FC<EnhancedRichTextEditorProps> = ({
       paste_data_images: enableMediaUpload,
       paste_as_text: false,
       paste_webkit_styles: 'font-weight font-style color text-decoration',
-      paste_retain_style_properties: 'color font-size font-family font-weight font-style text-decoration',
+      // paste_retain_style_properties removed - deprecated in TinyMCE 7.0
 
       // Content structure - Improved for semantic HTML
       forced_root_block: 'p',
@@ -335,7 +336,7 @@ const EnhancedRichTextEditor: React.FC<EnhancedRichTextEditorProps> = ({
         'width': '100%',
         'border': '1px solid #e2e8f0'
       },
-      table_responsive_width: true,
+      // table_responsive_width removed - deprecated in TinyMCE 7.0
       table_grid: false, // Disable table grid for better performance
 
       // Link configuration - Improved for better UX
@@ -357,7 +358,7 @@ const EnhancedRichTextEditor: React.FC<EnhancedRichTextEditorProps> = ({
 
       // Mobile responsiveness - Simplified for TinyMCE 7+
       mobile: {
-        toolbar_mode: 'sliding',
+        toolbar_mode: 'wrap', // Changed from 'sliding' to 'wrap' for consistency
         toolbar_sticky: false
       },
 
@@ -533,15 +534,49 @@ const EnhancedRichTextEditor: React.FC<EnhancedRichTextEditorProps> = ({
         editor.on('init', () => {
           setIsInitialized(true);
           setIsLoading(false);
+
+          // Ensure toolbar is visible immediately after initialization
+          setTimeout(() => {
+            const container = editor.getContainer();
+            if (container) {
+              // Force all toolbar elements to be visible
+              const toolbars = container.querySelectorAll('.tox-toolbar, .tox-toolbar__primary, .tox-toolbar__overflow');
+              toolbars.forEach((toolbar: Element) => {
+                const element = toolbar as HTMLElement;
+                element.style.display = 'flex';
+                element.style.visibility = 'visible';
+                element.style.opacity = '1';
+              });
+
+              // Force the entire editor container to be visible
+              container.style.visibility = 'visible';
+              container.style.opacity = '1';
+            }
+          }, 50);
+
+          // Additional check after a longer delay
+          setTimeout(() => {
+            const container = editor.getContainer();
+            if (container) {
+              const toolbars = container.querySelectorAll('.tox-toolbar');
+              if (toolbars.length === 0) {
+                console.warn('TinyMCE toolbar not found after initialization');
+              } else {
+                console.log(`TinyMCE toolbar initialized successfully: ${toolbars.length} toolbar(s) found`);
+              }
+            }
+          }, 500);
         });
 
-        // Prevent content clearing on focus/blur
+        // Prevent content clearing on focus/blur and handle tab visibility
         editor.on('focus', () => {
           console.log('Editor focused, current content length:', editor.getContent().length);
+          isTabVisibleRef.current = true;
         });
 
         editor.on('blur', () => {
           console.log('Editor blurred, current content length:', editor.getContent().length);
+          // Don't immediately mark as invisible on blur, as it might be a temporary focus loss
         });
       }
     };
@@ -551,15 +586,16 @@ const EnhancedRichTextEditor: React.FC<EnhancedRichTextEditorProps> = ({
     enableAnchorLinks, enableLinking, enableKeyboardShortcuts, handleImageUpload, showWordCount
   ]);
 
-  // Handle value prop changes from parent
+  // Handle value prop changes from parent with improved tab switching support
   useEffect(() => {
     if (editorRef.current && isInitialized && typeof editorRef.current.getContent === 'function') {
       try {
         const currentEditorContent = editorRef.current.getContent();
 
-        // Only update editor if the value prop is different from current content
+        // Always update editor if the value prop is different from current content
+        // Remove the isTabVisibleRef check that was preventing updates during tab switches
         if (value !== currentEditorContent && value !== currentContentRef.current) {
-          console.log('Updating editor content from prop change');
+          console.log('Updating editor content from prop change:', value.length, 'characters');
           editorRef.current.setContent(value || '', { format: 'html' });
           currentContentRef.current = value;
         }
@@ -567,6 +603,91 @@ const EnhancedRichTextEditor: React.FC<EnhancedRichTextEditorProps> = ({
         console.error('Error updating editor content:', error);
       }
     }
+  }, [value, isInitialized]);
+
+  // Add visibility change detection for tab switching and content persistence
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        isTabVisibleRef.current = false;
+      } else {
+        isTabVisibleRef.current = true;
+        // When tab becomes visible again, ensure content is synchronized
+        if (editorRef.current && isInitialized && value !== currentContentRef.current) {
+          setTimeout(() => {
+            try {
+              editorRef.current.setContent(value || '', { format: 'html' });
+              currentContentRef.current = value;
+            } catch (error) {
+              console.error('Error synchronizing content on tab visibility change:', error);
+            }
+          }, 100);
+        }
+      }
+    };
+
+    // Also listen for Radix UI tab changes
+    const handleTabChange = (event: Event) => {
+      const target = event.target as HTMLElement;
+      if (target && target.closest('[data-radix-tabs-trigger]')) {
+        // This is a Radix UI tab trigger click
+        console.log('Tab trigger clicked, preserving content');
+
+        // Store current content before tab switch
+        if (editorRef.current && isInitialized) {
+          try {
+            const currentContent = editorRef.current.getContent();
+            if (currentContent && currentContent !== currentContentRef.current) {
+              console.log('Storing content before tab switch:', currentContent.length, 'characters');
+              currentContentRef.current = currentContent;
+              // Immediately call onChange to update parent state
+              onChange(currentContent);
+            }
+          } catch (error) {
+            console.error('Error storing content before tab switch:', error);
+          }
+        }
+
+        // After tab switch, restore content and toolbar
+        setTimeout(() => {
+          if (editorRef.current && isInitialized) {
+            try {
+              // Restore content if it was cleared
+              const currentContent = editorRef.current.getContent();
+              if ((!currentContent || currentContent === '<p></p>' || currentContent === '') && value) {
+                console.log('Restoring content after tab switch:', value.length, 'characters');
+                editorRef.current.setContent(value, { format: 'html' });
+                currentContentRef.current = value;
+              }
+
+              // Re-ensure toolbar visibility after tab switch
+              const container = editorRef.current.getContainer();
+              if (container) {
+                const toolbars = container.querySelectorAll('.tox-toolbar, .tox-toolbar__primary, .tox-toolbar__overflow');
+                toolbars.forEach((toolbar: Element) => {
+                  const element = toolbar as HTMLElement;
+                  element.style.display = 'flex';
+                  element.style.visibility = 'visible';
+                  element.style.opacity = '1';
+                });
+              }
+            } catch (error) {
+              console.error('Error handling tab change:', error);
+            }
+          }
+        }, 200);
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    document.addEventListener('focusin', handleTabChange);
+    document.addEventListener('click', handleTabChange);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      document.removeEventListener('focusin', handleTabChange);
+      document.removeEventListener('click', handleTabChange);
+    };
   }, [value, isInitialized]);
 
   // Initialize statistics on mount and when content changes
@@ -590,7 +711,7 @@ const EnhancedRichTextEditor: React.FC<EnhancedRichTextEditorProps> = ({
         </div>
       )}
 
-      <div className={isLoading ? 'hidden' : ''}>
+      <div className={isLoading ? 'hidden' : ''} style={{ minHeight: '400px' }}>
         <Editor
           ref={editorRef}
           tinymceScriptSrc="/tinymce/tinymce.min.js"
@@ -605,12 +726,55 @@ const EnhancedRichTextEditor: React.FC<EnhancedRichTextEditorProps> = ({
           }}
           disabled={disabled}
           init={editorConfig}
+          onInit={(evt, editor) => {
+            console.log('TinyMCE editor initialized');
+            editorRef.current = editor;
+
+            // Ensure content is set if provided
+            if (value && value !== editor.getContent()) {
+              editor.setContent(value, { format: 'html' });
+              currentContentRef.current = value;
+            }
+
+            // Force toolbar visibility immediately
+            const container = editor.getContainer();
+            if (container) {
+              // Set container dimensions for PostEditorPage compatibility
+              container.style.height = '500px';
+              container.style.minHeight = '500px';
+              container.style.width = '100%';
+
+              const toolbars = container.querySelectorAll('.tox-toolbar, .tox-toolbar__primary, .tox-toolbar__overflow');
+              toolbars.forEach((toolbar: Element) => {
+                const element = toolbar as HTMLElement;
+                element.style.display = 'flex';
+                element.style.visibility = 'visible';
+                element.style.opacity = '1';
+                element.style.position = 'relative';
+                element.style.zIndex = '10';
+              });
+
+              // Ensure edit area has proper height
+              const editArea = container.querySelector('.tox-edit-area');
+              if (editArea) {
+                (editArea as HTMLElement).style.minHeight = '400px';
+              }
+            }
+          }}
           onBeforeSetContent={(evt) => {
             try {
-              // Only allow content updates if they're different from current content
+              // Allow content updates during tab switching and initialization
               const newContent = evt.content;
-              if (currentContentRef.current === newContent) {
+
+              // Only prevent if it's exactly the same content and we're not in a tab switch
+              if (currentContentRef.current === newContent &&
+                  isTabVisibleRef.current &&
+                  isInitialized &&
+                  newContent !== '') {
+                console.log('Preventing duplicate content update');
                 evt.preventDefault();
+              } else {
+                console.log('Allowing content update:', newContent.length, 'characters');
               }
             } catch (error) {
               console.error('Error in onBeforeSetContent:', error);

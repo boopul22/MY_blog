@@ -42,6 +42,8 @@ const PostEditorPage: React.FC = () => {
     const [urlSlug, setUrlSlug] = useState('');
     const [validationErrors, setValidationErrors] = useState<Record<string, string>>(() => ({}));
     const [isSaving, setIsSaving] = useState(false);
+    const [currentTab, setCurrentTab] = useState('content');
+    const contentBackupRef = useRef<string>('');
 
     // Generate URL slug from title - moved outside component to prevent re-creation
     const generateSlug = useMemo(() => {
@@ -59,9 +61,20 @@ const PostEditorPage: React.FC = () => {
             if (existingPost) {
                 setPost(existingPost);
                 setUrlSlug(existingPost.title ? generateSlug(existingPost.title) : '');
+                // Initialize content backup
+                contentBackupRef.current = existingPost.content || '';
+                console.log('Loaded existing post, content backup initialized:', contentBackupRef.current.length, 'characters');
             }
         }
     }, [id, context?.getPost]); // Removed generateSlug from dependencies
+
+    // Initialize content backup when post content changes
+    useEffect(() => {
+        if (post.content && post.content !== contentBackupRef.current) {
+            contentBackupRef.current = post.content;
+            console.log('Content backup updated:', post.content.length, 'characters');
+        }
+    }, [post.content]);
 
     // Prevent accidental navigation away from unsaved content
     useEffect(() => {
@@ -122,8 +135,13 @@ const PostEditorPage: React.FC = () => {
         }
     }, []); // Removed generateSlug dependency - using stable reference from useMemo
 
-    // Simplified content change handler with proper memoization
+    // Enhanced content change handler with backup mechanism
     const handleContentChange = useCallback((content: string) => {
+        console.log('Content changed in PostEditorPage:', content.length, 'characters');
+
+        // Always backup the content
+        contentBackupRef.current = content;
+
         // Only update if content actually changed
         setPost(prev => {
             if (prev.content === content) {
@@ -430,7 +448,62 @@ const PostEditorPage: React.FC = () => {
             {/* Main Content Area */}
             <div className="flex-1 flex overflow-hidden">
                 <form id="post-form" onSubmit={handleSubmit} className="flex-1 flex flex-col">
-                    <Tabs defaultValue="content" className="flex-1 flex flex-col bg-card">
+                    <Tabs
+                        defaultValue="content"
+                        className="flex-1 flex flex-col bg-card"
+                        onValueChange={(value) => {
+                            // Handle tab switching to preserve editor content
+                            console.log('Tab switched from', currentTab, 'to:', value);
+
+                            // Store current content before switching away from content tab
+                            if (currentTab === 'content' && value !== 'content') {
+                                console.log('Leaving content tab, backing up content:', contentBackupRef.current.length, 'characters');
+                                // Ensure we have the latest content backed up
+                                if (post.content) {
+                                    contentBackupRef.current = post.content;
+                                }
+                            }
+
+                            setCurrentTab(value);
+
+                            // If switching back to content tab, restore content and ensure editor is properly visible
+                            if (value === 'content') {
+                                setTimeout(() => {
+                                    // Force toolbar visibility after tab switch
+                                    const toolbars = document.querySelectorAll('.tox-toolbar, .tox-toolbar__primary, .tox-toolbar__overflow');
+                                    toolbars.forEach((toolbar) => {
+                                        const element = toolbar as HTMLElement;
+                                        element.style.display = 'flex';
+                                        element.style.visibility = 'visible';
+                                        element.style.opacity = '1';
+                                        element.style.position = 'relative';
+                                        element.style.zIndex = '10';
+                                    });
+
+                                    // Ensure editor container is properly sized
+                                    const editorContainers = document.querySelectorAll('.tox-tinymce');
+                                    editorContainers.forEach((container) => {
+                                        const element = container as HTMLElement;
+                                        element.style.height = '500px';
+                                        element.style.minHeight = '500px';
+                                        element.style.width = '100%';
+                                    });
+
+                                    // Restore content if it was cleared
+                                    if (contentBackupRef.current && (!post.content || post.content === '<p></p>')) {
+                                        console.log('Restoring backed up content:', contentBackupRef.current.length, 'characters');
+                                        setPost(prev => ({
+                                            ...prev,
+                                            content: contentBackupRef.current
+                                        }));
+                                    }
+
+                                    // Trigger a resize event to ensure proper layout
+                                    window.dispatchEvent(new Event('resize'));
+                                }, 150);
+                            }
+                        }}
+                    >
                         {/* Tab Navigation */}
                         <div className="flex-shrink-0 border-b border-border px-4">
                             <TabsList className="grid w-full grid-cols-4">
@@ -454,10 +527,10 @@ const PostEditorPage: React.FC = () => {
                         </div>
 
                         {/* Tab Content Area - Fixed Height */}
-                        <div className="flex-1 overflow-hidden">
+                        <div className="flex-1" style={{ minHeight: '700px' }}>
                             {/* Content Tab */}
-                            <TabsContent value="content" className="flex-1 overflow-hidden m-0">
-                                    <div className="h-full flex flex-col lg:flex-row">
+                            <TabsContent value="content" className="flex-1 m-0" style={{ minHeight: '700px' }}>
+                                    <div className="h-full flex flex-col lg:flex-row" style={{ minHeight: '700px' }}>
                                         {/* Left Column - Title and Controls */}
                                         <div className="w-full lg:w-80 xl:w-96 flex-shrink-0 p-4 md:p-6 border-b lg:border-b-0 lg:border-r border-gray-200 dark:border-gray-700 space-y-4">
                                             <FormField
@@ -538,21 +611,22 @@ const PostEditorPage: React.FC = () => {
                                         </div>
 
                                         {/* Right Column - Content Editor */}
-                                        <div className="flex-1 p-4 md:p-6 min-h-0">
+                                        <div className="flex-1 p-4 md:p-6" style={{ minHeight: '600px' }}>
                                             <FormField
                                                 label="Content"
                                                 required
                                                 error={validationErrors.content}
                                                 hint="Write your blog post content using the rich text editor"
                                             >
-                                                <div className="h-full">
+                                                <div style={{ height: '500px', minHeight: '500px' }}>
                                                     <EnhancedRichTextEditor
-                                                        key="post-content-editor"
+                                                        key={`post-content-editor-${post.id || 'new'}`}
                                                         value={post.content || ''}
                                                         onChange={handleContentChange}
                                                         placeholder="Start writing your blog post content..."
-                                                        autoHeight={true}
-                                                        className="h-full"
+                                                        height={500}
+                                                        autoHeight={false}
+                                                        className=""
                                                         enableAutoSave={true}
                                                         autoSaveDelay={30000}
                                                         onAutoSave={async (content) => {
