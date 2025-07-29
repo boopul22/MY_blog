@@ -102,9 +102,42 @@ const AllPostsPage: React.FC = () => {
                 }}
             />
 
-            <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            {/* Mobile: Edge-to-edge layout */}
+            <div className="md:hidden">
+                {/* Mobile Page Header */}
+                <div className="px-4 py-8 text-center bg-background border-b border-border">
+                    <h1 className="text-2xl sm:text-3xl font-serif tracking-tight text-foreground mb-2">
+                        All Articles
+                    </h1>
+                    <p className="text-muted-foreground text-sm">
+                        Explore our complete collection
+                    </p>
+                </div>
 
-                
+                {/* Mobile Posts List */}
+                {currentPosts.length > 0 ? (
+                    <div className="space-y-0">
+                        {currentPosts.map(post => (
+                            <PostCard key={post.id} post={post} variant="mobile-fluid" />
+                        ))}
+                    </div>
+                ) : (
+                    <div className="text-center py-16 px-4">
+                        <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
+                            <div className="w-8 h-8 border-2 border-muted-foreground rounded"></div>
+                        </div>
+                        <h3 className="text-xl font-semibold text-foreground mb-2">
+                            No articles found
+                        </h3>
+                        <p className="text-muted-foreground">
+                            There are currently no published articles available.
+                        </p>
+                    </div>
+                )}
+            </div>
+
+            {/* Desktop: Original boxed layout */}
+            <div className="hidden md:block max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 {/* Page Header */}
                 <div className="text-center mb-12">
                     <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif tracking-tight text-dark-text dark:text-light-text mb-4">
@@ -115,7 +148,7 @@ const AllPostsPage: React.FC = () => {
                     </p>
                     <div className="w-16 h-0.5 bg-primary mx-auto mt-6"></div>
                 </div>
-                
+
                 {/* Posts Grid */}
                 {currentPosts.length > 0 ? (
                     <>
@@ -135,7 +168,7 @@ const AllPostsPage: React.FC = () => {
                                 >
                                     Previous
                                 </button>
-                                
+
                                 {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
                                     <button
                                         key={page}
@@ -149,7 +182,7 @@ const AllPostsPage: React.FC = () => {
                                         {page}
                                     </button>
                                 ))}
-                                
+
                                 <button
                                     onClick={() => handlePageChange(currentPage + 1)}
                                     disabled={currentPage === totalPages}
@@ -174,6 +207,33 @@ const AllPostsPage: React.FC = () => {
                     </div>
                 )}
             </div>
+
+            {/* Mobile Pagination */}
+            {totalPages > 1 && (
+                <div className="md:hidden px-4 py-6 bg-background border-t border-border">
+                    <div className="flex justify-center items-center space-x-2">
+                        <button
+                            onClick={() => handlePageChange(currentPage - 1)}
+                            disabled={currentPage === 1}
+                            className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-primary disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        >
+                            Previous
+                        </button>
+
+                        <span className="px-3 py-2 text-sm font-medium text-foreground">
+                            {currentPage} of {totalPages}
+                        </span>
+
+                        <button
+                            onClick={() => handlePageChange(currentPage + 1)}
+                            disabled={currentPage === totalPages}
+                            className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-primary disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        >
+                            Next
+                        </button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

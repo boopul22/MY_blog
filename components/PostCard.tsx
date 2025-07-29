@@ -7,7 +7,7 @@ import { createExcerpt } from '../utils/textUtils';
 
 interface PostCardProps {
   post: Post;
-  variant?: 'default' | 'grid' | 'list' | 'wireframe';
+  variant?: 'default' | 'grid' | 'list' | 'wireframe' | 'mobile-fluid';
   isLarge?: boolean;
 }
 
@@ -23,6 +23,65 @@ const PostCard: React.FC<PostCardProps> = ({ post, variant = 'default', isLarge 
   const getExcerpt = (maxLength: number) => {
     return post.excerpt || createExcerpt(post.content, maxLength);
   };
+
+  if (variant === 'mobile-fluid') {
+    return (
+        <article className="group mobile-post-card-minimal py-6 md:border md:border-border md:rounded-lg md:p-4 md:mb-4 md:bg-card md:shadow-sm">
+            {/* Mobile: Edge-to-edge image */}
+            <Link to={`/post/${post.slug}`} className="block mb-4">
+                <div className="mobile-hero-image md:w-full md:mx-0 md:rounded-lg overflow-hidden">
+                    <div className={`w-full ${isLarge ? 'aspect-[16/10]' : 'aspect-[16/9]'} bg-muted`}>
+                        {post.imageUrl && (
+                            <img
+                                src={post.imageUrl}
+                                alt={post.title}
+                                className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-300"
+                                loading="lazy"
+                                decoding="async"
+                            />
+                        )}
+                    </div>
+                </div>
+            </Link>
+
+            {/* Content with mobile-optimized spacing */}
+            <div className="space-y-3">
+                {/* Category and date - horizontal on mobile */}
+                <div className="flex items-center justify-between text-xs text-muted-foreground">
+                    <div className="flex items-center space-x-3">
+                        {category && (
+                            <Link to={`/category/${category.slug}`} className="font-medium uppercase tracking-wider hover:text-primary transition-colors">
+                                {category.name}
+                            </Link>
+                        )}
+                        <span>•</span>
+                        <span>{formattedDate}</span>
+                    </div>
+                    <span className="hidden sm:inline">BY {post.authorName.toUpperCase()}</span>
+                </div>
+
+                {/* Title and excerpt */}
+                <div className="space-y-2">
+                    <Link to={`/post/${post.slug}`} className="block">
+                        <h3 className={`font-serif font-bold text-foreground hover:text-primary transition-colors leading-tight ${
+                            isLarge ? 'text-xl sm:text-2xl lg:text-3xl' : 'text-lg sm:text-xl'
+                        }`}>
+                            {post.title}
+                        </h3>
+                    </Link>
+                    <p className="text-sm text-muted-foreground leading-relaxed line-clamp-3">
+                        {getExcerpt(isLarge ? 180 : 120)}
+                    </p>
+                </div>
+
+                {/* Author on mobile */}
+                <div className="sm:hidden text-xs text-muted-foreground">
+                    BY {post.authorName.toUpperCase()}
+                </div>
+            </div>
+        </article>
+    );
+  }
 
   if (variant === 'wireframe') {
     return (

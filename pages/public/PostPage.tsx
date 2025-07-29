@@ -169,7 +169,89 @@ const PostPage: React.FC = () => {
                 breadcrumbs={breadcrumbs}
             />
 
-            <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-8">
+            {/* Mobile: Edge-to-edge layout */}
+            <div className="md:hidden">
+                {/* Mobile Breadcrumbs */}
+                <div className="px-4 py-4 bg-background border-b border-border">
+                    <Breadcrumbs />
+                </div>
+
+                {/* Mobile Main Content */}
+                <main className="bg-background">
+                    {/* Featured Image - Full width on mobile */}
+                    {post.imageUrl && (
+                        <div className="w-full h-64 sm:h-80 bg-muted overflow-hidden">
+                            <img
+                                src={post.imageUrl}
+                                alt={post.title}
+                                className="w-full h-full object-cover"
+                            />
+                        </div>
+                    )}
+
+                    {/* Article Header */}
+                    <header className="px-4 py-6 bg-background">
+                        <h1 className="text-2xl sm:text-3xl font-bold leading-tight mb-4 text-foreground">
+                            {post.title}
+                        </h1>
+
+                        <div className="flex items-center gap-4 mb-4 text-sm text-muted-foreground">
+                            <div className="flex items-center gap-2">
+                                <div className="w-8 h-8 bg-muted rounded-full flex items-center justify-center flex-shrink-0">
+                                    <div className="w-4 h-4 bg-muted-foreground rounded-full"></div>
+                                </div>
+                                <span className="font-medium text-foreground">{post.authorName || 'Author'}</span>
+                            </div>
+                            <span>•</span>
+                            <span>{new Date(post.createdAt).toLocaleDateString('en-US', {
+                                month: 'short',
+                                day: 'numeric',
+                                year: 'numeric'
+                            })}</span>
+                            <span>•</span>
+                            <span>{readTime} min read</span>
+                        </div>
+
+                        {post.tags && post.tags.length > 0 && (
+                            <div className="flex flex-wrap gap-2">
+                                {post.tags.map((tagId) => {
+                                    const tag = context.tags.find(t => t.id === tagId);
+                                    return tag ? (
+                                        <span key={tagId} className="bg-muted px-2 py-1 rounded text-xs font-medium text-muted-foreground">
+                                            {tag.name}
+                                        </span>
+                                    ) : null;
+                                })}
+                            </div>
+                        )}
+                    </header>
+
+                    {/* Article Content */}
+                    <article className="px-4 pb-8">
+                        <div className="enhanced-content prose prose-base dark:prose-invert max-w-none prose-headings:text-foreground prose-p:text-foreground prose-li:text-foreground prose-strong:text-foreground">
+                            <div dangerouslySetInnerHTML={{ __html: post.content }} />
+                        </div>
+                    </article>
+
+                    {/* Mobile Social Sharing */}
+                    <div className="px-4 py-6 border-t border-border bg-background">
+                        <h4 className="text-foreground font-semibold text-lg mb-4">Share this article</h4>
+                        <div className="flex flex-wrap gap-2">
+                            {socialIcons.map(({ label, emoji }, index) => (
+                                <button
+                                    key={index}
+                                    className="px-3 py-2 bg-muted border border-border rounded text-sm font-medium text-foreground hover:bg-secondary transition-colors"
+                                >
+                                    {emoji} {label}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                </main>
+            </div>
+
+            {/* Desktop: Original boxed layout */}
+            <div className="hidden md:block max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-8">
                 {/* Breadcrumbs */}
                 <Breadcrumbs />
 

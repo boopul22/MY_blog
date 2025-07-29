@@ -396,6 +396,40 @@ main {
     max-width: 100%;
   }
 
+  /* Edge-to-edge mobile reading experience */
+  .mobile-edge-to-edge {
+    margin-left: calc(-1 * var(--mobile-padding, 1rem));
+    margin-right: calc(-1 * var(--mobile-padding, 1rem));
+    padding-left: var(--mobile-padding, 1rem);
+    padding-right: var(--mobile-padding, 1rem);
+  }
+
+  /* Fluid mobile containers - no max-width constraints */
+  .mobile-fluid-container {
+    width: 100%;
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  /* Mobile reading content - edge-to-edge with minimal padding */
+  .mobile-reading-content {
+    padding-left: 1rem;
+    padding-right: 1rem;
+    margin-left: 0;
+    margin-right: 0;
+    max-width: none;
+  }
+
+  /* Remove card styling on mobile for fluid experience */
+  .mobile-no-card {
+    background: transparent !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+
   /* Enhanced mobile card interactions - Performance optimized */
   .mobile-card {
     border-radius: 12px;
@@ -494,6 +528,41 @@ main {
     grid-template-columns: 1fr;
     gap: 20px;
     padding: 16px;
+  }
+
+  /* Mobile PostCard fluid styling */
+  .mobile-post-card {
+    border-left: none !important;
+    border-right: none !important;
+    border-radius: 0 !important;
+    margin-left: -1rem;
+    margin-right: -1rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    background: rgb(var(--background));
+  }
+
+  /* Mobile post card with minimal borders */
+  .mobile-post-card-minimal {
+    border: none !important;
+    border-bottom: 1px solid rgb(var(--border)) !important;
+    border-radius: 0 !important;
+    background: transparent;
+    box-shadow: none !important;
+  }
+
+  /* Mobile hero image - full width */
+  .mobile-hero-image {
+    margin-left: -1rem;
+    margin-right: -1rem;
+    border-radius: 0 !important;
+    width: calc(100% + 2rem);
+  }
+
+  /* Mobile content spacing */
+  .mobile-content-spacing {
+    padding-top: 1.5rem;
+    padding-bottom: 1.5rem;
   }
 
   /* Mobile accessibility improvements */

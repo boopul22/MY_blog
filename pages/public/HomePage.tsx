@@ -27,14 +27,22 @@ const HomePage: React.FC = () => {
             
             {/* Main Article Grid */}
             <main className="py-8 sm:py-12">
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-6 sm:gap-8">
+                {/* Mobile: Fluid edge-to-edge layout */}
+                <div className="md:hidden space-y-0">
+                    {articles.slice(0, 8).map(article => (
+                        <PostCard key={article.id} post={article} variant="mobile-fluid" isLarge={false} />
+                    ))}
+                </div>
+
+                {/* Desktop: Grid layout */}
+                <div className="hidden md:grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-6 sm:gap-8">
                     {/* First two large articles */}
                     {articles.slice(0, 2).map(article => (
                         <div key={article.id} className="sm:col-span-2 lg:col-span-6">
                             <PostCard post={article} variant="wireframe" isLarge={true} />
                         </div>
                     ))}
-                    
+
                     {/* Remaining smaller articles */}
                     {articles.slice(2, 12).map(article => (
                         <div key={article.id} className="sm:col-span-1 lg:col-span-4">

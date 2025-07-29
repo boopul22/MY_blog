@@ -10,6 +10,7 @@ import HomePage from './pages/public/HomePage';
 import PostPage from './pages/public/PostPage';
 import CategoryPage from './pages/public/CategoryPage';
 import AllPostsPage from './pages/public/AllPostsPage';
+import MobileReadingDemo from './pages/public/MobileReadingDemo';
 import LoginPage from './pages/admin/LoginPage';
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -108,7 +109,7 @@ const App: React.FC = () => {
               <div className="flex-1 flex flex-col">
                   <Header />
                   <main className="flex-1" style={{contain: 'layout style paint', transform: 'translateZ(0)'}}>
-                    <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 pt-4">
+                    <div className="md:max-w-screen-xl md:mx-auto md:px-4 sm:md:px-6 lg:md:px-8 md:pt-4">
                         <ConditionalBreadcrumbs />
                         <Routes>
                             <Route path="/" element={<HomePage />} />
@@ -116,6 +117,7 @@ const App: React.FC = () => {
                             <Route path="/post/:slug" element={<PostPage />} />
                             <Route path="/category/:slug" element={<CategoryPage />} />
                             <Route path="/all-posts" element={<AllPostsPage />} />
+                            <Route path="/mobile-demo" element={<MobileReadingDemo />} />
                             <Route path="/editor-debug" element={
                               <Suspense fallback={<LazyLoadingFallback />}>
                                 <EditorDebugPage />

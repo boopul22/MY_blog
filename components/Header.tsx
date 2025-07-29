@@ -111,6 +111,7 @@ const Header: React.FC = () => {
                                     )}
                                 </li>
                                 
+                                <NavItem to="/mobile-demo">Mobile Demo</NavItem>
                                 <NavItem to="/admin">Contact</NavItem>
                             </ul>
                         </nav>
@@ -181,6 +182,7 @@ const Header: React.FC = () => {
                                     )}
                                 </li>
                                 
+                                <NavItem to="/mobile-demo" mobile>Mobile Demo</NavItem>
                                 <NavItem to="/admin" mobile>Contact</NavItem>
                             </ul>
                             <div className="py-4 border-t border-slate-200 dark:border-slate-700 flex items-center justify-center space-x-4">
