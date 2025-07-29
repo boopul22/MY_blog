@@ -1,21 +1,17 @@
-
 import React, { useState, useContext, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { BlogContext } from '../../context/SupabaseBlogContext';
 import { useNotifications } from '../../context/NotificationProvider';
 import { Post } from '../../types';
 import { generateBlogPostContent, generateSEOMetadata } from '../../services/geminiService';
-import { SparklesIcon, DocumentTextIcon, GlobeAltIcon, CogIcon, RocketLaunchIcon } from '../../components/icons';
+import { SparklesIcon } from '../../components/icons';
 import Spinner from '../../components/Spinner';
 import ImageUpload from '../../components/ImageUpload';
 import EnhancedRichTextEditor from '../../components/EnhancedRichTextEditor';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import FormField from '../../components/FormField';
 import { ImageSizes } from '../../services/imageService';
 
@@ -25,7 +21,6 @@ const PostEditorPage: React.FC = () => {
     const context = useContext(BlogContext);
     const { showSuccess, showError, showInfo } = useNotifications();
 
-    // Simple state management for the post
     const [post, setPost] = useState<Partial<Post>>({
         title: '',
         content: '',
@@ -34,6 +29,7 @@ const PostEditorPage: React.FC = () => {
         tags: [],
         seoTitle: '',
         seoDescription: '',
+        excerpt: '',
     });
 
     const [isGenerating, setIsGenerating] = useState(() => ({ content: false, seo: false }));
@@ -42,10 +38,7 @@ const PostEditorPage: React.FC = () => {
     const [urlSlug, setUrlSlug] = useState('');
     const [validationErrors, setValidationErrors] = useState<Record<string, string>>(() => ({}));
     const [isSaving, setIsSaving] = useState(false);
-    const [currentTab, setCurrentTab] = useState('content');
-    const contentBackupRef = useRef<string>('');
 
-    // Generate URL slug from title - moved outside component to prevent re-creation
     const generateSlug = useMemo(() => {
         return (title: string) => {
             return title
@@ -61,22 +54,10 @@ const PostEditorPage: React.FC = () => {
             if (existingPost) {
                 setPost(existingPost);
                 setUrlSlug(existingPost.title ? generateSlug(existingPost.title) : '');
-                // Initialize content backup
-                contentBackupRef.current = existingPost.content || '';
-                console.log('Loaded existing post, content backup initialized:', contentBackupRef.current.length, 'characters');
             }
         }
-    }, [id, context?.getPost]); // Removed generateSlug from dependencies
+    }, [id, context?.getPost, generateSlug]);
 
-    // Initialize content backup when post content changes
-    useEffect(() => {
-        if (post.content && post.content !== contentBackupRef.current) {
-            contentBackupRef.current = post.content;
-            console.log('Content backup updated:', post.content.length, 'characters');
-        }
-    }, [post.content]);
-
-    // Prevent accidental navigation away from unsaved content
     useEffect(() => {
         const handleBeforeUnload = (e: BeforeUnloadEvent) => {
             if (post.title || post.content) {
@@ -90,1043 +71,297 @@ const PostEditorPage: React.FC = () => {
         return () => window.removeEventListener('beforeunload', handleBeforeUnload);
     }, [post.title, post.content]);
 
-
-
-    // Validation logic
     const validateForm = useCallback(() => {
         const errors: Record<string, string> = {};
-
-        if (!post.title?.trim()) {
-            errors.title = 'Title is required';
-        }
-
-        if (!post.content?.trim()) {
-            errors.content = 'Content is required';
-        }
-
-        if (!post.categoryId) {
-            errors.categoryId = 'Category is required';
-        }
-
+        if (!post.title?.trim()) errors.title = 'Title is required';
+        if (!post.content?.trim()) errors.content = 'Content is required';
+        if (!post.categoryId) errors.categoryId = 'Category is required';
         setValidationErrors(errors);
         return Object.keys(errors).length === 0;
     }, [post.title, post.content, post.categoryId]);
 
     const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
-
-        // Simple state update
-        setPost(prev => ({
-            ...prev,
-            [name]: value
-        }));
-
-        // Clear validation error when user starts typing
-        setValidationErrors(prev => {
-            if (prev[name]) {
-                return { ...prev, [name]: '' };
-            }
-            return prev;
-        });
-
-        // Auto-generate slug from title
+        setPost(prev => ({ ...prev, [name]: value }));
+        if (validationErrors[name]) {
+            setValidationErrors(prev => ({ ...prev, [name]: '' }));
+        }
         if (name === 'title') {
             setUrlSlug(generateSlug(value));
         }
-    }, []); // Removed generateSlug dependency - using stable reference from useMemo
+    }, [validationErrors, generateSlug]);
 
-    // Enhanced content change handler with backup mechanism
     const handleContentChange = useCallback((content: string) => {
-        console.log('Content changed in PostEditorPage:', content.length, 'characters');
-
-        // Always backup the content
-        contentBackupRef.current = content;
-
-        // Only update if content actually changed
-        setPost(prev => {
-            if (prev.content === content) {
-                return prev; // No change, return same object to prevent re-render
-            }
-            return {
-                ...prev,
-                content
-            };
-        });
-
-        // Clear validation error only if there was one
-        setValidationErrors(prev => {
-            if (prev.content) {
-                return { ...prev, content: '' };
-            }
-            return prev; // No change, return same object
-        });
-    }, []); // No dependencies needed since we use functional updates
-
-    const handleInsertLink = (url: string, anchorText: string) => {
-        // This would integrate with the rich text editor to insert a link
-        // For now, we'll just copy to clipboard
-        const linkHtml = `<a href="${url}">${anchorText}</a>`;
-        navigator.clipboard.writeText(linkHtml).then(() => {
-            console.log('Link copied to clipboard:', linkHtml);
-            // You could show a toast notification here
-        });
-    };
+        setPost(prev => ({ ...prev, content }));
+        if (validationErrors.content) {
+            setValidationErrors(prev => ({ ...prev, content: '' }));
+        }
+    }, [validationErrors.content]);
 
     const handleGenerateContent = useCallback(async () => {
         if (!post.title) {
-            alert('Please provide a title first to generate content.');
+            showError('Title Required', 'Please provide a title first to generate content.');
             return;
         }
         setIsGenerating(prev => ({ ...prev, content: true }));
         try {
             const content = await generateBlogPostContent(post.title);
             setPost(prev => ({ ...prev, content }));
+            showSuccess('Content Generated', 'AI-powered content has been generated successfully.');
         } catch (error) {
-            console.error('Error generating content:', error);
-            alert('Failed to generate content. Please try again.');
+            showError('Generation Failed', 'Failed to generate content. Please try again.');
         } finally {
             setIsGenerating(prev => ({ ...prev, content: false }));
         }
-    }, [post.title]);
+    }, [post.title, showSuccess, showError]);
 
     const handleImageUpload = useCallback(async (file: File): Promise<ImageSizes> => {
         if (!context) throw new Error('Context not available');
-
         try {
             const imageSizes = await context.uploadPostImage(file, id);
             setPost(prev => ({ ...prev, imageUrl: imageSizes.large }));
+            showSuccess('Image Uploaded', 'Featured image has been uploaded.');
             return imageSizes;
         } catch (error) {
-            console.error('Error uploading image:', error);
+            showError('Upload Failed', 'Failed to upload image.');
             throw error;
         }
-    }, [context, id]);
+    }, [context, id, showSuccess, showError]);
 
     const handleImageRemove = useCallback(() => {
         setPost(prev => ({ ...prev, imageUrl: undefined }));
-    }, []);
+        showInfo('Image Removed', 'Featured image has been removed.');
+    }, [showInfo]);
 
     const handleGenerateSEO = useCallback(async () => {
         if (!post.content) {
-            alert('Please generate content first to create SEO metadata.');
+            showError('Content Required', 'Please generate content first to create SEO metadata.');
             return;
         }
         setIsGenerating(prev => ({ ...prev, seo: true }));
         try {
             const { seoTitle, seoDescription } = await generateSEOMetadata(post.content);
             setPost(prev => ({ ...prev, seoTitle, seoDescription }));
+            showSuccess('SEO Generated', 'SEO metadata has been generated successfully.');
         } catch (error) {
-            console.error('Error generating SEO:', error);
-            alert('Failed to generate SEO metadata. Please try again.');
+            showError('SEO Failed', 'Failed to generate SEO metadata.');
         } finally {
             setIsGenerating(prev => ({ ...prev, seo: false }));
         }
-    }, [post.content]);
+    }, [post.content, showSuccess, showError]);
 
     const handleTagAdd = useCallback(async () => {
         if (newTag && context && !post.tags?.includes(newTag)) {
             const existingTag = context.tags.find(t => t.name.toLowerCase() === newTag.toLowerCase());
             if (existingTag) {
-                 setPost(prev => ({ ...prev, tags: [...(prev.tags || []), existingTag.id] }));
+                setPost(prev => ({ ...prev, tags: [...(prev.tags || []), existingTag.id] }));
             } else {
                 try {
                     await context.addTag(newTag);
-                    // Find the newly added tag
                     const addedTag = context.tags.find(t => t.name.toLowerCase() === newTag.toLowerCase());
-                    if(addedTag) setPost(prev => ({ ...prev, tags: [...(prev.tags || []), addedTag.id] }));
+                    if (addedTag) setPost(prev => ({ ...prev, tags: [...(prev.tags || []), addedTag.id] }));
                 } catch (error) {
-                    console.error('Error adding tag:', error);
-                    alert('Failed to add tag. Please try again.');
+                    showError('Error', 'Failed to add tag.');
                 }
             }
             setNewTag('');
         }
-    }, [newTag, context, post.tags]);
-    
+    }, [newTag, context, post.tags, showError]);
+
     const handleTagRemove = useCallback((tagId: string) => {
         setPost(prev => ({ ...prev, tags: prev.tags?.filter(t => t !== tagId) }));
     }, []);
 
     const handleSave = useCallback(async (status: 'draft' | 'published', shouldRedirect = true) => {
         if (!validateForm()) {
-            showError("Validation Error", "Please fix the validation errors before saving.");
+            showError("Validation Error", "Please fix the errors before saving.");
             return;
         }
 
         setIsSaving(true);
-        const postData = { ...post, status };
+        const postData = { ...post, status, slug: urlSlug };
 
         try {
             if (id) {
                 await context?.updatePost(id, postData);
-                if (status === 'published') {
-                    showSuccess(
-                        "Post Published!",
-                        "Your post has been successfully published and is now live.",
-                        6000
-                    );
-                } else {
-                    showSuccess("Draft Saved", "Your post has been saved as a draft.");
-                }
             } else {
-                await context?.addPost(postData as Omit<Post, 'id' | 'createdAt' | 'slug'>);
-                if (status === 'published') {
-                    showSuccess(
-                        "Post Published!",
-                        "Your new post has been successfully published and is now live.",
-                        6000
-                    );
-                } else {
-                    showSuccess("Draft Created", "Your new post has been saved as a draft.");
+                const newPost = await context?.addPost(postData as Omit<Post, 'id' | 'createdAt'>);
+                if (newPost && !id) {
+                    // If it's a new post, we need to update the URL to include the new ID
+                    // This prevents creating a new post on every save.
+                    navigate(`/admin/edit/${newPost.id}`, { replace: true });
                 }
             }
-
+            showSuccess(status === 'published' ? "Post Published!" : "Draft Saved", `Your post has been saved as a ${status}.`);
             if (shouldRedirect) {
-                // Small delay to let user see the success message
-                setTimeout(() => {
-                    navigate('/admin/posts');
-                }, 1500);
+                setTimeout(() => navigate('/admin/posts'), 1500);
             }
         } catch (error) {
-            console.error('Error saving post:', error);
-            showError(
-                "Save Failed",
-                error instanceof Error ? error.message : "Failed to save post. Please try again.",
-                10000
-            );
+            showError("Save Failed", error instanceof Error ? error.message : "An unknown error occurred.");
         } finally {
             setIsSaving(false);
         }
-    }, [validateForm, showError, post, id, context, showSuccess, navigate]);
+    }, [validateForm, showError, post, id, context, showSuccess, navigate, urlSlug]);
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        await handleSave('published');
-    };
-
-    const handleSaveDraft = useCallback(async () => {
-        await handleSave('draft', false);
-    }, [handleSave]);
-
-    const handlePublish = useCallback(async () => {
-        // Show confirmation for first-time publish
-        if (post.status !== 'published' && !id) {
-            const confirmed = window.confirm(
-                "Are you ready to publish this post? Once published, it will be visible to all visitors on your blog."
-            );
-            if (!confirmed) return;
-        }
-        await handleSave('published');
-    }, [handleSave, post.status, id]);
+    const handleSaveDraft = useCallback(() => handleSave('draft', false), [handleSave]);
+    const handlePublish = useCallback(() => handleSave('published'), [handleSave]);
 
     const handleViewPost = () => {
-        if (post.slug) {
-            window.open(`/post/${post.slug}`, '_blank');
-        } else if (id) {
-            // If no slug, try to construct one from title
-            const slug = post.title?.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-            if (slug) {
-                window.open(`/post/${slug}`, '_blank');
-            }
-        }
+        if (post.slug) window.open(`/post/${post.slug}`, '_blank');
     };
 
-    // Keyboard shortcuts - moved here after function definitions
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
-            // Cmd/Ctrl + S to save draft
             if ((e.metaKey || e.ctrlKey) && e.key === 's') {
                 e.preventDefault();
-                if (!isSaving) {
-                    handleSaveDraft();
-                }
-            }
-            // Cmd/Ctrl + Shift + P to publish
-            if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key === 'P') {
-                e.preventDefault();
-                if (!isSaving) {
-                    handlePublish();
-                }
+                if (!isSaving) handleSaveDraft();
             }
         };
-
         document.addEventListener('keydown', handleKeyDown);
         return () => document.removeEventListener('keydown', handleKeyDown);
-    }, [isSaving, handleSaveDraft, handlePublish]);
-
-    // Validation state for tabs
-    const hasContentErrors = !!(validationErrors.title || validationErrors.content);
-    const hasPublishingErrors = !!validationErrors.categoryId;
+    }, [isSaving, handleSaveDraft]);
 
     if (!context) return <Spinner />;
     const { categories, tags } = context;
 
     return (
-        <div className="h-screen flex flex-col bg-gray-50 dark:bg-gray-900">
-            {/* Fixed Header */}
-            <div className="flex-shrink-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4">
+        <div className="h-screen flex flex-col bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white">
+            {/* Header */}
+            <header className="flex-shrink-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-3">
                 <div className="flex items-center justify-between">
                     <div>
-                        <div className="flex items-center space-x-3">
-                            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-                                {id ? 'Edit Post' : 'Create New Post'}
-                            </h1>
-                            {/* Status Badge */}
-                            <span className={`px-2 py-1 text-xs font-medium rounded-full ${
-                                post.status === 'published'
-                                    ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400'
-                                    : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400'
-                            }`}>
-                                {post.status === 'published' ? 'Published' : 'Draft'}
-                            </span>
-                        </div>
-                        <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                            {id ? 'Update your blog post content and settings' : 'Create a new blog post with content and SEO optimization'}
-                            <span className="ml-2 text-xs text-gray-500 dark:text-gray-500">
-                                • Ctrl+S save draft • Ctrl+Shift+P publish
-                            </span>
+                        <h1 className="text-xl font-bold">
+                            {id ? 'Edit Post' : 'Create New Post'}
+                        </h1>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                            Cmd/Ctrl+S to save draft
                         </p>
                     </div>
-
-                    {/* Action Buttons in Header */}
                     <div className="flex items-center space-x-3">
-
-
-                        <button
-                            type="button"
-                            onClick={() => navigate('/admin/posts')}
-                            disabled={isSaving}
-                            className="px-4 py-2 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 focus:ring-2 focus:ring-blue-500 disabled:opacity-50 transition-colors"
-                        >
-                            Cancel
-                        </button>
-
-                        <button
-                            type="button"
-                            onClick={handleSaveDraft}
-                            disabled={isSaving}
-                            className="px-4 py-2 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 focus:ring-2 focus:ring-blue-500 disabled:opacity-50 transition-colors"
-                        >
-                            {isSaving && post.status === 'draft' ? (
-                                <div className="flex items-center space-x-2">
-                                    <Spinner size="sm" />
-                                    <span>Saving...</span>
-                                </div>
-                            ) : 'Save Draft'}
-                        </button>
-
-                        {/* View Post Button - only show for published posts */}
+                        <span className={`px-2 py-1 text-xs font-medium rounded-full ${post.status === 'published' ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400' : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400'}`}>
+                            {post.status}
+                        </span>
                         {post.status === 'published' && id && (
-                            <button
-                                type="button"
-                                onClick={handleViewPost}
-                                className="px-4 py-2 text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/30 focus:ring-2 focus:ring-blue-500 transition-colors"
-                            >
-                                View Post
-                            </button>
+                            <Button variant="outline" size="sm" onClick={handleViewPost}>View Post</Button>
                         )}
-
-                        <button
-                            type="button"
-                            onClick={handlePublish}
-                            disabled={isSaving}
-                            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 disabled:opacity-50 transition-colors font-medium"
-                        >
-                            {isSaving && post.status === 'published' ? (
-                                <div className="flex items-center space-x-2">
-                                    <Spinner size="sm" />
-                                    <span>Publishing...</span>
-                                </div>
-                            ) : (
-                                post.status === 'published' ? 'Update Post' : 'Publish Post'
-                            )}
-                        </button>
+                        <Button variant="outline" size="sm" onClick={handleSaveDraft} disabled={isSaving}>
+                            {isSaving && post.status === 'draft' ? <Spinner size="sm" /> : 'Save Draft'}
+                        </Button>
+                        <Button size="sm" onClick={handlePublish} disabled={isSaving}>
+                            {isSaving && post.status === 'published' ? <Spinner size="sm" /> : (post.status === 'published' ? 'Update' : 'Publish')}
+                        </Button>
                     </div>
                 </div>
-            </div>
+            </header>
 
-            {/* Main Content Area */}
+            {/* Main Content */}
             <div className="flex-1 flex overflow-hidden">
-                <form id="post-form" onSubmit={handleSubmit} className="flex-1 flex flex-col">
-                    <Tabs
-                        defaultValue="content"
-                        className="flex-1 flex flex-col bg-card"
-                        onValueChange={(value) => {
-                            // Handle tab switching to preserve editor content
-                            console.log('Tab switched from', currentTab, 'to:', value);
+                {/* Editor Column */}
+                <main className="flex-1 p-6 overflow-y-auto space-y-6">
+                    <Textarea
+                        id="title"
+                        name="title"
+                        value={post.title || ''}
+                        onChange={handleInputChange}
+                        placeholder="Post Title"
+                        required
+                        className="w-full text-4xl font-extrabold tracking-tight border-none focus:ring-0 resize-none p-0 h-auto bg-transparent"
+                    />
+                    {validationErrors.title && <p className="text-red-500 text-sm">{validationErrors.title}</p>}
 
-                            // Store current content before switching away from content tab
-                            if (currentTab === 'content' && value !== 'content') {
-                                console.log('Leaving content tab, backing up content:', contentBackupRef.current.length, 'characters');
-                                // Ensure we have the latest content backed up
-                                if (post.content) {
-                                    contentBackupRef.current = post.content;
-                                }
-                            }
+                    <div className="min-h-[500px]">
+                        <EnhancedRichTextEditor
+                            key={`post-content-editor-${id || 'new'}`}
+                            value={post.content || ''}
+                            onChange={handleContentChange}
+                            placeholder="Start writing your masterpiece..."
+                            height="100%"
+                            autoHeight={true}
+                        />
+                        {validationErrors.content && <p className="text-red-500 text-sm mt-2">{validationErrors.content}</p>}
+                    </div>
+                </main>
 
-                            setCurrentTab(value);
-
-                            // If switching back to content tab, restore content and ensure editor is properly visible
-                            if (value === 'content') {
-                                setTimeout(() => {
-                                    // Force toolbar visibility after tab switch
-                                    const toolbars = document.querySelectorAll('.tox-toolbar, .tox-toolbar__primary, .tox-toolbar__overflow');
-                                    toolbars.forEach((toolbar) => {
-                                        const element = toolbar as HTMLElement;
-                                        element.style.display = 'flex';
-                                        element.style.visibility = 'visible';
-                                        element.style.opacity = '1';
-                                        element.style.position = 'relative';
-                                        element.style.zIndex = '10';
-                                    });
-
-                                    // Ensure editor container is properly sized
-                                    const editorContainers = document.querySelectorAll('.tox-tinymce');
-                                    editorContainers.forEach((container) => {
-                                        const element = container as HTMLElement;
-                                        element.style.height = '500px';
-                                        element.style.minHeight = '500px';
-                                        element.style.width = '100%';
-                                    });
-
-                                    // Restore content if it was cleared
-                                    if (contentBackupRef.current && (!post.content || post.content === '<p></p>')) {
-                                        console.log('Restoring backed up content:', contentBackupRef.current.length, 'characters');
-                                        setPost(prev => ({
-                                            ...prev,
-                                            content: contentBackupRef.current
-                                        }));
-                                    }
-
-                                    // Trigger a resize event to ensure proper layout
-                                    window.dispatchEvent(new Event('resize'));
-                                }, 150);
-                            }
-                        }}
-                    >
-                        {/* Tab Navigation */}
-                        <div className="flex-shrink-0 border-b border-border px-4">
-                            <TabsList className="grid w-full grid-cols-4">
-                                <TabsTrigger value="content" className="gap-2">
-                                    <DocumentTextIcon className="h-4 w-4" />
-                                    <span className="hidden sm:inline">Content</span>
-                                </TabsTrigger>
-                                <TabsTrigger value="seo" className="gap-2">
-                                    <GlobeAltIcon className="h-4 w-4" />
-                                    <span className="hidden sm:inline">SEO & Meta</span>
-                                </TabsTrigger>
-                                <TabsTrigger value="publishing" className="gap-2">
-                                    <RocketLaunchIcon className="h-4 w-4" />
-                                    <span className="hidden sm:inline">Publishing</span>
-                                </TabsTrigger>
-                                <TabsTrigger value="advanced" className="gap-2">
-                                    <CogIcon className="h-4 w-4" />
-                                    <span className="hidden sm:inline">Advanced</span>
-                                </TabsTrigger>
-                            </TabsList>
+                {/* Inspector Sidebar */}
+                <aside className="w-96 bg-white dark:bg-gray-800 border-l border-gray-200 dark:border-gray-700 p-6 space-y-8 overflow-y-auto">
+                    {/* Publish Settings */}
+                    <div>
+                        <h3 className="text-lg font-semibold mb-4">Publish Settings</h3>
+                        <div className="space-y-4">
+                            <FormField label="Status" htmlFor="status" required>
+                                <select id="status" name="status" value={post.status || 'draft'} onChange={handleInputChange} className="w-full input-class">
+                                    <option value="draft">Draft</option>
+                                    <option value="published">Published</option>
+                                </select>
+                            </FormField>
+                            <FormField label="Category" htmlFor="categoryId" required error={validationErrors.categoryId}>
+                                <select id="categoryId" name="categoryId" value={post.categoryId || ''} onChange={handleInputChange} required className="w-full input-class">
+                                    <option value="">Select a category</option>
+                                    {categories.map(cat => <option key={cat.id} value={cat.id}>{cat.name}</option>)}
+                                </select>
+                            </FormField>
+                            <FormField label="URL Slug" htmlFor="urlSlug" hint="Auto-generated from title">
+                                <Input type="text" id="urlSlug" value={urlSlug} onChange={(e) => setUrlSlug(e.target.value)} placeholder="post-url-slug" />
+                            </FormField>
                         </div>
+                    </div>
 
-                        {/* Tab Content Area - Fixed Height */}
-                        <div className="flex-1" style={{ minHeight: '700px' }}>
-                            {/* Content Tab */}
-                            <TabsContent value="content" className="flex-1 m-0" style={{ minHeight: '700px' }}>
-                                    <div className="h-full flex flex-col lg:flex-row" style={{ minHeight: '700px' }}>
-                                        {/* Left Column - Title and Controls */}
-                                        <div className="w-full lg:w-80 xl:w-96 flex-shrink-0 p-4 md:p-6 border-b lg:border-b-0 lg:border-r border-gray-200 dark:border-gray-700 space-y-4">
-                                            <FormField
-                                                label="Title"
-                                                htmlFor="title"
-                                                required
-                                                error={validationErrors.title}
-                                            >
-                                                <Input
-                                                    type="text"
-                                                    id="title"
-                                                    name="title"
-                                                    value={post.title || ''}
-                                                    onChange={handleInputChange}
-                                                    placeholder="Enter your post title..."
-                                                    required
-                                                />
-                                            </FormField>
+                    {/* SEO */}
+                    <div>
+                        <div className="flex items-center justify-between mb-4">
+                            <h3 className="text-lg font-semibold">SEO</h3>
+                            <Button variant="ghost" size="sm" onClick={handleGenerateSEO} disabled={isGenerating.seo || !post.content}>
+                                {isGenerating.seo ? <Spinner size="sm" /> : <SparklesIcon className="w-4 h-4 mr-2" />}
+                                Generate
+                            </Button>
+                        </div>
+                        <div className="space-y-4">
+                            <FormField label="SEO Title" htmlFor="seoTitle" hint="Max 60 characters">
+                                <Input type="text" id="seoTitle" name="seoTitle" value={post.seoTitle || ''} onChange={handleInputChange} maxLength={60} />
+                                <div className="text-xs text-gray-500 mt-1">{(post.seoTitle || '').length}/60</div>
+                            </FormField>
+                            <FormField label="SEO Description" htmlFor="seoDescription" hint="Max 160 characters">
+                                <Textarea id="seoDescription" name="seoDescription" value={post.seoDescription || ''} onChange={handleInputChange} maxLength={160} rows={4} />
+                                <div className="text-xs text-gray-500 mt-1">{(post.seoDescription || '').length}/160</div>
+                            </FormField>
+                        </div>
+                    </div>
 
-                                            <FormField
-                                                label="Excerpt"
-                                                htmlFor="excerpt"
-                                                hint="Brief summary (optional)"
-                                            >
-                                                <textarea
-                                                    id="excerpt"
-                                                    name="excerpt"
-                                                    value={post.excerpt || ''}
-                                                    onChange={handleInputChange}
-                                                    rows={3}
-                                                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none text-sm"
-                                                    placeholder="Brief description..."
-                                                />
-                                            </FormField>
+                    {/* Featured Image */}
+                    <div>
+                        <h3 className="text-lg font-semibold mb-4">Featured Image</h3>
+                        <ImageUpload onImageUpload={handleImageUpload} currentImageUrl={post.imageUrl} onImageRemove={handleImageRemove} />
+                    </div>
 
-                                            <div className="pt-2">
-                                                <button
-                                                    type="button"
-                                                    onClick={handleGenerateContent}
-                                                    disabled={isGenerating.content || !post.title}
-                                                    className="w-full inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/30 focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                                                >
-                                                    {isGenerating.content ? (
-                                                        <Spinner size="sm" />
-                                                    ) : (
-                                                        <SparklesIcon className="w-4 h-4 mr-2" />
-                                                    )}
-                                                    Generate with AI
-                                                </button>
-                                            </div>
-
-                                            {/* Content Stats */}
-                                            <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-3">
-                                                <h4 className="text-xs font-medium text-gray-900 dark:text-white mb-2">
-                                                    Content Statistics
-                                                </h4>
-                                                <div className="space-y-1 text-xs">
-                                                    <div className="flex justify-between">
-                                                        <span className="text-gray-500 dark:text-gray-400">Words:</span>
-                                                        <span className="font-medium text-gray-900 dark:text-white">
-                                                            {post.content ? post.content.split(' ').length : 0}
-                                                        </span>
-                                                    </div>
-                                                    <div className="flex justify-between">
-                                                        <span className="text-gray-500 dark:text-gray-400">Characters:</span>
-                                                        <span className="font-medium text-gray-900 dark:text-white">
-                                                            {post.content ? post.content.length : 0}
-                                                        </span>
-                                                    </div>
-                                                    <div className="flex justify-between">
-                                                        <span className="text-gray-500 dark:text-gray-400">Reading Time:</span>
-                                                        <span className="font-medium text-gray-900 dark:text-white">
-                                                            {post.content ? Math.ceil(post.content.split(' ').length / 200) : 0} min
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        {/* Right Column - Content Editor */}
-                                        <div className="flex-1 p-4 md:p-6" style={{ minHeight: '600px' }}>
-                                            <FormField
-                                                label="Content"
-                                                required
-                                                error={validationErrors.content}
-                                                hint="Write your blog post content using the rich text editor"
-                                            >
-                                                <div style={{ height: '500px', minHeight: '500px' }}>
-                                                    <EnhancedRichTextEditor
-                                                        key={`post-content-editor-${post.id || 'new'}`}
-                                                        value={post.content || ''}
-                                                        onChange={handleContentChange}
-                                                        placeholder="Start writing your blog post content..."
-                                                        height={500}
-                                                        autoHeight={false}
-                                                        className=""
-                                                        enableAutoSave={true}
-                                                        autoSaveDelay={30000}
-                                                        onAutoSave={async (content) => {
-                                                            // Auto-save the post content
-                                                            if (post.id) {
-                                                                try {
-                                                                    await updatePost(post.id, { ...post, content });
-                                                                    console.log('Auto-saved post content');
-                                                                } catch (error) {
-                                                                    console.error('Auto-save failed:', error);
-                                                                }
-                                                            }
-                                                        }}
-                                                        showWordCount={true}
-                                                        showDetailedStats={true}
-                                                        enableKeyboardShortcuts={true}
-                                                        enableMediaUpload={true}
-                                                        enableLinking={true}
-                                                        enableTables={true}
-                                                        enableFullScreen={true}
-                                                        enableSourceCode={true}
-                                                        enableAdvancedFormatting={true}
-                                                        enableCustomStyles={true}
-                                                        enableEmbeds={true}
-                                                        enableAnchorLinks={true}
-                                                        posts={context?.posts?.filter(p => p.status === 'published').map(p => ({
-                                                            id: p.id,
-                                                            title: p.title,
-                                                            slug: p.slug
-                                                        })) || []}
-                                                        onExcerptGenerate={(excerpt) => {
-                                                            setPost(prev => ({ ...prev, seoDescription: excerpt }));
-                                                            showInfo('Excerpt generated and added to SEO description');
-                                                        }}
-                                                    />
-                                                </div>
-                                            </FormField>
-                                        </div>
+                    {/* Tags */}
+                    <div>
+                        <h3 className="text-lg font-semibold mb-4">Tags</h3>
+                        <div className="flex gap-2 mb-4">
+                            <Input type="text" value={newTag} onChange={(e) => setNewTag(e.target.value)} onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleTagAdd())} placeholder="Add a tag..." />
+                            <Button onClick={handleTagAdd}>Add</Button>
+                        </div>
+                        <div className="space-y-2 max-h-40 overflow-y-auto">
+                            {post.tags?.map(tagId => {
+                                const tag = tags.find(t => t.id === tagId);
+                                return tag ? (
+                                    <div key={tagId} className="flex items-center justify-between bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">
+                                        <span className="text-sm">{tag.name}</span>
+                                        <button onClick={() => handleTagRemove(tagId)} className="text-gray-500 hover:text-gray-800 dark:hover:text-gray-200">&times;</button>
                                     </div>
-                            </TabsContent>
+                                ) : null;
+                            })}
+                        </div>
+                    </div>
 
-                            {/* SEO & Meta Tab */}
-                            <TabsContent value="seo" className="flex-1 overflow-hidden m-0">
-                                    <div className="h-full p-6">
-                                        <div className="h-full grid grid-cols-2 gap-8">
-                                            {/* Left Column */}
-                                            <div className="space-y-4">
-                                                <div className="flex justify-between items-center mb-4">
-                                                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                                                        SEO Optimization
-                                                    </h3>
-                                                    <button
-                                                        type="button"
-                                                        onClick={handleGenerateSEO}
-                                                        disabled={isGenerating.seo || !post.content}
-                                                        className="inline-flex items-center px-3 py-2 text-sm font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/30 focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                                                    >
-                                                        {isGenerating.seo ? (
-                                                            <Spinner size="sm" />
-                                                        ) : (
-                                                            <SparklesIcon className="w-4 h-4 mr-2" />
-                                                        )}
-                                                        Auto-Generate SEO
-                                                    </button>
-                                                </div>
+                    {/* Excerpt */}
+                    <div>
+                        <h3 className="text-lg font-semibold mb-4">Excerpt</h3>
+                        <FormField label="Excerpt" htmlFor="excerpt" hint="A short summary of the post.">
+                            <Textarea id="excerpt" name="excerpt" value={post.excerpt || ''} onChange={handleInputChange} rows={4} />
+                        </FormField>
+                    </div>
 
-                                                <FormField
-                                                    label="Focus Keyword"
-                                                    htmlFor="focusKeyword"
-                                                    hint="Main keyword for SEO optimization"
-                                                >
-                                                    <input
-                                                        type="text"
-                                                        id="focusKeyword"
-                                                        value={focusKeyword}
-                                                        onChange={(e) => setFocusKeyword(e.target.value)}
-                                                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                                                        placeholder="Enter your main keyword..."
-                                                    />
-                                                </FormField>
-
-                                                <FormField
-                                                    label="URL Slug"
-                                                    htmlFor="urlSlug"
-                                                    hint="Auto-generated from title"
-                                                >
-                                                    <input
-                                                        type="text"
-                                                        id="urlSlug"
-                                                        value={urlSlug}
-                                                        onChange={(e) => setUrlSlug(e.target.value)}
-                                                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                                                        placeholder="post-url-slug"
-                                                    />
-                                                </FormField>
-
-                                                <FormField
-                                                    label="SEO Title"
-                                                    htmlFor="seoTitle"
-                                                    hint="Optimized title for search engines (max 60 characters)"
-                                                >
-                                                    <input
-                                                        type="text"
-                                                        id="seoTitle"
-                                                        name="seoTitle"
-                                                        value={post.seoTitle || ''}
-                                                        onChange={handleInputChange}
-                                                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                                                        placeholder="SEO optimized title..."
-                                                        maxLength={60}
-                                                    />
-                                                    <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                                                        {(post.seoTitle || '').length}/60 characters
-                                                    </div>
-                                                </FormField>
-                                            </div>
-
-                                            {/* Right Column */}
-                                            <div className="space-y-4">
-                                                <FormField
-                                                    label="SEO Description"
-                                                    htmlFor="seoDescription"
-                                                    hint="Meta description for search engines (max 160 characters)"
-                                                >
-                                                    <textarea
-                                                        id="seoDescription"
-                                                        name="seoDescription"
-                                                        value={post.seoDescription || ''}
-                                                        onChange={handleInputChange}
-                                                        rows={4}
-                                                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none text-sm"
-                                                        placeholder="Brief description for search engines..."
-                                                        maxLength={160}
-                                                    />
-                                                    <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                                                        {(post.seoDescription || '').length}/160 characters
-                                                    </div>
-                                                </FormField>
-
-                                                {/* SEO Preview */}
-                                                <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-                                                    <h4 className="text-sm font-medium text-gray-900 dark:text-white mb-3">
-                                                        Search Engine Preview
-                                                    </h4>
-                                                    <div className="space-y-2">
-                                                        <div className="text-blue-600 dark:text-blue-400 text-sm font-medium truncate">
-                                                            {post.seoTitle || post.title || 'Your Post Title'}
-                                                        </div>
-                                                        <div className="text-green-600 dark:text-green-400 text-xs">
-                                                            yoursite.com/post/{urlSlug || 'post-slug'}
-                                                        </div>
-                                                        <div className="text-gray-600 dark:text-gray-400 text-sm">
-                                                            {post.seoDescription || 'Your SEO description will appear here...'}
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                {/* SEO Score */}
-                                                <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-                                                    <h4 className="text-sm font-medium text-gray-900 dark:text-white mb-3">
-                                                        SEO Score
-                                                    </h4>
-                                                    <div className="space-y-2">
-                                                        <div className="flex justify-between text-sm">
-                                                            <span className="text-gray-600 dark:text-gray-400">Title Length:</span>
-                                                            <span className={`font-medium ${(post.seoTitle || post.title || '').length > 0 && (post.seoTitle || post.title || '').length <= 60 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
-                                                                {(post.seoTitle || post.title || '').length <= 60 ? 'Good' : 'Too Long'}
-                                                            </span>
-                                                        </div>
-                                                        <div className="flex justify-between text-sm">
-                                                            <span className="text-gray-600 dark:text-gray-400">Description Length:</span>
-                                                            <span className={`font-medium ${(post.seoDescription || '').length > 0 && (post.seoDescription || '').length <= 160 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
-                                                                {(post.seoDescription || '').length > 0 && (post.seoDescription || '').length <= 160 ? 'Good' : 'Needs Work'}
-                                                            </span>
-                                                        </div>
-                                                        <div className="flex justify-between text-sm">
-                                                            <span className="text-gray-600 dark:text-gray-400">Focus Keyword:</span>
-                                                            <span className={`font-medium ${focusKeyword ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
-                                                                {focusKeyword ? 'Set' : 'Missing'}
-                                                            </span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                            </TabsContent>
-
-                            {/* Publishing Tab */}
-                            <TabsContent value="publishing" className="flex-1 overflow-hidden m-0">
-                                    <div className="h-full p-6">
-                                        <div className="h-full grid grid-cols-3 gap-6">
-                                            {/* Left Column - Basic Settings */}
-                                            <div className="space-y-4">
-                                                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-                                                    Publishing Settings
-                                                </h3>
-
-                                                <FormField
-                                                    label="Status"
-                                                    htmlFor="status"
-                                                    required
-                                                >
-                                                    <select
-                                                        id="status"
-                                                        name="status"
-                                                        value={post.status || 'draft'}
-                                                        onChange={handleInputChange}
-                                                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                                                    >
-                                                        <option value="draft">Draft</option>
-                                                        <option value="published">Published</option>
-                                                    </select>
-                                                </FormField>
-
-                                                <FormField
-                                                    label="Category"
-                                                    htmlFor="categoryId"
-                                                    required
-                                                    error={validationErrors.categoryId}
-                                                >
-                                                    <select
-                                                        id="categoryId"
-                                                        name="categoryId"
-                                                        value={post.categoryId || ''}
-                                                        onChange={handleInputChange}
-                                                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                                                        required
-                                                    >
-                                                        <option value="">Select a category</option>
-                                                        {categories.map(category => (
-                                                            <option key={category.id} value={category.id}>
-                                                                {category.name}
-                                                            </option>
-                                                        ))}
-                                                    </select>
-                                                </FormField>
-
-                                                <FormField
-                                                    label="Author"
-                                                    htmlFor="authorName"
-                                                >
-                                                    <input
-                                                        type="text"
-                                                        id="authorName"
-                                                        name="authorName"
-                                                        value={post.authorName || 'Admin'}
-                                                        onChange={handleInputChange}
-                                                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                                                        placeholder="Author name..."
-                                                    />
-                                                </FormField>
-                                            </div>
-
-                                            {/* Middle Column - Featured Image */}
-                                            <div className="space-y-4">
-                                                <h4 className="text-md font-medium text-gray-900 dark:text-white">
-                                                    Featured Image
-                                                </h4>
-                                                <div className="h-64">
-                                                    <ImageUpload
-                                                        onImageUpload={handleImageUpload}
-                                                        currentImageUrl={post.imageUrl}
-                                                        onImageRemove={handleImageRemove}
-                                                        disabled={false}
-                                                        className="h-full"
-                                                    />
-                                                </div>
-                                            </div>
-
-                                            {/* Right Column - Tags */}
-                                            <div className="space-y-4">
-                                                <h4 className="text-md font-medium text-gray-900 dark:text-white">
-                                                    Tags
-                                                </h4>
-
-                                                {/* Add New Tag */}
-                                                <div className="flex gap-2">
-                                                    <input
-                                                        type="text"
-                                                        value={newTag}
-                                                        onChange={(e) => setNewTag(e.target.value)}
-                                                        onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleTagAdd())}
-                                                        className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                                                        placeholder="Add a tag..."
-                                                    />
-                                                    <button
-                                                        type="button"
-                                                        onClick={handleTagAdd}
-                                                        className="px-3 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 transition-colors text-sm"
-                                                    >
-                                                        Add
-                                                    </button>
-                                                </div>
-
-                                                {/* Selected Tags */}
-                                                <div className="space-y-2 max-h-64 overflow-y-auto">
-                                                    {post.tags && post.tags.length > 0 ? (
-                                                        <div className="space-y-2">
-                                                            {post.tags.map(tagId => {
-                                                                const tag = tags.find(t => t.id === tagId);
-                                                                return tag ? (
-                                                                    <div
-                                                                        key={tagId}
-                                                                        className="flex items-center justify-between px-3 py-2 bg-blue-50 dark:bg-blue-900/20 rounded-md"
-                                                                    >
-                                                                        <span className="text-sm text-blue-800 dark:text-blue-200">
-                                                                            {tag.name}
-                                                                        </span>
-                                                                        <button
-                                                                            type="button"
-                                                                            onClick={() => handleTagRemove(tagId)}
-                                                                            className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200 text-sm"
-                                                                        >
-                                                                            ×
-                                                                        </button>
-                                                                    </div>
-                                                                ) : null;
-                                                            })}
-                                                        </div>
-                                                    ) : (
-                                                        <p className="text-sm text-gray-500 dark:text-gray-400 italic">
-                                                            No tags added yet
-                                                        </p>
-                                                    )}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                            </TabsContent>
-
-                            {/* Advanced Tab */}
-                            <TabsContent value="advanced" className="flex-1 overflow-hidden m-0">
-                                    <div className="h-full p-6">
-                                        <div className="h-full grid grid-cols-2 gap-8">
-                                            {/* Left Column */}
-                                            <div className="space-y-4">
-                                                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-                                                    Advanced Settings
-                                                </h3>
-
-                                                <FormField
-                                                    label="Custom Slug"
-                                                    htmlFor="customSlug"
-                                                    hint="Custom URL slug (leave empty to auto-generate)"
-                                                >
-                                                    <input
-                                                        type="text"
-                                                        id="customSlug"
-                                                        value={urlSlug}
-                                                        onChange={(e) => setUrlSlug(e.target.value)}
-                                                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                                                        placeholder="custom-url-slug"
-                                                    />
-                                                </FormField>
-
-                                                <FormField
-                                                    label="Post Format"
-                                                    htmlFor="postFormat"
-                                                    hint="Choose the post format type"
-                                                >
-                                                    <select
-                                                        id="postFormat"
-                                                        name="postFormat"
-                                                        value={post.postFormat || 'standard'}
-                                                        onChange={handleInputChange}
-                                                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                                                    >
-                                                        <option value="standard">Standard</option>
-                                                        <option value="gallery">Gallery</option>
-                                                        <option value="video">Video</option>
-                                                        <option value="audio">Audio</option>
-                                                        <option value="quote">Quote</option>
-                                                        <option value="link">Link</option>
-                                                    </select>
-                                                </FormField>
-
-                                                <FormField
-                                                    label="Comment Status"
-                                                    htmlFor="commentStatus"
-                                                    hint="Allow comments on this post"
-                                                >
-                                                    <select
-                                                        id="commentStatus"
-                                                        name="commentStatus"
-                                                        value={post.commentStatus || 'open'}
-                                                        onChange={handleInputChange}
-                                                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                                                    >
-                                                        <option value="open">Open</option>
-                                                        <option value="closed">Closed</option>
-                                                    </select>
-                                                </FormField>
-
-                                                <FormField
-                                                    label="Menu Order"
-                                                    htmlFor="menuOrder"
-                                                    hint="Order in navigation menus (0 = default)"
-                                                >
-                                                    <input
-                                                        type="number"
-                                                        id="menuOrder"
-                                                        name="menuOrder"
-                                                        value={post.menuOrder || 0}
-                                                        onChange={handleInputChange}
-                                                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                                                        placeholder="0"
-                                                        min="0"
-                                                    />
-                                                </FormField>
-                                            </div>
-
-                                            {/* Right Column */}
-                                            <div className="space-y-4">
-                                                <h4 className="text-md font-medium text-gray-900 dark:text-white mb-4">
-                                                    Post Information
-                                                </h4>
-
-                                                {/* Post Statistics */}
-                                                <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-                                                    <h5 className="text-sm font-medium text-gray-900 dark:text-white mb-3">
-                                                        Content Statistics
-                                                    </h5>
-                                                    <div className="grid grid-cols-2 gap-4 text-sm">
-                                                        <div>
-                                                            <span className="text-gray-500 dark:text-gray-400">Words:</span>
-                                                            <span className="ml-2 font-medium text-gray-900 dark:text-white">
-                                                                {post.content ? post.content.split(' ').length : 0}
-                                                            </span>
-                                                        </div>
-                                                        <div>
-                                                            <span className="text-gray-500 dark:text-gray-400">Characters:</span>
-                                                            <span className="ml-2 font-medium text-gray-900 dark:text-white">
-                                                                {post.content ? post.content.length : 0}
-                                                            </span>
-                                                        </div>
-                                                        <div>
-                                                            <span className="text-gray-500 dark:text-gray-400">Reading Time:</span>
-                                                            <span className="ml-2 font-medium text-gray-900 dark:text-white">
-                                                                {post.content ? Math.ceil(post.content.split(' ').length / 200) : 0} min
-                                                            </span>
-                                                        </div>
-                                                        <div>
-                                                            <span className="text-gray-500 dark:text-gray-400">Status:</span>
-                                                            <span className={`ml-2 font-medium ${post.status === 'published' ? 'text-green-600 dark:text-green-400' : 'text-yellow-600 dark:text-yellow-400'}`}>
-                                                                {post.status === 'published' ? 'Published' : 'Draft'}
-                                                            </span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                {/* Post Metadata */}
-                                                <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-                                                    <h5 className="text-sm font-medium text-gray-900 dark:text-white mb-3">
-                                                        Post Metadata
-                                                    </h5>
-                                                    <div className="space-y-2 text-sm">
-                                                        <div className="flex justify-between">
-                                                            <span className="text-gray-500 dark:text-gray-400">Created:</span>
-                                                            <span className="font-medium text-gray-900 dark:text-white">
-                                                                {id ? new Date(post.createdAt || '').toLocaleDateString() : 'Not saved yet'}
-                                                            </span>
-                                                        </div>
-                                                        <div className="flex justify-between">
-                                                            <span className="text-gray-500 dark:text-gray-400">Author:</span>
-                                                            <span className="font-medium text-gray-900 dark:text-white">
-                                                                {post.authorName || 'Admin'}
-                                                            </span>
-                                                        </div>
-                                                        <div className="flex justify-between">
-                                                            <span className="text-gray-500 dark:text-gray-400">Category:</span>
-                                                            <span className="font-medium text-gray-900 dark:text-white">
-                                                                {post.categoryId ? categories.find(c => c.id === post.categoryId)?.name || 'Unknown' : 'Not selected'}
-                                                            </span>
-                                                        </div>
-                                                        <div className="flex justify-between">
-                                                            <span className="text-gray-500 dark:text-gray-400">Tags:</span>
-                                                            <span className="font-medium text-gray-900 dark:text-white">
-                                                                {post.tags?.length || 0} tags
-                                                            </span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                {/* URL Preview */}
-                                                <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-                                                    <h5 className="text-sm font-medium text-gray-900 dark:text-white mb-2">
-                                                        URL Preview
-                                                    </h5>
-                                                    <div className="text-sm text-blue-600 dark:text-blue-400 break-all">
-                                                        yoursite.com/post/{urlSlug || 'post-slug'}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </TabsContent>
-                            </div>
-                        </Tabs>
-                </form>
+                </aside>
             </div>
         </div>
     );
