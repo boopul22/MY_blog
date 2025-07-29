@@ -9,9 +9,14 @@ import { SparklesIcon, DocumentTextIcon, GlobeAltIcon, CogIcon, RocketLaunchIcon
 import Spinner from '../../components/Spinner';
 import ImageUpload from '../../components/ImageUpload';
 import EnhancedRichTextEditor from '../../components/EnhancedRichTextEditor';
-import { TabContainer, TabList, Tab, TabPanel, useTabContext } from '../../components/Tabs';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import FormField from '../../components/FormField';
-import Card from '../../components/Card';
 import { ImageSizes } from '../../services/imageService';
 
 const PostEditorPage: React.FC = () => {
@@ -331,22 +336,9 @@ const PostEditorPage: React.FC = () => {
         return () => document.removeEventListener('keydown', handleKeyDown);
     }, [isSaving, handleSaveDraft, handlePublish]);
 
-    // Tab validation component - memoized to prevent unnecessary re-renders
-    const TabValidationWrapper = useMemo(() => {
-        return ({ children }: { children: React.ReactNode }) => {
-            const { setTabError } = useTabContext();
-
-            useEffect(() => {
-                // Update tab error states based on validation
-                setTabError('content', !!(validationErrors.title || validationErrors.content));
-                setTabError('seo', false); // SEO fields are optional
-                setTabError('publishing', !!validationErrors.categoryId);
-                setTabError('advanced', false); // Advanced fields are optional
-            }, [validationErrors, setTabError]);
-
-            return <>{children}</>;
-        };
-    }, [validationErrors]);
+    // Validation state for tabs
+    const hasContentErrors = !!(validationErrors.title || validationErrors.content);
+    const hasPublishingErrors = !!validationErrors.categoryId;
 
     if (!context) return <Spinner />;
     const { categories, tags } = context;
@@ -438,30 +430,33 @@ const PostEditorPage: React.FC = () => {
             {/* Main Content Area */}
             <div className="flex-1 flex overflow-hidden">
                 <form id="post-form" onSubmit={handleSubmit} className="flex-1 flex flex-col">
-                    <TabContainer defaultTab="content" className="flex-1 flex flex-col bg-white dark:bg-gray-800">
-                        <TabValidationWrapper>
-                            {/* Tab Navigation */}
-                            <div className="flex-shrink-0 border-b border-gray-200 dark:border-gray-700 px-6">
-                                <TabList>
-                                    <Tab id="content" icon={<DocumentTextIcon />}>
-                                        Content
-                                    </Tab>
-                                    <Tab id="seo" icon={<GlobeAltIcon />}>
-                                        SEO & Meta
-                                    </Tab>
-                                    <Tab id="publishing" icon={<RocketLaunchIcon />}>
-                                        Publishing
-                                    </Tab>
-                                    <Tab id="advanced" icon={<CogIcon />}>
-                                        Advanced
-                                    </Tab>
-                                </TabList>
-                            </div>
+                    <Tabs defaultValue="content" className="flex-1 flex flex-col bg-card">
+                        {/* Tab Navigation */}
+                        <div className="flex-shrink-0 border-b border-border px-4">
+                            <TabsList className="grid w-full grid-cols-4">
+                                <TabsTrigger value="content" className="gap-2">
+                                    <DocumentTextIcon className="h-4 w-4" />
+                                    <span className="hidden sm:inline">Content</span>
+                                </TabsTrigger>
+                                <TabsTrigger value="seo" className="gap-2">
+                                    <GlobeAltIcon className="h-4 w-4" />
+                                    <span className="hidden sm:inline">SEO & Meta</span>
+                                </TabsTrigger>
+                                <TabsTrigger value="publishing" className="gap-2">
+                                    <RocketLaunchIcon className="h-4 w-4" />
+                                    <span className="hidden sm:inline">Publishing</span>
+                                </TabsTrigger>
+                                <TabsTrigger value="advanced" className="gap-2">
+                                    <CogIcon className="h-4 w-4" />
+                                    <span className="hidden sm:inline">Advanced</span>
+                                </TabsTrigger>
+                            </TabsList>
+                        </div>
 
-                            {/* Tab Content Area - Fixed Height */}
-                            <div className="flex-1 overflow-hidden">
-                                {/* Content Tab */}
-                                <TabPanel id="content" className="h-full">
+                        {/* Tab Content Area - Fixed Height */}
+                        <div className="flex-1 overflow-hidden">
+                            {/* Content Tab */}
+                            <TabsContent value="content" className="flex-1 overflow-hidden m-0">
                                     <div className="h-full flex flex-col lg:flex-row">
                                         {/* Left Column - Title and Controls */}
                                         <div className="w-full lg:w-80 xl:w-96 flex-shrink-0 p-4 md:p-6 border-b lg:border-b-0 lg:border-r border-gray-200 dark:border-gray-700 space-y-4">
@@ -471,13 +466,12 @@ const PostEditorPage: React.FC = () => {
                                                 required
                                                 error={validationErrors.title}
                                             >
-                                                <input
+                                                <Input
                                                     type="text"
                                                     id="title"
                                                     name="title"
                                                     value={post.title || ''}
                                                     onChange={handleInputChange}
-                                                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
                                                     placeholder="Enter your post title..."
                                                     required
                                                 />
@@ -598,10 +592,10 @@ const PostEditorPage: React.FC = () => {
                                             </FormField>
                                         </div>
                                     </div>
-                                </TabPanel>
+                            </TabsContent>
 
-                                {/* SEO & Meta Tab */}
-                                <TabPanel id="seo" className="h-full">
+                            {/* SEO & Meta Tab */}
+                            <TabsContent value="seo" className="flex-1 overflow-hidden m-0">
                                     <div className="h-full p-6">
                                         <div className="h-full grid grid-cols-2 gap-8">
                                             {/* Left Column */}
@@ -745,10 +739,10 @@ const PostEditorPage: React.FC = () => {
                                             </div>
                                         </div>
                                     </div>
-                                </TabPanel>
+                            </TabsContent>
 
-                                {/* Publishing Tab */}
-                                <TabPanel id="publishing" className="h-full">
+                            {/* Publishing Tab */}
+                            <TabsContent value="publishing" className="flex-1 overflow-hidden m-0">
                                     <div className="h-full p-6">
                                         <div className="h-full grid grid-cols-3 gap-6">
                                             {/* Left Column - Basic Settings */}
@@ -888,10 +882,10 @@ const PostEditorPage: React.FC = () => {
                                             </div>
                                         </div>
                                     </div>
-                                </TabPanel>
+                            </TabsContent>
 
-                                {/* Advanced Tab */}
-                                <TabPanel id="advanced" className="h-full">
+                            {/* Advanced Tab */}
+                            <TabsContent value="advanced" className="flex-1 overflow-hidden m-0">
                                     <div className="h-full p-6">
                                         <div className="h-full grid grid-cols-2 gap-8">
                                             {/* Left Column */}
@@ -1055,10 +1049,9 @@ const PostEditorPage: React.FC = () => {
                                             </div>
                                         </div>
                                     </div>
-                                </TabPanel>
+                                </TabsContent>
                             </div>
-                        </TabValidationWrapper>
-                    </TabContainer>
+                        </Tabs>
                 </form>
             </div>
         </div>

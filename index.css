@@ -1,4 +1,7 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
 @config "./tailwind.config.js";
 
 /* behindyourbrain Blog - Custom Styles */
@@ -6,10 +9,75 @@
 /* Color scheme support for proper dark mode */
 :root {
   color-scheme: light;
+  --radius: 0.5rem;
+  --background: 248 249 250; /* #f8f9fa - light */
+  --foreground: 26 32 44; /* #1a202c - dark-text */
+  --card: 255 255 255; /* white */
+  --card-foreground: 26 32 44; /* #1a202c - dark-text */
+  --popover: 255 255 255; /* white */
+  --popover-foreground: 26 32 44; /* #1a202c - dark-text */
+  --primary: 0 123 255; /* #007bff - primary */
+  --primary-foreground: 247 250 252; /* #f7fafc - light-text */
+  --secondary: 108 117 125; /* #6c757d - secondary */
+  --secondary-foreground: 26 32 44; /* #1a202c - dark-text */
+  --muted: 248 249 250; /* #f8f9fa - light */
+  --muted-foreground: 108 117 125; /* #6c757d - secondary */
+  --accent: 202 66 70; /* #ca4246 - accent */
+  --accent-foreground: 247 250 252; /* #f7fafc - light-text */
+  --destructive: 220 38 38; /* red-600 */
+  --destructive-foreground: 248 249 250; /* #f8f9fa - light */
+  --border: 229 231 235; /* gray-200 */
+  --input: 229 231 235; /* gray-200 */
+  --ring: 0 123 255; /* #007bff - primary */
+  --chart-1: 0 123 255; /* #007bff - primary */
+  --chart-2: 202 66 70; /* #ca4246 - accent */
+  --chart-3: 108 117 125; /* #6c757d - secondary */
+  --chart-4: 34 197 94; /* green-500 */
+  --chart-5: 168 85 247; /* purple-500 */
+  --sidebar: 26 32 44; /* #1a202c - dark */
+  --sidebar-foreground: 247 250 252; /* #f7fafc - light-text */
+  --sidebar-primary: 0 123 255; /* #007bff - primary */
+  --sidebar-primary-foreground: 247 250 252; /* #f7fafc - light-text */
+  --sidebar-accent: 45 55 72; /* #2d3748 - medium-dark */
+  --sidebar-accent-foreground: 247 250 252; /* #f7fafc - light-text */
+  --sidebar-border: 74 85 104; /* #4a5568 - light-dark */
+  --sidebar-ring: 0 123 255; /* #007bff - primary */
 }
 
 .dark {
   color-scheme: dark;
+  --background: 26 32 44; /* #1a202c - dark */
+  --foreground: 247 250 252; /* #f7fafc - light-text */
+  --card: 45 55 72; /* #2d3748 - medium-dark */
+  --card-foreground: 247 250 252; /* #f7fafc - light-text */
+  --popover: 45 55 72; /* #2d3748 - medium-dark */
+  --popover-foreground: 247 250 252; /* #f7fafc - light-text */
+  --primary: 0 123 255; /* #007bff - primary */
+  --primary-foreground: 247 250 252; /* #f7fafc - light-text */
+  --secondary: 74 85 104; /* #4a5568 - light-dark */
+  --secondary-foreground: 247 250 252; /* #f7fafc - light-text */
+  --muted: 45 55 72; /* #2d3748 - medium-dark */
+  --muted-foreground: 156 163 175; /* gray-400 */
+  --accent: 202 66 70; /* #ca4246 - accent */
+  --accent-foreground: 247 250 252; /* #f7fafc - light-text */
+  --destructive: 239 68 68; /* red-500 */
+  --destructive-foreground: 247 250 252; /* #f7fafc - light-text */
+  --border: 74 85 104; /* #4a5568 - light-dark */
+  --input: 74 85 104; /* #4a5568 - light-dark */
+  --ring: 0 123 255; /* #007bff - primary */
+  --chart-1: 0 123 255; /* #007bff - primary */
+  --chart-2: 202 66 70; /* #ca4246 - accent */
+  --chart-3: 108 117 125; /* #6c757d - secondary */
+  --chart-4: 34 197 94; /* green-500 */
+  --chart-5: 168 85 247; /* purple-500 */
+  --sidebar: 26 32 44; /* #1a202c - dark */
+  --sidebar-foreground: 247 250 252; /* #f7fafc - light-text */
+  --sidebar-primary: 0 123 255; /* #007bff - primary */
+  --sidebar-primary-foreground: 247 250 252; /* #f7fafc - light-text */
+  --sidebar-accent: 45 55 72; /* #2d3748 - medium-dark */
+  --sidebar-accent-foreground: 247 250 252; /* #f7fafc - light-text */
+  --sidebar-border: 74 85 104; /* #4a5568 - light-dark */
+  --sidebar-ring: 0 123 255; /* #007bff - primary */
 }
 
 /* Ensure full page dark mode coverage */
@@ -110,7 +178,7 @@ html {
     outline-offset: 2px;
     border-radius: 4px;
   }
-  
+
   /* Enhanced focus for interactive elements */
   .mobile-focus:focus {
     outline: 3px solid #3b82f6;
@@ -149,7 +217,7 @@ html {
   .backdrop-blur-md {
     background-color: rgba(255, 255, 255, 0.95);
   }
-  
+
   .dark .backdrop-blur-md {
     background-color: rgba(26, 26, 26, 0.95);
   }
@@ -169,14 +237,14 @@ html {
     -webkit-overflow-scrolling: touch;
     scroll-behavior: smooth;
   }
-  
+
   /* Mobile-optimized containers */
   .mobile-container {
     padding-left: 16px;
     padding-right: 16px;
     max-width: 100%;
   }
-  
+
   /* Enhanced mobile card interactions */
   .mobile-card {
     border-radius: 12px;
@@ -185,12 +253,12 @@ html {
     transition: all 0.3s ease;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   }
-  
+
   .mobile-card:active {
     transform: scale(0.98);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   }
-  
+
   /* Mobile navigation improvements */
   .mobile-nav {
     position: sticky;
@@ -199,23 +267,23 @@ html {
     backdrop-filter: blur(12px);
     background-color: rgba(255, 255, 255, 0.95);
   }
-  
+
   .dark .mobile-nav {
     background-color: rgba(26, 32, 44, 0.95);
   }
-  
+
   /* Mobile menu button */
   .mobile-menu-button {
     padding: 12px;
     border-radius: 8px;
     transition: all 0.2s ease;
   }
-  
+
   .mobile-menu-button:active {
     background-color: rgba(0, 0, 0, 0.1);
     transform: scale(0.95);
   }
-  
+
   /* Mobile dropdown menu */
   .mobile-dropdown {
     position: absolute;
@@ -227,18 +295,18 @@ html {
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
     z-index: 60;
   }
-  
+
   .dark .mobile-dropdown {
     background-color: #1a202c;
   }
-  
+
   /* Mobile text selection */
   .mobile-selectable {
     -webkit-user-select: text;
     user-select: text;
     -webkit-touch-callout: default;
   }
-  
+
   /* Mobile image optimization */
   .mobile-image {
     width: 100%;
@@ -246,20 +314,20 @@ html {
     border-radius: 8px;
     object-fit: cover;
   }
-  
+
   /* Mobile spacing utilities */
   .mobile-spacing-sm {
     margin: 8px 0;
   }
-  
+
   .mobile-spacing-md {
     margin: 16px 0;
   }
-  
+
   .mobile-spacing-lg {
     margin: 24px 0;
   }
-  
+
   /* Mobile grid improvements */
   .mobile-grid {
     display: grid;
@@ -267,7 +335,7 @@ html {
     gap: 20px;
     padding: 16px;
   }
-  
+
   /* Mobile accessibility improvements */
   .mobile-accessible {
     font-size: 16px;
@@ -275,17 +343,17 @@ html {
     color: #1f2937;
     font-weight: 400;
   }
-  
+
   .dark .mobile-accessible {
     color: #f9fafb;
   }
-  
+
   /* Mobile loading states */
   .mobile-loading {
     padding: 40px 20px;
     text-align: center;
   }
-  
+
   .mobile-spinner {
     width: 32px;
     height: 32px;
@@ -321,55 +389,55 @@ html {
     min-width: 44px;
     padding: 12px 16px;
   }
-  
+
   /* Enhanced spacing for mobile navigation */
   nav a,
   nav button {
     padding: 16px 20px;
     margin: 4px 0;
   }
-  
+
   /* Mobile card spacing */
   .mobile-card-spacing {
     margin-bottom: 24px;
     padding: 20px;
   }
-  
+
   /* Mobile typography improvements */
   h1 {
     font-size: 2rem;
     line-height: 1.2;
     margin-bottom: 1rem;
   }
-  
+
   h2 {
     font-size: 1.75rem;
     line-height: 1.3;
     margin-bottom: 0.875rem;
   }
-  
+
   h3 {
     font-size: 1.5rem;
     line-height: 1.4;
     margin-bottom: 0.75rem;
   }
-  
+
   p {
     font-size: 1rem;
     line-height: 1.6;
     margin-bottom: 1rem;
   }
-  
+
   /* Improved text contrast for mobile */
   .mobile-text-contrast {
     color: #1f2937;
     font-weight: 500;
   }
-  
+
   .dark .mobile-text-contrast {
     color: #f9fafb;
   }
-  
+
   /* Mobile button improvements */
   .mobile-button {
     font-size: 1rem;
@@ -378,11 +446,11 @@ html {
     border-radius: 8px;
     transition: all 0.2s ease;
   }
-  
+
   .mobile-button:active {
     transform: scale(0.98);
   }
-  
+
   /* Mobile link improvements */
   .mobile-link {
     text-decoration: underline;
@@ -390,7 +458,7 @@ html {
     text-underline-offset: 4px;
     padding: 8px 4px;
   }
-  
+
   /* Mobile form elements */
   input,
   textarea,
@@ -400,7 +468,7 @@ html {
     border-radius: 8px;
     border: 2px solid #d1d5db;
   }
-  
+
   input:focus,
    textarea:focus,
    select:focus {
@@ -416,22 +484,22 @@ html {
     font-size: 14px;
     line-height: 1.6;
   }
-  
+
   h1 {
     font-size: 1.75rem;
     line-height: 1.2;
   }
-  
+
   h2 {
     font-size: 1.5rem;
     line-height: 1.3;
   }
-  
+
   h3 {
     font-size: 1.25rem;
     line-height: 1.4;
   }
-  
+
   /* Larger touch targets for small screens */
   button,
   a,
@@ -440,20 +508,20 @@ html {
     min-width: 48px;
     padding: 16px 20px;
   }
-  
+
   /* Enhanced spacing for readability */
   .small-mobile-spacing {
     padding: 16px 12px;
     margin: 12px 0;
   }
-  
+
   /* Improved card layout for small screens */
   .small-mobile-card {
     padding: 16px;
     margin: 12px 8px;
     border-radius: 8px;
   }
-  
+
   /* Better text contrast for small screens */
   .small-mobile-text {
     font-size: 15px;
@@ -461,7 +529,7 @@ html {
     color: #111827;
     font-weight: 500;
   }
-  
+
   .dark .small-mobile-text {
     color: #f3f4f6;
   }
@@ -473,13 +541,13 @@ html {
   .landscape-mobile {
     padding: 12px 20px;
   }
-  
+
   /* Adjust navigation for landscape */
   .landscape-nav {
     height: 60px;
     padding: 8px 16px;
   }
-  
+
   /* Compact spacing for landscape */
   .landscape-spacing {
     margin: 8px 0;
@@ -494,14 +562,14 @@ html {
   input {
     border: 2px solid currentColor;
   }
-  
+
   .high-contrast-focus:focus {
     outline: 4px solid #000;
     outline-offset: 2px;
     background-color: #ffff00;
     color: #000;
   }
-  
+
   .dark .high-contrast-focus:focus {
     outline: 4px solid #fff;
     background-color: #000;
@@ -519,7 +587,7 @@ html {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
-  
+
   .reduced-motion-safe {
     transform: none !important;
   }
@@ -736,5 +804,52 @@ html {
   .rich-text-editor input,
   .rich-text-editor textarea {
     font-size: 16px !important;
+  }
+}
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
   }
 }

@@ -2,13 +2,24 @@
 import React, { useContext } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { BlogContext } from '../../context/SupabaseBlogContext';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 import { PlusIcon, PencilIcon, TrashIcon, EyeIcon } from '../../components/icons';
 
 const PostListPage: React.FC = () => {
     const context = useContext(BlogContext);
     const navigate = useNavigate();
 
-    if (!context) return <div>Loading...</div>;
+    if (!context) return <div className="p-4">Loading...</div>;
 
     const { posts, deletePost, categories } = context;
 
@@ -16,65 +27,99 @@ const PostListPage: React.FC = () => {
         return categories.find(c => c.id === categoryId)?.name || 'Uncategorized';
     };
 
+    const handleDeletePost = (postId: string, postTitle: string) => {
+        if (window.confirm(`Are you sure you want to delete "${postTitle}"?`)) {
+            deletePost(postId);
+        }
+    };
+
     return (
-        <div>
-            <div className="flex justify-between items-center mb-6">
-                <h1 className="text-3xl font-bold text-dark-text dark:text-light-text">Manage Posts</h1>
-                <button
-                    onClick={() => navigate('/admin/posts/new')}
-                    className="flex items-center bg-primary hover:bg-primary-dark text-light-text font-bold py-2 px-4 rounded-lg transition-colors"
-                >
-                    <PlusIcon className="w-5 h-5 mr-2" />
+        <div className="p-4 space-y-4 h-full overflow-auto">
+            <div className="flex justify-between items-center">
+                <h1 className="text-2xl font-bold">Manage Posts</h1>
+                <Button onClick={() => navigate('/admin/posts/new')} className="gap-2">
+                    <PlusIcon className="h-4 w-4" />
                     New Post
-                </button>
+                </Button>
             </div>
-            <div className="bg-light dark:bg-dark shadow-md rounded-lg overflow-hidden">
-                <table className="min-w-full leading-normal">
-                    <thead>
-                        <tr className="border-b-2 border-gray-300 dark:border-medium-dark bg-gray-200 dark:bg-medium-dark">
-                            <th className="px-5 py-3 text-left text-xs font-semibold text-secondary dark:text-gray-400 uppercase tracking-wider">Title</th>
-                            <th className="px-5 py-3 text-left text-xs font-semibold text-secondary dark:text-gray-400 uppercase tracking-wider">Category</th>
-                            <th className="px-5 py-3 text-left text-xs font-semibold text-secondary dark:text-gray-400 uppercase tracking-wider">Status</th>
-                            <th className="px-5 py-3 text-left text-xs font-semibold text-secondary dark:text-gray-400 uppercase tracking-wider">Date</th>
-                            <th className="px-5 py-3 text-left text-xs font-semibold text-secondary dark:text-gray-400 uppercase tracking-wider">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {posts.map(post => (
-                            <tr key={post.id} className="border-b border-gray-300 dark:border-medium-dark hover:bg-gray-100 dark:hover:bg-medium-dark/50">
-                                <td className="px-5 py-4 text-sm">
-                                    <p className="text-dark-text dark:text-light-text whitespace-no-wrap font-medium">{post.title}</p>
-                                </td>
-                                <td className="px-5 py-4 text-sm">
-                                    <p className="text-secondary dark:text-gray-400 whitespace-no-wrap">{getCategoryName(post.categoryId)}</p>
-                                </td>
-                                <td className="px-5 py-4 text-sm">
-                                    <span className={`relative inline-block px-3 py-1 font-semibold leading-tight ${post.status === 'published' ? 'text-green-800' : 'text-yellow-800'}`}>
-                                        <span aria-hidden className={`absolute inset-0 ${post.status === 'published' ? 'bg-green-300' : 'bg-yellow-300'} opacity-50 rounded-full`}></span>
-                                        <span className="relative">{post.status}</span>
-                                    </span>
-                                </td>
-                                <td className="px-5 py-4 text-sm">
-                                    <p className="text-secondary dark:text-gray-400 whitespace-no-wrap">{new Date(post.createdAt).toLocaleDateString()}</p>
-                                </td>
-                                <td className="px-5 py-4 text-sm">
-                                    <div className="flex items-center space-x-3">
-                                        <Link to={`/post/${post.slug}`} target="_blank" className="text-secondary hover:text-primary" title="View Post">
-                                            <EyeIcon className="w-5 h-5"/>
-                                        </Link>
-                                        <button onClick={() => navigate(`/admin/posts/edit/${post.id}`)} className="text-secondary hover:text-primary-dark" title="Edit Post">
-                                            <PencilIcon className="w-5 h-5" />
-                                        </button>
-                                        <button onClick={() => window.confirm('Are you sure?') && deletePost(post.id)} className="text-secondary hover:text-red-600" title="Delete Post">
-                                            <TrashIcon className="w-5 h-5" />
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
+
+            <Card>
+                <CardHeader className="pb-3">
+                    <CardTitle className="text-lg">Posts ({posts.length})</CardTitle>
+                </CardHeader>
+                <CardContent className="p-0">
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead>Title</TableHead>
+                                <TableHead>Category</TableHead>
+                                <TableHead>Status</TableHead>
+                                <TableHead>Date</TableHead>
+                                <TableHead className="w-[120px]">Actions</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {posts.map(post => (
+                                <TableRow key={post.id}>
+                                    <TableCell className="font-medium">
+                                        <div className="max-w-[300px] truncate">
+                                            {post.title}
+                                        </div>
+                                    </TableCell>
+                                    <TableCell>
+                                        <Badge variant="outline" className="text-xs">
+                                            {getCategoryName(post.categoryId)}
+                                        </Badge>
+                                    </TableCell>
+                                    <TableCell>
+                                        <Badge
+                                            variant={post.status === 'published' ? 'default' : 'secondary'}
+                                            className="text-xs"
+                                        >
+                                            {post.status}
+                                        </Badge>
+                                    </TableCell>
+                                    <TableCell className="text-sm text-muted-foreground">
+                                        {new Date(post.createdAt).toLocaleDateString()}
+                                    </TableCell>
+                                    <TableCell>
+                                        <div className="flex items-center gap-1">
+                                            <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                asChild
+                                                className="h-8 w-8"
+                                            >
+                                                <Link to={`/post/${post.slug}`} target="_blank" title="View Post">
+                                                    <EyeIcon className="h-4 w-4" />
+                                                </Link>
+                                            </Button>
+                                            <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                onClick={() => navigate(`/admin/posts/edit/${post.id}`)}
+                                                className="h-8 w-8"
+                                                title="Edit Post"
+                                            >
+                                                <PencilIcon className="h-4 w-4" />
+                                            </Button>
+                                            <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                onClick={() => handleDeletePost(post.id, post.title)}
+                                                className="h-8 w-8 text-destructive hover:text-destructive"
+                                                title="Delete Post"
+                                            >
+                                                <TrashIcon className="h-4 w-4" />
+                                            </Button>
+                                        </div>
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </CardContent>
+            </Card>
         </div>
     );
 };

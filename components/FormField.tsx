@@ -1,4 +1,5 @@
 import React, { ReactNode } from 'react';
+import { cn } from '@/lib/utils';
 
 interface FormFieldProps {
   label: string;
@@ -20,25 +21,25 @@ const FormField: React.FC<FormFieldProps> = React.memo(({
   className = ''
 }) => {
   return (
-    <div className={`space-y-2 ${className}`}>
-      <label 
+    <div className={cn("space-y-2", className)}>
+      <label
         htmlFor={htmlFor}
-        className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
       >
         {label}
-        {required && <span className="text-red-500 ml-1">*</span>}
+        {required && <span className="text-destructive ml-1">*</span>}
       </label>
-      
+
       {children}
-      
+
       {hint && !error && (
-        <p className="text-xs text-gray-500 dark:text-gray-400">
+        <p className="text-xs text-muted-foreground">
           {hint}
         </p>
       )}
-      
+
       {error && (
-        <p className="text-xs text-red-600 dark:text-red-400">
+        <p className="text-xs text-destructive">
           {error}
         </p>
       )}

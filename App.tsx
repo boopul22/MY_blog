@@ -17,6 +17,7 @@ import PostListPage from './pages/admin/PostListPage';
 import PostEditorPage from './pages/admin/PostEditorPage';
 import CategoryManagerPage from './pages/admin/CategoryManagerPage';
 import EditorTestPage from './pages/admin/EditorTestPage';
+import EditorDebugPage from './pages/EditorDebugPage';
 import Sitemap from './pages/Sitemap';
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -63,6 +64,7 @@ const App: React.FC = () => {
                             <Route path="/post/:slug" element={<PostPage />} />
                             <Route path="/category/:slug" element={<CategoryPage />} />
                             <Route path="/all-posts" element={<AllPostsPage />} />
+                            <Route path="/editor-debug" element={<EditorDebugPage />} />
                             <Route path="/sitemap.xml" element={<Sitemap />} />
                         </Routes>
                     </div>

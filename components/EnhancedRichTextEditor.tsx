@@ -86,62 +86,74 @@ const EnhancedRichTextEditor: React.FC<EnhancedRichTextEditorProps> = ({
     }
   }, [uploadPostImage]);
 
-  // Build comprehensive plugin list based on enabled features
+  // Build comprehensive plugin list based on enabled features - Optimized loading order
   const getPlugins = () => {
+    // Core plugins loaded first for better performance
     const basePlugins = [
       'advlist', 'autolink', 'lists', 'link', 'charmap', 'anchor',
       'searchreplace', 'visualblocks', 'wordcount', 'help'
     ];
 
-    if (enableMediaUpload) basePlugins.push('image', 'media');
+    // Conditional plugins based on features - avoid duplicates
+    if (enableMediaUpload) {
+      basePlugins.push('image');
+      if (enableEmbeds && !basePlugins.includes('media')) {
+        basePlugins.push('media');
+      }
+    }
     if (enableTables) basePlugins.push('table');
     if (enableSourceCode) basePlugins.push('code');
     if (enableFullScreen) basePlugins.push('fullscreen');
     if (enableAdvancedFormatting) basePlugins.push('emoticons');
-    if (enableEmbeds) basePlugins.push('media');
 
-    return basePlugins;
+    // Additional performance-oriented plugins (paste is built-in in TinyMCE 7+)
+    if (enableKeyboardShortcuts) basePlugins.push('quickbars'); // Context-sensitive toolbars
+
+    return [...new Set(basePlugins)]; // Remove any duplicates
   };
 
-  // Build comprehensive toolbar based on enabled features
+  // Build comprehensive toolbar based on enabled features - Optimized for UX
   const getToolbar = () => {
+    // Primary toolbar: Most frequently used formatting tools
     let toolbar1 = 'undo redo | ';
+    toolbar1 += 'blocks | ';
+    toolbar1 += 'bold italic underline | ';
+    toolbar1 += 'forecolor backcolor | ';
+    toolbar1 += 'align | ';
+    toolbar1 += 'bullist numlist';
 
-    // Format dropdown and basic formatting
-    toolbar1 += 'blocks fontfamily fontsize | ';
-    toolbar1 += 'bold italic underline strikethrough | ';
-
-    // Alignment
-    toolbar1 += 'align';
-
-    let toolbar2 = 'bullist numlist outdent indent | ';
+    // Secondary toolbar: Advanced features and media
+    let toolbar2 = 'outdent indent | ';
 
     // Links and media
     if (enableLinking) toolbar2 += 'link unlink | ';
-    if (enableMediaUpload) toolbar2 += 'image media | ';
+    if (enableMediaUpload) toolbar2 += 'image | ';
+    if (enableEmbeds) toolbar2 += 'media | ';
 
-    // Tables
+    // Tables and advanced formatting
     if (enableTables) toolbar2 += 'table | ';
-
-    // Advanced features
     toolbar2 += 'blockquote hr | ';
-    if (enableSourceCode) toolbar2 += 'code | ';
-    if (enableFullScreen) toolbar2 += 'fullscreen | ';
 
+    // Code and utilities
+    if (enableSourceCode) toolbar2 += 'code | ';
+    toolbar2 += 'removeformat | ';
+
+    // View and help
+    if (enableFullScreen) toolbar2 += 'fullscreen | ';
     toolbar2 += 'help';
 
     return [toolbar1, toolbar2];
   };
 
-  // TinyMCE configuration
+  // TinyMCE configuration - Optimized for performance and best practices
   const editorConfig = useMemo(() => {
     const toolbars = getToolbar();
-    
+
     return {
-      // License key for TinyMCE 8.x (use 'gpl' for open source)
+      // License key for TinyMCE 7.x (use 'gpl' for open source)
       license_key: 'gpl',
 
-      // Basic configuration
+      // Basic configuration - Optimized for performance
       height: autoHeight ? 'auto' : (typeof height === 'number' ? Math.max(height, 300) : (height || 400)),
       min_height: 300,
       max_height: autoHeight ? 800 : undefined,
@@ -149,40 +161,48 @@ const EnhancedRichTextEditor: React.FC<EnhancedRichTextEditorProps> = ({
       statusbar: showWordCount,
       resize: true,
 
-      // Comprehensive plugins
+      // Performance optimizations
+      object_resizing: true,
+      elementpath: false, // Disable element path for better performance
+
+      // Comprehensive plugins - Optimized loading order
       plugins: getPlugins(),
 
-      // Multi-row toolbar
+      // Multi-row toolbar with improved organization
       toolbar1: toolbars[0],
       toolbar2: toolbars[1],
       toolbar_mode: 'sliding',
+      toolbar_sticky: true, // Keep toolbar visible when scrolling
 
-      // Content settings
+      // Content settings - Enhanced for better UX
       placeholder: placeholder || 'Start writing your content...',
       browser_spellcheck: true,
       paste_data_images: enableMediaUpload,
       paste_as_text: false,
+      paste_webkit_styles: 'font-weight font-style color text-decoration',
+      paste_retain_style_properties: 'color font-size font-family font-weight font-style text-decoration',
 
-      // Content structure
+      // Content structure - Improved for semantic HTML
       forced_root_block: 'p',
       forced_root_block_attrs: {},
       remove_trailing_brs: false,
+      keep_styles: false, // Remove inline styles for cleaner HTML
 
-      // Format options - using modern TinyMCE 7.0 format
-      block_formats: 'Paragraph=p; Heading 1=h1; Heading 2=h2; Heading 3=h3; Heading 4=h4; Heading 5=h5; Heading 6=h6; Preformatted=pre; Blockquote=blockquote',
+      // Format options - Enhanced with better semantic options
+      block_formats: 'Paragraph=p; Heading 1=h1; Heading 2=h2; Heading 3=h3; Heading 4=h4; Heading 5=h5; Heading 6=h6; Preformatted=pre; Blockquote=blockquote; Code=code',
 
-      // Font options - using modern TinyMCE 7.0 format
-      font_family_formats: 'Arial=arial,helvetica,sans-serif; Georgia=georgia,serif; Times New Roman=times new roman,times,serif; Courier New=courier new,courier,monospace; Verdana=verdana,geneva,sans-serif; Helvetica=helvetica,arial,sans-serif; Impact=impact,sans-serif; Tahoma=tahoma,arial,helvetica,sans-serif',
-      font_size_formats: '8pt 9pt 10pt 11pt 12pt 14pt 16pt 18pt 20pt 24pt 30pt 36pt 48pt 60pt 72pt 96pt',
+      // Font options - Optimized with web-safe fonts
+      font_family_formats: 'System Font=-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen,Ubuntu,Cantarell,sans-serif; Arial=arial,helvetica,sans-serif; Georgia=georgia,serif; Times New Roman=times new roman,times,serif; Courier New=courier new,courier,monospace; Verdana=verdana,geneva,sans-serif',
+      font_size_formats: '12px 14px 16px 18px 20px 24px 28px 32px 36px 48px',
 
-      // Disable external requests
+      // Disable external requests for better performance and privacy
       branding: false,
       promotion: false,
       verify_html: false,
       cleanup: false,
       convert_urls: false,
 
-      // Enhanced content styling
+      // Enhanced content styling - Optimized for readability and performance
       content_style: `
         body {
           font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
@@ -191,23 +211,30 @@ const EnhancedRichTextEditor: React.FC<EnhancedRichTextEditorProps> = ({
           color: #374151;
           margin: 1rem;
           max-width: none;
+          word-wrap: break-word;
+          overflow-wrap: break-word;
         }
-        
+
         h1, h2, h3, h4, h5, h6 {
           font-weight: 600;
           line-height: 1.25;
           margin-top: 1.5em;
           margin-bottom: 0.5em;
           color: #1f2937;
+          scroll-margin-top: 2rem; /* Better anchor link behavior */
         }
-        
+
         h1 { font-size: 2.25em; }
         h2 { font-size: 1.875em; }
         h3 { font-size: 1.5em; }
         h4 { font-size: 1.25em; }
         h5 { font-size: 1.125em; }
         h6 { font-size: 1em; }
-        
+
+        p {
+          margin: 0 0 1em 0;
+        }
+
         blockquote {
           border-left: 4px solid #3b82f6;
           margin: 1.5em 0;
@@ -215,8 +242,9 @@ const EnhancedRichTextEditor: React.FC<EnhancedRichTextEditorProps> = ({
           background-color: #f8fafc;
           font-style: italic;
           color: #64748b;
+          border-radius: 0 0.25rem 0.25rem 0;
         }
-        
+
         code {
           background-color: #f1f5f9;
           padding: 0.125em 0.25em;
@@ -224,8 +252,9 @@ const EnhancedRichTextEditor: React.FC<EnhancedRichTextEditorProps> = ({
           font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', 'Courier New', monospace;
           font-size: 0.875em;
           color: #e11d48;
+          border: 1px solid #e2e8f0;
         }
-        
+
         pre {
           background-color: #1e293b;
           color: #f1f5f9;
@@ -234,6 +263,7 @@ const EnhancedRichTextEditor: React.FC<EnhancedRichTextEditorProps> = ({
           overflow-x: auto;
           font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', 'Courier New', monospace;
           line-height: 1.4;
+          border: 1px solid #334155;
         }
         
         table {
@@ -296,23 +326,40 @@ const EnhancedRichTextEditor: React.FC<EnhancedRichTextEditorProps> = ({
       images_upload_credentials: false,
       images_reuse_filename: true,
 
-      // Table configuration
+      // Table configuration - Enhanced for better UX
       table_default_attributes: {
         border: '1'
       },
       table_default_styles: {
         'border-collapse': 'collapse',
-        'width': '100%'
+        'width': '100%',
+        'border': '1px solid #e2e8f0'
       },
+      table_responsive_width: true,
+      table_grid: false, // Disable table grid for better performance
 
-      // Link configuration
+      // Link configuration - Improved for better UX
       link_assume_external_targets: true,
       link_context_toolbar: true,
       link_title: false,
+      link_quicklink: true, // Enable quick link creation
+      default_link_target: '_blank',
 
       // Advanced list configuration
       advlist_bullet_styles: 'disc,circle,square',
       advlist_number_styles: 'decimal,lower-alpha,lower-roman,upper-alpha,upper-roman',
+
+      // Performance optimizations
+      cache_suffix: '?v=7.9.1', // Cache busting for updates
+
+      // Accessibility improvements
+      a11y_advanced_options: true,
+
+      // Mobile responsiveness - Simplified for TinyMCE 7+
+      mobile: {
+        toolbar_mode: 'sliding',
+        toolbar_sticky: false
+      },
 
       // Setup function to handle editor events and custom functionality
       setup: (editor: any) => {

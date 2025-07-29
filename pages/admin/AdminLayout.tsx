@@ -3,6 +3,9 @@ import React, { useContext } from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { BlogContext } from '../../context/SupabaseBlogContext';
 import { useSidebar } from '../../context/SidebarContext';
+import { Button } from '@/components/ui/button';
+import { Separator } from '@/components/ui/separator';
+import { cn } from '@/lib/utils';
 import {
   ChartBarIcon,
   DocumentTextIcon,
@@ -24,38 +27,43 @@ const AdminLayout: React.FC = () => {
     };
 
     const navLinkClasses = ({ isActive }: { isActive: boolean }) =>
-        `flex items-center px-4 py-3 md:py-4 lg:py-3 rounded-lg transition-colors duration-200 text-sm md:text-base xl:text-sm ${
-        isActive
-            ? 'bg-primary text-light-text'
-            : 'text-gray-400 hover:bg-medium-dark hover:text-light-text'
-        } ${isCollapsed ? 'xl:justify-center xl:px-2' : ''}`;
+        cn(
+            "flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors",
+            "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+            isActive
+                ? "bg-sidebar-primary text-sidebar-primary-foreground"
+                : "text-sidebar-foreground/70",
+            isCollapsed && "justify-center px-2"
+        );
 
     return (
-        <div className="flex h-screen bg-light dark:bg-dark overflow-hidden">
+        <div className="flex h-screen bg-background overflow-hidden">
             {/* Mobile Menu Button */}
-            <div className="xl:hidden fixed top-4 left-4 z-50">
-                <button
+            <div className="xl:hidden fixed top-3 left-3 z-50">
+                <Button
+                    variant="default"
+                    size="icon"
                     onClick={() => setMobileOpen(!isMobileOpen)}
-                    className="p-3 bg-dark text-light-text rounded-lg shadow-lg hover:bg-gray-800 transition-colors duration-200 md:p-2"
-                    aria-label="Toggle sidebar"
+                    className="bg-sidebar text-sidebar-foreground hover:bg-sidebar-accent shadow-lg"
                 >
-                    <MenuIcon className="w-6 h-6 md:w-5 md:h-5" />
-                </button>
+                    <MenuIcon className="h-5 w-5" />
+                </Button>
             </div>
 
             {/* Desktop Collapse Toggle */}
-            <div className="hidden xl:block fixed top-4 left-4 z-50">
-                <button
+            <div className="hidden xl:block fixed top-3 left-3 z-50">
+                <Button
+                    variant="outline"
+                    size="icon"
                     onClick={toggleCollapsed}
-                    className="p-2 bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded-md shadow-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200"
-                    aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+                    className="h-8 w-8 shadow-sm"
                 >
                     {isCollapsed ? (
-                        <ChevronRightIcon className="w-5 h-5" />
+                        <ChevronRightIcon className="h-4 w-4" />
                     ) : (
-                        <ChevronLeftIcon className="w-5 h-5" />
+                        <ChevronLeftIcon className="h-4 w-4" />
                     )}
-                </button>
+                </Button>
             </div>
 
             {/* Mobile Overlay */}
@@ -67,28 +75,31 @@ const AdminLayout: React.FC = () => {
             )}
 
             {/* Sidebar */}
-            <aside className={`
-                fixed xl:static inset-y-0 left-0 z-50 bg-dark text-light-text flex flex-col transform transition-all duration-300 ease-in-out
-                ${isMobileOpen ? 'translate-x-0' : '-translate-x-full xl:translate-x-0'}
-                ${isCollapsed ? 'xl:w-16' : 'xl:w-64'}
-                w-64 md:w-72 lg:w-80 xl:w-64
-            `}>
-                <div className={`p-4 text-center border-b border-medium-dark transition-all duration-300 ${isCollapsed ? 'xl:px-2' : 'md:p-6'}`}>
+            <aside className={cn(
+                "fixed xl:static inset-y-0 left-0 z-50 bg-sidebar border-r border-sidebar-border flex flex-col transform transition-all duration-300 ease-in-out",
+                isMobileOpen ? "translate-x-0" : "-translate-x-full xl:translate-x-0",
+                isCollapsed ? "xl:w-16" : "xl:w-56",
+                "w-56"
+            )}>
+                <div className={cn(
+                    "p-4 border-b border-sidebar-border transition-all duration-300",
+                    isCollapsed ? "xl:px-2" : ""
+                )}>
                     {!isCollapsed && (
-                        <>
-                            <h1 className="text-xl md:text-2xl lg:text-3xl xl:text-2xl font-bold text-light-text">GeminiBlog</h1>
-                            <span className="text-sm md:text-base xl:text-sm text-primary">Admin Panel</span>
-                        </>
+                        <div className="text-center">
+                            <h1 className="text-lg font-bold text-sidebar-foreground">GeminiBlog</h1>
+                            <span className="text-xs text-sidebar-primary">Admin Panel</span>
+                        </div>
                     )}
                     {isCollapsed && (
-                        <div className="hidden xl:block">
-                            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center mx-auto">
-                                <span className="text-white font-bold text-sm">GB</span>
+                        <div className="hidden xl:flex justify-center">
+                            <div className="w-8 h-8 bg-sidebar-primary rounded-md flex items-center justify-center">
+                                <span className="text-sidebar-primary-foreground font-bold text-sm">GB</span>
                             </div>
                         </div>
                     )}
                 </div>
-                <nav className="flex-grow p-4 md:p-6 xl:p-4 space-y-2 md:space-y-3 xl:space-y-2">
+                <nav className="flex-grow p-3 space-y-1">
                     <NavLink
                         to="/admin"
                         end
@@ -96,8 +107,8 @@ const AdminLayout: React.FC = () => {
                         onClick={closeMobile}
                         title={isCollapsed ? "Dashboard" : ""}
                     >
-                        <ChartBarIcon className="w-5 h-5 md:w-6 md:h-6 xl:w-5 xl:h-5 flex-shrink-0" />
-                        {!isCollapsed && <span className="ml-3 md:ml-4 xl:ml-3">Dashboard</span>}
+                        <ChartBarIcon className="h-4 w-4 flex-shrink-0" />
+                        {!isCollapsed && <span>Dashboard</span>}
                     </NavLink>
                     <NavLink
                         to="/admin/posts"
@@ -105,8 +116,8 @@ const AdminLayout: React.FC = () => {
                         onClick={closeMobile}
                         title={isCollapsed ? "Posts" : ""}
                     >
-                        <DocumentTextIcon className="w-5 h-5 md:w-6 md:h-6 xl:w-5 xl:h-5 flex-shrink-0" />
-                        {!isCollapsed && <span className="ml-3 md:ml-4 xl:ml-3">Posts</span>}
+                        <DocumentTextIcon className="h-4 w-4 flex-shrink-0" />
+                        {!isCollapsed && <span>Posts</span>}
                     </NavLink>
                     <NavLink
                         to="/admin/categories"
@@ -114,27 +125,32 @@ const AdminLayout: React.FC = () => {
                         onClick={closeMobile}
                         title={isCollapsed ? "Categories & Tags" : ""}
                     >
-                        <TagIcon className="w-5 h-5 md:w-6 md:h-6 xl:w-5 xl:h-5 flex-shrink-0" />
-                        {!isCollapsed && <span className="ml-3 md:ml-4 xl:ml-3">Categories & Tags</span>}
+                        <TagIcon className="h-4 w-4 flex-shrink-0" />
+                        {!isCollapsed && <span>Categories & Tags</span>}
                     </NavLink>
                 </nav>
-                <div className="p-4 md:p-6 xl:p-4 border-t border-medium-dark">
-                    <button
+                <Separator />
+                <div className="p-3">
+                    <Button
+                        variant="ghost"
                         onClick={handleLogout}
-                        className={`w-full flex items-center px-4 py-3 md:py-4 xl:py-3 rounded-lg text-gray-400 hover:bg-medium-dark hover:text-light-text transition-colors duration-200 text-sm md:text-base xl:text-sm ${isCollapsed ? 'xl:justify-center' : ''}`}
+                        className={cn(
+                            "w-full justify-start gap-3 text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+                            isCollapsed && "justify-center px-2"
+                        )}
                         title={isCollapsed ? "Logout" : ""}
                     >
-                        <ArrowLeftOnRectangleIcon className="w-5 h-5 md:w-6 md:h-6 xl:w-5 xl:h-5 flex-shrink-0" />
-                        {!isCollapsed && <span className="ml-3 md:ml-4 xl:ml-3">Logout</span>}
-                    </button>
+                        <ArrowLeftOnRectangleIcon className="h-4 w-4 flex-shrink-0" />
+                        {!isCollapsed && <span>Logout</span>}
+                    </Button>
                 </div>
             </aside>
 
             {/* Main Content */}
-            <main className={`flex-1 overflow-hidden transition-all duration-300 ${isCollapsed ? 'xl:ml-16' : 'xl:ml-64'} xl:ml-0`}>
+            <main className="flex-1 overflow-hidden">
                 <div className="h-full flex flex-col">
-                    {/* Content Area with optimized padding for editor */}
-                    <div className="flex-1 overflow-hidden pt-16 xl:pt-4">
+                    {/* Content Area with compact padding */}
+                    <div className="flex-1 overflow-hidden pt-12 xl:pt-12">
                         <Outlet />
                     </div>
                 </div>
