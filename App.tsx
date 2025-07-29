@@ -109,7 +109,8 @@ const App: React.FC = () => {
               <div className="flex-1 flex flex-col">
                   <Header />
                   <main className="flex-1" style={{contain: 'layout style paint', transform: 'translateZ(0)'}}>
-                    <div className="md:max-w-screen-xl md:mx-auto md:px-4 sm:md:px-6 lg:md:px-8 md:pt-4">
+                    {/* Enhanced Container System */}
+                    <div className="main-container">
                         <ConditionalBreadcrumbs />
                         <Routes>
                             <Route path="/" element={<HomePage />} />

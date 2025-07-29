@@ -7,6 +7,8 @@ import StructuredData from '../../components/StructuredData';
 import FAQSchema from '../../components/FAQSchema';
 import SocialMetaTags from '../../components/SocialMetaTags';
 import TableOfContents from '../../components/TableOfContents';
+import { PostSidebar } from '../../components/PostSidebar';
+import { PostNavigation } from '../../components/PostNavigation';
 
 import { useEnhancedCodeBlocks } from '../../utils/contentRenderer';
 
@@ -169,347 +171,229 @@ const PostPage: React.FC = () => {
                 breadcrumbs={breadcrumbs}
             />
 
-            {/* Mobile: Edge-to-edge layout */}
-            <div className="md:hidden">
+            {/* Mobile: Enhanced edge-to-edge layout */}
+            <div className="mobile-only">
                 {/* Mobile Breadcrumbs */}
-                <div className="px-4 py-4 bg-background border-b border-border">
-                    <Breadcrumbs />
+                <div className="section-container bg-background">
+                    <div className="main-container">
+                        <Breadcrumbs />
+                    </div>
                 </div>
 
                 {/* Mobile Main Content */}
                 <main className="bg-background">
                     {/* Featured Image - Full width on mobile */}
                     {post.imageUrl && (
-                        <div className="w-full h-64 sm:h-80 bg-muted overflow-hidden">
+                        <div className="container-edge-to-edge h-64 xs:h-72 sm:h-80 bg-muted overflow-hidden">
                             <img
                                 src={post.imageUrl}
                                 alt={post.title}
                                 className="w-full h-full object-cover"
+                                loading="eager"
+                                decoding="async"
+                                sizes="100vw"
                             />
                         </div>
                     )}
 
                     {/* Article Header */}
-                    <header className="px-4 py-6 bg-background">
-                        <h1 className="text-2xl sm:text-3xl font-bold leading-tight mb-4 text-foreground">
-                            {post.title}
-                        </h1>
+                    <div className="content-header">
+                        <div className="content-container">
+                            <h1 className="text-fluid-2xl font-bold leading-tight mb-fluid-sm text-foreground">
+                                {post.title}
+                            </h1>
 
-                        <div className="flex items-center gap-4 mb-4 text-sm text-muted-foreground">
-                            <div className="flex items-center gap-2">
-                                <div className="w-8 h-8 bg-muted rounded-full flex items-center justify-center flex-shrink-0">
-                                    <div className="w-4 h-4 bg-muted-foreground rounded-full"></div>
+                            <div className="flex flex-col xs:flex-row xs:items-center gap-2 xs:gap-4 mb-fluid-sm text-fluid-xs text-muted-foreground">
+                                <div className="flex items-center gap-2">
+                                    <div className="w-8 h-8 bg-muted rounded-full flex items-center justify-center flex-shrink-0">
+                                        <div className="w-4 h-4 bg-muted-foreground rounded-full"></div>
+                                    </div>
+                                    <span className="font-medium text-foreground">{post.authorName || 'Author'}</span>
                                 </div>
-                                <span className="font-medium text-foreground">{post.authorName || 'Author'}</span>
+                                <div className="flex items-center gap-2 xs:gap-4">
+                                    <span className="hidden xs:inline">•</span>
+                                    <span>{new Date(post.createdAt).toLocaleDateString('en-US', {
+                                        month: 'short',
+                                        day: 'numeric',
+                                        year: 'numeric'
+                                    })}</span>
+                                    <span>•</span>
+                                    <span>{readTime} min read</span>
+                                </div>
                             </div>
-                            <span>•</span>
-                            <span>{new Date(post.createdAt).toLocaleDateString('en-US', {
-                                month: 'short',
-                                day: 'numeric',
-                                year: 'numeric'
-                            })}</span>
-                            <span>•</span>
-                            <span>{readTime} min read</span>
-                        </div>
 
-                        {post.tags && post.tags.length > 0 && (
-                            <div className="flex flex-wrap gap-2">
-                                {post.tags.map((tagId) => {
-                                    const tag = context.tags.find(t => t.id === tagId);
-                                    return tag ? (
-                                        <span key={tagId} className="bg-muted px-2 py-1 rounded text-xs font-medium text-muted-foreground">
-                                            {tag.name}
-                                        </span>
+                            {post.tags && post.tags.length > 0 && (
+                                <div className="flex flex-wrap gap-2">
+                                    {post.tags.map((tagId) => {
+                                        const tag = context.tags.find(t => t.id === tagId);
+                                        return tag ? (
+                                            <span key={tagId} className="bg-muted px-3 py-1 rounded-full text-fluid-xs font-medium text-muted-foreground">
+                                                {tag.name}
+                                            </span>
                                     ) : null;
                                 })}
                             </div>
                         )}
-                    </header>
+                        </div>
+                    </div>
 
-                    {/* Article Content */}
-                    <article className="px-4 pb-8">
-                        <div className="enhanced-content prose prose-base dark:prose-invert max-w-none prose-headings:text-foreground prose-p:text-foreground prose-li:text-foreground prose-strong:text-foreground">
-                            <div dangerouslySetInnerHTML={{ __html: post.content }} />
+                    {/* Article Content with enhanced reading experience */}
+                    <article className="content-body">
+                        <div className="content-container">
+                            <div className="enhanced-content prose prose-base dark:prose-invert max-w-none prose-headings:text-foreground prose-p:text-foreground prose-li:text-foreground prose-strong:text-foreground prose-p:text-fluid-base prose-headings:text-fluid-lg">
+                                <div dangerouslySetInnerHTML={{ __html: post.content }} />
+                            </div>
                         </div>
                     </article>
 
                     {/* Mobile Social Sharing */}
-                    <div className="px-4 py-6 border-t border-border bg-background">
-                        <h4 className="text-foreground font-semibold text-lg mb-4">Share this article</h4>
-                        <div className="flex flex-wrap gap-2">
-                            {socialIcons.map(({ label, emoji }, index) => (
-                                <button
-                                    key={index}
-                                    className="px-3 py-2 bg-muted border border-border rounded text-sm font-medium text-foreground hover:bg-secondary transition-colors"
-                                >
-                                    {emoji} {label}
-                                </button>
-                            ))}
+                    <div className="content-footer">
+                        <div className="content-container">
+                            <h4 className="text-foreground font-semibold text-fluid-lg mb-fluid-sm">Share this article</h4>
+                            <div className="grid grid-cols-2 gap-3">
+                                {socialIcons.map(({ label, emoji }, index) => (
+                                    <button
+                                        key={index}
+                                        className="touch-target bg-muted border border-border rounded-lg text-fluid-sm font-medium text-foreground hover:bg-secondary transition-colors"
+                                    >
+                                        {emoji} {label}
+                                    </button>
+                                ))}
+                            </div>
                         </div>
                     </div>
                 </main>
             </div>
 
-            {/* Desktop: Original boxed layout */}
-            <div className="hidden md:block max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-8">
-                {/* Breadcrumbs */}
-                <Breadcrumbs />
+            {/* Desktop: Enhanced post layout */}
+            <div className="hidden md:block">
+                <div className="main-container py-fluid-lg">
+                    {/* Breadcrumbs */}
+                    <div className="mb-fluid-md">
+                        <Breadcrumbs />
+                    </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
-                    {/* Main Content Area */}
-                    <main className="lg:col-span-8 bg-card text-card-foreground border rounded-lg p-6 sm:p-8 shadow-sm">
+                    <div className="post-layout">
+                        {/* Main Content Area */}
+                        <main className="post-content-area">
+                            <article className="article-box">
                         
-                        {/* Article Header */}
-                        <header className="mb-10 pb-8 border-b border-slate-200/30 dark:border-slate-700/30">
-                            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight mb-8 text-dark-text dark:text-light-text">
-                                {post.title}
-                            </h1>
-
-                            <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 mb-6 text-sm text-slate-600 dark:text-slate-400">
-                                <div className="flex items-center gap-4">
-                                    <div className="w-12 h-12 bg-slate-200 dark:bg-slate-700 rounded-full flex items-center justify-center flex-shrink-0">
-                                        <div className="w-6 h-6 bg-slate-400 dark:bg-slate-500 rounded-full"></div>
-                                    </div>
-                                    <div>
-                                        <div className="font-semibold text-card-foreground">
-                                            {post.authorName || 'Author'}
-                                        </div>
-                                        <div className="text-xs">Senior Developer</div>
-                                    </div>
-                                </div>
-                                <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
-                                    <div className="flex items-center gap-2">
-                                        <span>📅</span>
-                                        <span>{new Date(post.createdAt).toLocaleDateString('en-US', {
-                                            month: 'long',
-                                            day: 'numeric',
-                                            year: 'numeric'
-                                        })}</span>
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                        <span>⏱️</span>
-                                        <span>{readTime} min read</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {post.tags && post.tags.length > 0 && (
-                                <div className="flex flex-wrap gap-2 mt-4">
-                                    {post.tags.map((tagId) => {
-                                        const tag = context.tags.find(t => t.id === tagId);
-                                        return tag ? (
-                                            <span key={tagId} className="bg-slate-100 dark:bg-slate-700 px-3 py-1 rounded-full text-xs font-medium text-slate-700 dark:text-slate-300">
-                                                {tag.name}
-                                            </span>
-                                        ) : null;
-                                    })}
-                                </div>
-                            )}
-                        </header>
-
-                        {/* Featured Image */}
-                        {post.imageUrl && (
-                            <div className="w-full h-64 sm:h-80 md:h-96 lg:h-[28rem] bg-slate-200 dark:bg-slate-700 rounded-xl mb-10 overflow-hidden">
-                                <img
-                                    src={post.imageUrl}
-                                    alt={post.title}
-                                    className="w-full h-full object-cover"
-                                />
-                            </div>
-                        )}
-
-                        {/* Article Content */}
-                        <article className="mb-12">
-                            <div className="enhanced-content prose prose-lg sm:prose-xl dark:prose-invert max-w-none prose-headings:text-dark-text dark:prose-headings:text-light-text prose-p:text-dark-text dark:prose-p:text-light-text prose-li:text-dark-text dark:prose-li:text-light-text prose-strong:text-dark-text dark:prose-strong:text-light-text">
-                                <div dangerouslySetInnerHTML={{ __html: post.content }} />
-                            </div>
-                        </article>
-
-                        {/* Social Sharing */}
-                        <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 mb-12 py-8 border-t border-b border-slate-200/30 dark:border-slate-700/30">
-                            <h4 className="text-card-foreground font-semibold text-lg sm:text-xl flex-shrink-0">📢 Share this article:</h4>
-                            <div className="flex flex-wrap gap-3">
-                                {socialIcons.map(({ label, emoji }, index) => (
-                                    <button
-                                        key={index}
-                                        className="px-4 py-2 sm:px-5 sm:py-2.5 bg-slate-100 dark:bg-slate-700 border border-slate-200/30 dark:border-slate-600/30 rounded-lg text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors"
-                                    >
-                                        <span className="hidden sm:inline">{emoji}</span> {label}
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
-
-                        {/* Author Bio */}
-                        {post.authorName && (
-                            <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 p-6 sm:p-8 bg-card text-card-foreground border rounded-xl shadow-sm mb-12">
-                                <div className="w-20 h-20 sm:w-24 sm:h-24 bg-slate-200 dark:bg-slate-600 rounded-full flex-shrink-0 flex items-center justify-center">
-                                    <div className="w-10 h-10 sm:w-12 sm:h-12 bg-slate-400 dark:bg-slate-500 rounded-full"></div>
-                                </div>
-                                <div className="text-center sm:text-left">
-                                    <h4 className="text-lg sm:text-xl font-semibold mb-2 text-card-foreground">
-                                        About {post.authorName}
-                                    </h4>
-                                    <p className="text-slate-600 dark:text-slate-400 leading-relaxed text-sm sm:text-base">
-                                        Senior Developer with expertise in modern web technologies. Passionate about sharing knowledge and helping developers grow.
-                                    </p>
-                                </div>
-                            </div>
-                        )}
-
-                        {/* Comments System */}
-                        {post.allowComments && (
-                            <section>
-                                <h3 className="text-2xl font-bold mb-8 text-card-foreground">
-                                    💬 Comments
-                                </h3>
-
-                            {/* Comment Form */}
-                            <div className="bg-card text-card-foreground border p-6 sm:p-8 rounded-xl shadow-sm">
-                                <h4 className="text-xl font-semibold mb-6 text-card-foreground">
-                                    ✍️ Leave a Comment
-                                </h4>
-                                <form onSubmit={handleCommentSubmit} className="space-y-5">
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                                        <div>
-                                            <input
-                                                type="text"
-                                                value={name}
-                                                onChange={(e) => setName(e.target.value)}
-                                                placeholder="Your Name"
-                                                className="w-full p-3 sm:p-4 border border-slate-200/40 dark:border-slate-600/40 rounded-lg bg-background text-foreground focus:ring-2 focus:ring-primary focus:border-transparent transition"
-                                                required
-                                            />
-                                        </div>
-                                        <div>
-                                            <input
-                                                type="email"
-                                                value={email}
-                                                onChange={(e) => setEmail(e.target.value)}
-                                                placeholder="Your Email"
-                                                className="w-full p-3 sm:p-4 border border-slate-200/40 dark:border-slate-600/40 rounded-lg bg-background text-foreground focus:ring-2 focus:ring-primary focus:border-transparent transition"
-                                                required
-                                            />
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <textarea
-                                            value={comment}
-                                            onChange={(e) => setComment(e.target.value)}
-                                            placeholder="Share your thoughts..."
-                                            className="w-full h-32 p-3 sm:p-4 border border-slate-200/40 dark:border-slate-600/40 rounded-lg bg-background text-foreground resize-y focus:ring-2 focus:ring-primary focus:border-transparent transition"
-                                            required
+                                {/* Featured Image */}
+                                {post.imageUrl && (
+                                    <div className="mb-fluid-lg -mx-6 sm:-mx-8 overflow-hidden rounded-lg">
+                                        <img
+                                            src={post.imageUrl}
+                                            alt={post.title}
+                                            className="w-full h-64 sm:h-80 lg:h-96 object-cover"
+                                            loading="eager"
+                                            decoding="async"
+                                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 66vw, 800px"
                                         />
                                     </div>
-                                    <button
-                                        type="submit"
-                                        className="bg-primary text-white px-6 py-3 rounded-lg font-semibold hover:bg-primary-dark transition-colors text-sm sm:text-base"
-                                    >
-                                        Post Comment
-                                    </button>
-                                </form>
-                            </div>
-                            </section>
-                        )}
-                    </main>
+                                )}
 
-                    {/* Sidebar */}
-                    <aside className="lg:col-span-4">
-                        {/* Table of Contents */}
-                        <div className="lg:sticky lg:top-8">
-                            <SidebarWidget title="In this article">
-                                <TableOfContents content={post.content} />
-                            </SidebarWidget>
-                        </div>
+                                {/* Article Header */}
+                                <header className="content-header">
+                                    <h1 className="text-fluid-2xl md:text-fluid-3xl lg:text-fluid-4xl font-bold leading-tight mb-fluid-sm text-foreground">
+                                        {post.title}
+                                    </h1>
 
-                        <div className="mt-8 space-y-8">
-                            {/* Search Widget */}
-                            <SidebarWidget title="🔍 Search">
-                                <input
-                                    type="text"
-                                    value={searchQuery}
-                                    onChange={(e) => setSearchQuery(e.target.value)}
-                                    placeholder="Search articles..."
-                                    className="w-full p-3 border border-slate-200/40 dark:border-slate-600/40 rounded bg-background text-foreground focus:ring-2 focus:ring-primary focus:border-transparent transition"
-                                />
-                            </SidebarWidget>
+                                    <div className="post-meta">
+                                        <div className="post-meta-item">
+                                            <div className="w-8 h-8 bg-gradient-to-br from-primary/20 to-primary/40 rounded-full flex items-center justify-center flex-shrink-0">
+                                                <div className="w-4 h-4 bg-primary rounded-full"></div>
+                                            </div>
+                                            <span className="font-medium text-foreground">{post.authorName || 'Author'}</span>
+                                        </div>
+                                        <span className="post-meta-separator">•</span>
+                                        <time className="post-meta-item">
+                                            {new Date(post.createdAt).toLocaleDateString('en-US', {
+                                                month: 'short',
+                                                day: 'numeric',
+                                                year: 'numeric'
+                                            })}
+                                        </time>
+                                        <span className="post-meta-separator">•</span>
+                                        <span className="post-meta-item">{readTime} min read</span>
+                                    </div>
 
-                            {/* Related Posts */}
-                            <SidebarWidget title="📖 Related Posts">
-                                {relatedPosts.map((relatedPost) => (
-                                    <SidebarItem key={relatedPost.id} post={relatedPost} />
-                                ))}
-                            </SidebarWidget>
+                                    {post.tags && post.tags.length > 0 && (
+                                        <div className="flex flex-wrap gap-2 mt-fluid-sm">
+                                            {post.tags.map((tagId) => {
+                                                const tag = context.tags.find(t => t.id === tagId);
+                                                return tag ? (
+                                                    <span key={tagId} className="bg-muted px-3 py-1 rounded-full text-xs font-medium text-muted-foreground">
+                                                        {tag.name}
+                                                    </span>
+                                                ) : null;
+                                            })}
+                                        </div>
+                                    )}
+                                </header>
 
-                            {/* Categories */}
-                            <SidebarWidget title="📂 Categories">
-                                <ul className="space-y-0">
-                                    {context.categories.map((cat) => (
-                                        <li key={cat.id} className="flex justify-between items-center py-2.5 border-b border-slate-200/20 dark:border-slate-700/20 last:border-b-0">
-                                            <Link 
-                                                to={`/category/${cat.slug}`}
-                                                className="text-slate-700 dark:text-slate-300 hover:text-primary transition-colors text-sm font-medium"
+                                {/* Article Content */}
+                                <div className="content-body">
+                                    <div className="enhanced-content prose prose-lg dark:prose-invert max-w-none prose-headings:text-foreground prose-p:text-foreground prose-li:text-foreground prose-strong:text-foreground prose-p:text-fluid-base prose-headings:text-fluid-lg">
+                                        <div dangerouslySetInnerHTML={{ __html: post.content }} />
+                                    </div>
+                                </div>
+
+                                {/* Social Sharing */}
+                                <div className="social-sharing">
+                                    <h5 className="social-sharing-title">Share Article:</h5>
+                                    <div className="social-buttons">
+                                        {socialIcons.map(({ label, emoji }, index) => (
+                                            <button
+                                                key={index}
+                                                className="social-button"
                                             >
-                                                {cat.name}
-                                            </Link>
-                                            <span className="text-slate-500 dark:text-slate-400 text-xs">
-                                                ({context.posts.filter(p => p.categoryId === cat.id).length})
-                                            </span>
-                                        </li>
-                                    ))}
-                                </ul>
-                            </SidebarWidget>
-
-                            {/* Popular Posts */}
-                            <SidebarWidget title="🔥 Popular This Week">
-                                {popularPosts.map((popularPost) => (
-                                    <SidebarItem key={popularPost.id} post={popularPost} />
-                                ))}
-                            </SidebarWidget>
-
-                            {/* Newsletter Signup */}
-                            <SidebarWidget title="">
-                                <div className="text-center bg-gradient-to-br from-primary to-primary-dark text-white rounded-lg p-6 -m-2">
-                                    <h3 className="text-lg font-semibold mb-2">📧 Stay Updated!</h3>
-                                    <p className="text-sm mb-4 opacity-90">
-                                        Get weekly web development tips and tutorials
-                                    </p>
-                                    <form onSubmit={handleNewsletterSubmit} className="space-y-3">
-                                        <input
-                                            type="email"
-                                            value={newsletterEmail}
-                                            onChange={(e) => setNewsletterEmail(e.target.value)}
-                                            placeholder="your@email.com"
-                                            className="w-full p-3 border-0 rounded text-dark-text focus:ring-2 focus:ring-white transition"
-                                            required
-                                        />
-                                        <button
-                                            type="submit"
-                                            className="w-full bg-white text-primary px-5 py-2.5 rounded font-semibold hover:bg-slate-50 transition-colors"
-                                        >
-                                            Subscribe Now
-                                        </button>
-                                    </form>
+                                                <span>{emoji}</span> {label}
+                                            </button>
+                                        ))}
+                                    </div>
                                 </div>
-                            </SidebarWidget>
+                            </article>
+                        </main>
 
-                            {/* Tags Cloud */}
-                            <SidebarWidget title="🏷️ Popular Tags">
-                                <div className="flex flex-wrap gap-2">
-                                    {context.tags.slice(0, 10).map((tag) => (
-                                        <span 
-                                            key={tag.id}
-                                            className="bg-slate-100 dark:bg-slate-700 px-3 py-1.5 rounded-full text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors cursor-pointer"
-                                        >
-                                            {tag.name}
-                                        </span>
-                                    ))}
-                                </div>
-                            </SidebarWidget>
-                        </div>
-                    </aside>
+                        {/* Sidebar */}
+                        <PostSidebar
+                            post={post}
+                            tags={context.tags}
+                            relatedPosts={publishedPosts.filter(p => p.id !== post.id).slice(0, 3)}
+                        />
+                    </div>
+
+                    {/* Post Navigation */}
+                    <PostNavigation currentPost={post} allPosts={publishedPosts} />
                 </div>
             </div>
+
+            {/* Author Bio Section - Outside main layout */}
+            <div className="hidden md:block">
+                <div className="main-container">
+                    <div className="content-box">
+                        {/* Author Bio */}
+                        {post.authorName && (
+                            <div className="content-box">
+                                <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
+                                    <div className="w-20 h-20 sm:w-24 sm:h-24 bg-gradient-to-br from-primary/20 to-primary/40 rounded-full flex-shrink-0 flex items-center justify-center">
+                                        <div className="w-10 h-10 sm:w-12 sm:h-12 bg-primary rounded-full"></div>
+                                    </div>
+                                    <div className="text-center sm:text-left">
+                                        <h4 className="text-lg sm:text-xl font-semibold mb-2 text-foreground">
+                                            About {post.authorName}
+                                        </h4>
+                                        <p className="text-muted-foreground leading-relaxed text-sm sm:text-base">
+                                            Senior Developer with expertise in modern web technologies. Passionate about sharing knowledge and helping developers grow.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            </div>
+
             
             {/* FAQ Schema */}
             <FAQSchema post={post} />

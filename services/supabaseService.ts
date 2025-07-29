@@ -145,31 +145,6 @@ export const postsService = {
     });
   },
 
-  // Get published posts only
-  async getPublishedPosts(): Promise<Post[]> {
-    const { data: posts, error } = await supabase
-      .from('posts')
-      .select(`
-        *,
-        post_tags (
-          tag_id,
-          tags (
-            id,
-            name
-          )
-        )
-      `)
-      .eq('status', 'published')
-      .order('created_at', { ascending: false });
-
-    if (error) throw error;
-
-    return posts.map(post => {
-      const tags = post.post_tags?.map((pt: any) => pt.tags).filter(Boolean) || [];
-      return convertDbPostToPost(post, tags as Tag[]);
-    });
-  },
-
   // Get post by ID with full details
   async getPostById(id: string): Promise<Post | null> {
     const { data: post, error } = await supabase

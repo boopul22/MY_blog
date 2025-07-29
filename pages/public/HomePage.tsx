@@ -24,47 +24,55 @@ const HomePage: React.FC = () => {
         <>
             <title>My Awesome Blog</title>
             <meta name="description" content="Welcome to my awesome blog where I write about cool stuff." />
-            
-            {/* Main Article Grid */}
-            <main className="py-8 sm:py-12">
-                {/* Mobile: Fluid edge-to-edge layout */}
-                <div className="md:hidden space-y-0">
-                    {articles.slice(0, 8).map(article => (
-                        <PostCard key={article.id} post={article} variant="mobile-fluid" isLarge={false} />
-                    ))}
-                </div>
 
-                {/* Desktop: Grid layout */}
-                <div className="hidden md:grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-6 sm:gap-8">
-                    {/* First two large articles */}
-                    {articles.slice(0, 2).map(article => (
-                        <div key={article.id} className="sm:col-span-2 lg:col-span-6">
-                            <PostCard post={article} variant="wireframe" isLarge={true} />
+            {/* Main Article Grid with Enhanced Layout Structure */}
+            <main className="content-section">
+                <div className="main-container">
+                    {/* Mobile: Fluid edge-to-edge layout */}
+                    <div className="mobile-only">
+                        <div className="content-section-compact">
+                            {articles.slice(0, 8).map(article => (
+                                <PostCard key={article.id} post={article} variant="mobile-fluid" isLarge={false} />
+                            ))}
                         </div>
-                    ))}
+                    </div>
 
-                    {/* Remaining smaller articles */}
-                    {articles.slice(2, 12).map(article => (
-                        <div key={article.id} className="sm:col-span-1 lg:col-span-4">
-                            <PostCard post={article} variant="wireframe" />
+                    {/* Desktop: Enhanced Grid layout */}
+                    <div className="desktop-only">
+                        <div className="content-section-compact">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-fluid-md">
+                                {/* First two large articles */}
+                                {articles.slice(0, 2).map(article => (
+                                    <div key={article.id} className="sm:col-span-2 lg:col-span-6">
+                                        <PostCard post={article} variant="wireframe" isLarge={true} />
+                                    </div>
+                                ))}
+
+                                {/* Remaining smaller articles */}
+                                {articles.slice(2, 12).map(article => (
+                                    <div key={article.id} className="sm:col-span-1 lg:col-span-4">
+                                        <PostCard post={article} variant="wireframe" />
+                                    </div>
+                                ))}
+                            </div>
                         </div>
-                    ))}
-                </div>
-                
-                {/* View All Button */}
-                <div className="text-center mt-8 sm:mt-12">
-                    {publishedPosts.length > 12 && (
-                        <Link 
-                            to="/all-posts" 
-                            className="inline-block border border-slate-400 dark:border-slate-600 text-slate-600 dark:text-slate-300 font-medium py-3 px-6 sm:px-8 text-sm hover:bg-slate-100 dark:hover:bg-medium-dark transition-colors"
-                        >
-                            View all trending articles
-                        </Link>
-                    )}
+                    </div>
+
+                    {/* View All Button Section */}
+                    <div className="content-footer">
+                        <div className="text-center">
+                            {publishedPosts.length > 12 && (
+                                <Link
+                                    to="/all-posts"
+                                    className="touch-target inline-flex items-center justify-center border border-border text-foreground font-medium rounded-lg text-fluid-sm hover:bg-muted transition-colors"
+                                >
+                                    View all trending articles
+                                </Link>
+                            )}
+                        </div>
+                    </div>
                 </div>
             </main>
-
-
         </>
     );
 };

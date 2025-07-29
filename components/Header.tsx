@@ -48,28 +48,31 @@ const Header: React.FC = () => {
     return (
         <>
             <header className="bg-background transition-colors relative">
-                <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
-                    {/* Logo Section */}
-                    <div className="text-center py-6 sm:py-8">
-                        <div className="inline-block relative mb-2 sm:mb-4">
-
+                {/* Header Content Section */}
+                <div className="content-header">
+                    <div className="main-container">
+                        {/* Mobile-First Logo Section */}
+                        <div className="text-center py-fluid-md">
+                            <Link to="/" className="block">
+                                <h1 className="text-fluid-2xl md:text-fluid-3xl lg:text-fluid-4xl font-serif tracking-widest text-foreground hover:text-primary transition-colors">
+                                    behindyourbrain
+                                </h1>
+                                <p className="text-fluid-xs tracking-[0.2em] text-muted-foreground mt-1">
+                                    CREATIVE MAGAZINE
+                                </p>
+                            </Link>
                         </div>
-                        <Link to="/" className="block">
-                            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif tracking-widest text-foreground hover:text-primary transition-colors">
-                                behindyourbrain
-                            </h1>
-                            <p className="text-xs tracking-[0.2em] text-muted-foreground mt-1">
-                                CREATIVE MAGAZINE
-                            </p>
-                        </Link>
                     </div>
+                </div>
 
-                    {/* Navigation Section */}
-                    <div className="flex justify-between items-center border-t border-b border-border py-4">
-                        {/* Mobile Menu Button */}
+                {/* Navigation Section */}
+                <div className="section-divider-subtle"></div>
+                <div className="main-container">
+                    <div className="flex justify-between items-center py-fluid-sm">
+                        {/* Mobile Menu Button - Enhanced Touch Target */}
                         <button
                             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                            className="md:hidden w-8 h-8 flex items-center justify-center text-foreground hover:text-primary transition-colors"
+                            className="md:hidden touch-target text-foreground hover:text-primary transition-colors rounded-lg hover:bg-muted/50"
                             aria-label="Toggle mobile menu"
                         >
                             <MenuIcon className="w-6 h-6" />
@@ -116,90 +119,164 @@ const Header: React.FC = () => {
                             </ul>
                         </nav>
                         
-                        {/* Action Buttons */}
-                        <div className="flex items-center space-x-2 sm:space-x-4">
+                        {/* Mobile-Optimized Action Buttons */}
+                        <div className="flex items-center space-x-2 xs:space-x-3 sm:space-x-4">
                             <ThemeToggle />
-                            
-                            <button className="hidden sm:flex w-6 h-6 border rounded-full border-border items-center justify-center hover:bg-accent hover:text-accent-foreground transition-colors" aria-label="Search">
-                                <SearchIcon className="w-3 h-3 text-foreground" />
+
+                            {/* Mobile: Show search button, hide on xs screens */}
+                            <button className="hidden xs:flex touch-target border rounded-full border-border hover:bg-accent hover:text-accent-foreground transition-colors" aria-label="Search">
+                                <SearchIcon className="w-4 h-4 text-foreground" />
                             </button>
 
-                            <div className="hidden sm:flex items-center gap-2 text-sm">
-                                <button className="w-6 h-6 border rounded-full border-border flex items-center justify-center hover:bg-accent hover:text-accent-foreground transition-colors" aria-label="Language">
+                            {/* Language selector - hidden on mobile, shown on tablet+ */}
+                            <div className="hidden md:flex items-center gap-2 text-sm">
+                                <button className="touch-target border rounded-full border-border hover:bg-accent hover:text-accent-foreground transition-colors" aria-label="Language">
                                     <GlobeAltIcon className="w-4 h-4 text-foreground" />
                                 </button>
                                 <span className="text-foreground text-xs">EN</span>
                             </div>
-                            
-                            <Link 
-                                to="/login" 
-                                className="px-3 sm:px-6 py-2 bg-primary dark:bg-primary-dark rounded-md text-white text-xs sm:text-sm font-medium hover:bg-primary-dark dark:hover:bg-primary transition-colors"
+
+                            {/* Mobile-optimized login button */}
+                            <Link
+                                to="/login"
+                                className="touch-target px-3 xs:px-4 sm:px-6 bg-primary rounded-lg text-white text-fluid-xs font-medium hover:bg-primary/90 transition-colors"
                             >
-                                Login
+                                <span className="xs:hidden">•••</span>
+                                <span className="hidden xs:inline">Login</span>
                             </Link>
                         </div>
                     </div>
                 </div>
-                
-                {/* Mobile Navigation Menu */}
-                {isMobileMenuOpen && (
-                    <div className="md:hidden absolute top-full left-0 right-0 bg-light dark:bg-dark border-b border-slate-200 dark:border-slate-700 shadow-lg z-50">
-                        <nav className="max-w-screen-xl mx-auto px-4">
-                            <ul className="py-4">
-                                <NavItem to="/" mobile>Home</NavItem>
-                                
-                                {/* Mobile Categories */}
-                                <li className="border-b border-slate-200 dark:border-slate-700">
+            </header>
+
+            {/* App-Like Mobile Navigation Menu */}
+            {isMobileMenuOpen && (
+                    <>
+                        {/* Backdrop */}
+                        <div
+                            className="md:hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-40 transition-opacity"
+                            onClick={() => setIsMobileMenuOpen(false)}
+                        />
+
+                        {/* Slide-out Menu */}
+                        <div className="md:hidden fixed top-0 left-0 h-full w-80 max-w-[85vw] bg-background border-r border-border shadow-2xl z-50 transform transition-transform duration-300 ease-out">
+                            <div className="flex flex-col h-full">
+                                {/* Menu Header */}
+                                <div className="flex items-center justify-between p-4 border-b border-border">
+                                    <h2 className="text-lg font-semibold text-foreground">Menu</h2>
                                     <button
-                                        onClick={() => setIsCategoriesOpen(!isCategoriesOpen)}
-                                        className="flex items-center justify-between w-full py-2 px-4 text-sm font-medium text-dark-text dark:text-light-text hover:text-primary dark:hover:text-primary transition-colors"
+                                        onClick={() => setIsMobileMenuOpen(false)}
+                                        className="touch-target text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-muted/50"
+                                        aria-label="Close menu"
                                     >
-                                        <span className="flex items-center gap-2">
-                                            <div className="w-2 h-2 rounded-full border border-primary dark:border-primary"></div>
-                                            Categories
-                                        </span>
-                                        <svg className={`w-4 h-4 transition-transform ${isCategoriesOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                                         </svg>
                                     </button>
-                                    
-                                    {isCategoriesOpen && context && (
-                                        <div className="pl-6 pb-2">
-                                            {context.categories.map((category) => (
-                                                <Link
-                                                    key={category.id}
-                                                    to={`/category/${category.slug}`}
-                                                    onClick={() => {
-                                                        setIsCategoriesOpen(false);
-                                                        setIsMobileMenuOpen(false);
-                                                    }}
-                                                    className="block py-1 text-sm text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors"
-                                                >
-                                                    {category.name}
-                                                </Link>
-                                            ))}
+                                </div>
+
+                                {/* Navigation Items */}
+                                <nav className="flex-1 overflow-y-auto">
+                                    <ul className="p-4 space-y-2">
+                                        <li>
+                                            <NavLink
+                                                to="/"
+                                                onClick={() => setIsMobileMenuOpen(false)}
+                                                className={({ isActive }) =>
+                                                    `flex items-center gap-3 p-3 rounded-lg text-foreground hover:bg-muted transition-colors touch-target ${
+                                                        isActive ? 'bg-muted text-primary' : ''
+                                                    }`
+                                                }
+                                            >
+                                                <div className="w-2 h-2 rounded-full border border-primary"></div>
+                                                Home
+                                            </NavLink>
+                                        </li>
+
+                                        {/* Mobile Categories */}
+                                        <li>
+                                            <button
+                                                onClick={() => setIsCategoriesOpen(!isCategoriesOpen)}
+                                                className="flex items-center justify-between w-full p-3 rounded-lg text-foreground hover:bg-muted transition-colors touch-target"
+                                            >
+                                                <span className="flex items-center gap-3">
+                                                    <div className="w-2 h-2 rounded-full border border-primary"></div>
+                                                    Categories
+                                                </span>
+                                                <svg className={`w-5 h-5 transition-transform ${isCategoriesOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                                </svg>
+                                            </button>
+
+                                            {isCategoriesOpen && context && (
+                                                <div className="ml-5 mt-2 space-y-1">
+                                                    {context.categories.map((category) => (
+                                                        <Link
+                                                            key={category.id}
+                                                            to={`/category/${category.slug}`}
+                                                            onClick={() => {
+                                                                setIsCategoriesOpen(false);
+                                                                setIsMobileMenuOpen(false);
+                                                            }}
+                                                            className="block p-2 rounded text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors touch-target"
+                                                        >
+                                                            {category.name}
+                                                        </Link>
+                                                    ))}
+                                                </div>
+                                            )}
+                                        </li>
+
+                                        <li>
+                                            <NavLink
+                                                to="/mobile-demo"
+                                                onClick={() => setIsMobileMenuOpen(false)}
+                                                className={({ isActive }) =>
+                                                    `flex items-center gap-3 p-3 rounded-lg text-foreground hover:bg-muted transition-colors touch-target ${
+                                                        isActive ? 'bg-muted text-primary' : ''
+                                                    }`
+                                                }
+                                            >
+                                                <div className="w-2 h-2 rounded-full border border-primary"></div>
+                                                Mobile Demo
+                                            </NavLink>
+                                        </li>
+
+                                        <li>
+                                            <NavLink
+                                                to="/admin"
+                                                onClick={() => setIsMobileMenuOpen(false)}
+                                                className={({ isActive }) =>
+                                                    `flex items-center gap-3 p-3 rounded-lg text-foreground hover:bg-muted transition-colors touch-target ${
+                                                        isActive ? 'bg-muted text-primary' : ''
+                                                    }`
+                                                }
+                                            >
+                                                <div className="w-2 h-2 rounded-full border border-primary"></div>
+                                                Contact
+                                            </NavLink>
+                                        </li>
+                                    </ul>
+                                </nav>
+
+                                {/* Menu Footer */}
+                                <div className="p-4 border-t border-border">
+                                    <div className="flex items-center justify-center space-x-4">
+                                        <button className="touch-target border rounded-full border-border hover:bg-muted transition-colors" aria-label="Search">
+                                            <SearchIcon className="w-4 h-4 text-foreground" />
+                                        </button>
+                                        <div className="flex items-center gap-2">
+                                            <button className="touch-target border rounded-full border-border hover:bg-muted transition-colors" aria-label="Language">
+                                                <GlobeAltIcon className="w-4 h-4 text-foreground" />
+                                            </button>
+                                            <span className="text-foreground text-xs">EN</span>
                                         </div>
-                                    )}
-                                </li>
-                                
-                                <NavItem to="/mobile-demo" mobile>Mobile Demo</NavItem>
-                                <NavItem to="/admin" mobile>Contact</NavItem>
-                            </ul>
-                            <div className="py-4 border-t border-slate-200 dark:border-slate-700 flex items-center justify-center space-x-4">
-                                <button className="w-6 h-6 border rounded-full border-slate-400 dark:border-slate-500 flex items-center justify-center hover:bg-slate-100 dark:hover:bg-medium-dark transition-colors" aria-label="Search">
-                                    <SearchIcon className="w-3 h-3 text-dark-text dark:text-light-text" />
-                                </button>
-                                <div className="flex items-center gap-2 text-sm">
-                                    <button className="w-6 h-6 border rounded-full border-slate-400 dark:border-slate-500 flex items-center justify-center hover:bg-slate-100 dark:hover:bg-medium-dark transition-colors" aria-label="Language">
-                                        <GlobeAltIcon className="w-4 h-4 text-dark-text dark:text-light-text" />
-                                    </button>
-                                    <span className="text-dark-text dark:text-light-text text-xs">EN</span>
+                                    </div>
                                 </div>
                             </div>
-                        </nav>
-                    </div>
+                        </div>
+                    </>
                 )}
-            </header>
         </>
     );
 };

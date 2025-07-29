@@ -18,12 +18,16 @@ export default {
   },
   theme: {
     screens: {
-      'xs': '475px',
-      'sm': '640px',
-      'md': '768px',
-      'lg': '1024px',
-      'xl': '1280px',
-      '2xl': '1536px',
+      'xs': '375px',    // iPhone SE and small phones
+      'sm': '480px',    // Large phones in portrait
+      'md': '768px',    // Tablets in portrait
+      'lg': '1024px',   // Tablets in landscape / small laptops
+      'xl': '1280px',   // Desktop
+      '2xl': '1536px',  // Large desktop
+      // Custom breakpoints for specific use cases
+      'mobile': {'max': '767px'},     // Mobile-only styles
+      'tablet': {'min': '768px', 'max': '1023px'},  // Tablet-only styles
+      'desktop': {'min': '1024px'},   // Desktop and up
     },
     extend: {
       colors: {
@@ -65,6 +69,34 @@ export default {
       spacing: {
         '18': '4.5rem',
         '88': '22rem',
+        // Responsive spacing using clamp()
+        'fluid-xs': 'clamp(0.5rem, 1vw, 0.75rem)',
+        'fluid-sm': 'clamp(0.75rem, 2vw, 1rem)',
+        'fluid-md': 'clamp(1rem, 3vw, 1.5rem)',
+        'fluid-lg': 'clamp(1.5rem, 4vw, 2rem)',
+        'fluid-xl': 'clamp(2rem, 5vw, 3rem)',
+        'fluid-2xl': 'clamp(3rem, 6vw, 4rem)',
+      },
+      // Container utilities for responsive layouts
+      container: {
+        center: true,
+        padding: {
+          DEFAULT: '1rem',
+          xs: '1rem',
+          sm: '1.5rem',
+          md: '2rem',
+          lg: '2.5rem',
+          xl: '3rem',
+          '2xl': '4rem',
+        },
+        screens: {
+          xs: '375px',
+          sm: '480px',
+          md: '768px',
+          lg: '1024px',
+          xl: '1280px',
+          '2xl': '1400px',
+        },
       },
       fontSize: {
         'xs': ['0.75rem', { lineHeight: '1rem' }],
@@ -77,6 +109,15 @@ export default {
         '4xl': ['2.25rem', { lineHeight: '2.5rem' }],
         '5xl': ['3rem', { lineHeight: '1' }],
         '6xl': ['3.75rem', { lineHeight: '1' }],
+        // Fluid typography using clamp()
+        'fluid-xs': 'clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem)',
+        'fluid-sm': 'clamp(0.875rem, 0.8rem + 0.375vw, 1rem)',
+        'fluid-base': 'clamp(1rem, 0.9rem + 0.5vw, 1.125rem)',
+        'fluid-lg': 'clamp(1.125rem, 1rem + 0.625vw, 1.25rem)',
+        'fluid-xl': 'clamp(1.25rem, 1.1rem + 0.75vw, 1.5rem)',
+        'fluid-2xl': 'clamp(1.5rem, 1.3rem + 1vw, 1.875rem)',
+        'fluid-3xl': 'clamp(1.875rem, 1.6rem + 1.375vw, 2.25rem)',
+        'fluid-4xl': 'clamp(2.25rem, 1.9rem + 1.75vw, 3rem)',
       },
       animation: {
         'fade-in': 'fadeIn 0.5s ease-in-out',
@@ -99,7 +140,7 @@ export default {
   corePlugins: {
     // Disable unused core plugins to reduce bundle size
     preflight: true, // Keep for CSS reset
-    container: false, // Not used in this project
+    container: true, // Now used for responsive layouts
     accessibility: true, // Keep for a11y
     appearance: false, // Not used
     backdropBlur: false, // Not used
