@@ -2,36 +2,30 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { BlogContext } from '../../context/SupabaseBlogContext';
-import { useTheme } from '../../context/ThemeContext';
 import { Post } from '../../types';
 import StructuredData from '../../components/StructuredData';
-import TableOfContents from '../../components/TableOfContents';
 import FAQSchema from '../../components/FAQSchema';
-import AuthorInfo from '../../components/AuthorInfo';
 import SocialMetaTags from '../../components/SocialMetaTags';
+import TableOfContents from '../../components/TableOfContents';
 
 import { useEnhancedCodeBlocks } from '../../utils/contentRenderer';
 
-import { 
-    FacebookIcon, 
-    TwitterIcon, 
-    PinterestIcon, 
-    LinkedInIcon, 
-    WhatsAppIcon, 
-    MailIcon,
-    InstagramIcon 
+import {
+    FacebookIcon,
+    TwitterIcon,
+    LinkedInIcon,
+    MailIcon
 } from '../../components/icons';
 
 const PostPage: React.FC = () => {
     const { slug } = useParams<{ slug: string }>();
     const context = useContext(BlogContext);
-    const { isDarkMode } = useTheme();
     const [post, setPost] = useState<Post | undefined>(undefined);
     const [comment, setComment] = useState('');
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
-    const [website, setWebsite] = useState('');
-    const [saveInfo, setSaveInfo] = useState(false);
+    const [newsletterEmail, setNewsletterEmail] = useState('');
+    const [searchQuery, setSearchQuery] = useState('');
 
     // Use enhanced code blocks for syntax highlighting
     useEnhancedCodeBlocks();
@@ -57,7 +51,8 @@ const PostPage: React.FC = () => {
     
     const category = context.categories.find(c => c.id === post.categoryId);
     const publishedPosts = context.posts.filter(p => p.status === 'published' && p.id !== post.id);
-    const popularPosts = publishedPosts.slice(0, 5);
+    const relatedPosts = publishedPosts.slice(0, 3);
+    const popularPosts = publishedPosts.slice(0, 2);
 
     // Generate breadcrumbs for schema markup
     const breadcrumbs = [
@@ -66,331 +61,371 @@ const PostPage: React.FC = () => {
         { name: post.title, url: `https://myawesomeblog.com/post/${post.slug}` }
     ];
 
-
-
     const socialIcons = [
-        { icon: FacebookIcon, label: 'Facebook' },
-        { icon: TwitterIcon, label: 'Twitter' },
-        { icon: PinterestIcon, label: 'Pinterest' },
-        { icon: LinkedInIcon, label: 'LinkedIn' },
-        { icon: WhatsAppIcon, label: 'WhatsApp' },
-        { icon: MailIcon, label: 'Email' }
+        { icon: FacebookIcon, label: 'Facebook', emoji: '📘' },
+        { icon: TwitterIcon, label: 'Twitter', emoji: '🐦' },
+        { icon: LinkedInIcon, label: 'LinkedIn', emoji: '💼' },
+        { icon: MailIcon, label: 'Email', emoji: '🔗' }
     ];
 
     const handleCommentSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        // Handle comment submission here
-        console.log('Comment submitted:', { comment, name, email, website, saveInfo });
-        // Reset form
+        console.log('Comment submitted:', { comment, name, email });
         setComment('');
         setName('');
         setEmail('');
-        setWebsite('');
-        setSaveInfo(false);
     };
 
-    const PopularPostCard: React.FC<{ post: Post }> = ({ post: popularPost }) => {
-        const postCategory = context.categories.find(c => c.id === popularPost.categoryId);
+    const handleNewsletterSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        console.log('Newsletter subscription:', newsletterEmail);
+        setNewsletterEmail('');
+    };
+
+    // Calculate read time (rough estimate: 200 words per minute)
+    const wordCount = post.content.split(' ').length;
+    const readTime = Math.ceil(wordCount / 200);
+
+
+
+    const SidebarWidget: React.FC<{ title: string; children: React.ReactNode }> = ({ title, children }) => (
+        <div className="bg-white dark:bg-slate-800 border border-slate-200/20 dark:border-slate-700/20 rounded-lg p-6">
+            {title && (
+                <h3 className="text-lg font-semibold mb-5 pb-3 border-b border-slate-200/30 dark:border-slate-700/30 text-dark-text dark:text-light-text">
+                    {title}
+                </h3>
+            )}
+            {children}
+        </div>
+    );
+
+    const SidebarItem: React.FC<{ post: Post }> = ({ post: sidebarPost }) => {
+        const postCategory = context.categories.find(c => c.id === sidebarPost.categoryId);
         return (
-            <div className="flex items-center space-x-3 sm:space-x-4">
-                <div className="w-16 h-16 sm:w-20 sm:h-20 bg-slate-200 dark:bg-slate-700 flex-shrink-0 rounded overflow-hidden">
-                    {popularPost.imageUrl ? (
+            <div className="flex gap-3 mb-4 pb-4 border-b border-slate-200/20 dark:border-slate-700/20 last:border-b-0 last:mb-0 last:pb-0">
+                <div className="w-15 h-15 bg-slate-200 dark:bg-slate-700 rounded flex-shrink-0 flex items-center justify-center">
+                    {sidebarPost.imageUrl ? (
                         <img 
-                            src={popularPost.imageUrl} 
-                            alt={popularPost.title}
-                            className="w-full h-full object-cover"
+                            src={sidebarPost.imageUrl} 
+                            alt={sidebarPost.title}
+                            className="w-full h-full object-cover rounded"
                         />
                     ) : (
-                        <div className="w-full h-full bg-slate-300 dark:bg-slate-600 flex items-center justify-center">
-                            <div className="w-6 h-6 sm:w-8 sm:h-8 border-2 border-slate-400 dark:border-slate-500 rounded"></div>
-                        </div>
+                        <div className="w-8 h-8 border-2 border-slate-400/30 dark:border-slate-500/30 rounded"></div>
                     )}
                 </div>
                 <div className="min-w-0 flex-1">
-                    <h3 className="font-bold text-xs sm:text-sm leading-tight">
-                        <Link to={`/post/${popularPost.slug}`} className="text-dark-text dark:text-light-text hover:text-primary dark:hover:text-primary transition-colors line-clamp-2">
-                            {popularPost.title}
+                    <h5 className="text-sm font-medium leading-tight mb-1 text-dark-text dark:text-light-text">
+                        <Link to={`/post/${sidebarPost.slug}`} className="hover:text-primary transition-colors">
+                            {sidebarPost.title}
                         </Link>
-                    </h3>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 truncate">
-                        {postCategory?.name.toUpperCase()} BY <span className="text-primary font-semibold">{(popularPost.authorName || 'AUTHOR').toUpperCase()}</span>
-                    </p>
+                    </h5>
+                    <div className="text-xs text-slate-500 dark:text-slate-400">
+                        {postCategory?.name} • {new Date(sidebarPost.createdAt).toLocaleDateString('en-US', { 
+                            month: 'short', 
+                            day: 'numeric',
+                            year: 'numeric'
+                        })}
+                    </div>
                 </div>
             </div>
         );
     };
 
-    const Sidebar = () => (
-        <aside className="space-y-8 bg-light dark:bg-dark">
-            {/* Table of Contents */}
-            <TableOfContents content={post.content} />
-            
-            {/* Popular Posts */}
-            <div>
-                <h2 className="text-lg font-bold mb-6 relative after:content-[''] after:absolute after:left-0 after:bottom-[-8px] after:w-8 after:h-0.5 after:bg-slate-800 dark:after:bg-slate-200 text-dark-text dark:text-light-text">
-                    POPULAR POSTS
-                </h2>
-                <div className="space-y-6">
-                    {popularPosts.map((popularPost) => (
-                        <PopularPostCard key={popularPost.id} post={popularPost} />
-                    ))}
-                </div>
-            </div>
-        </aside>
-    );
 
-    const CommentSection = () => (
-        <div className="mt-12 sm:mt-16 py-8 sm:py-12 border-t border-slate-200 dark:border-slate-700">
-            <h2 className="text-base sm:text-lg font-bold mb-6 sm:mb-8 text-dark-text dark:text-light-text">COMMENTS</h2>
-            
-            {/* Sample Comment */}
-            <div className="space-y-6 sm:space-y-8 mb-8 sm:mb-12">
-                <div className="flex space-x-3 sm:space-x-4">
-                    <div className="w-12 h-12 sm:w-16 sm:h-16 bg-slate-200 dark:bg-slate-700 rounded-full flex-shrink-0 flex items-center justify-center">
-                        <div className="w-6 h-6 sm:w-8 sm:h-8 bg-slate-400 dark:bg-slate-500 rounded-full"></div>
-                    </div>
-                    <div className="w-full min-w-0">
-                        <div className="flex flex-col sm:flex-row sm:items-center space-y-1 sm:space-y-0 sm:space-x-3">
-                            <h4 className="font-bold text-sm sm:text-base text-dark-text dark:text-light-text">Sample User</h4>
-                            <span className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">Just now</span>
-                        </div>
-                        <p className="mt-2 text-sm sm:text-base text-slate-700 dark:text-slate-300">This is a sample comment to show the comment layout.</p>
-                        <button className="text-xs sm:text-sm font-semibold text-slate-600 dark:text-slate-400 mt-2 hover:text-slate-900 dark:hover:text-slate-200 transition-colors">
-                            Reply
-                        </button>
-                    </div>
-                </div>
-            </div>
 
-            {/* Comment Form */}
-            <div className="mt-8 sm:mt-12">
-                <h3 className="text-lg sm:text-xl font-bold text-dark-text dark:text-light-text">Leave a comment</h3>
-                <p className="text-slate-500 dark:text-slate-400 text-xs sm:text-sm mt-1">
-                    Your email address will not be published. Required fields are marked *
-                </p>
-                <form onSubmit={handleCommentSubmit} className="mt-4 sm:mt-6 space-y-4 sm:space-y-6">
-                    <div>
-                        <label htmlFor="comment" className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                            Comment *
-                        </label>
-                        <textarea
-                            id="comment"
-                            value={comment}
-                            onChange={(e) => setComment(e.target.value)}
-                            className="w-full h-32 border-2 border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-dark-text dark:text-light-text p-3 rounded focus:border-primary dark:focus:border-primary outline-none transition-colors"
-                            required
-                        />
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label htmlFor="name" className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                                Name *
-                            </label>
-                            <input
-                                type="text"
-                                id="name"
-                                value={name}
-                                onChange={(e) => setName(e.target.value)}
-                                className="w-full border-2 border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-dark-text dark:text-light-text p-3 rounded focus:border-primary dark:focus:border-primary outline-none transition-colors"
-                                required
-                            />
-                        </div>
-                        <div>
-                            <label htmlFor="email" className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                                Email *
-                            </label>
-                            <input
-                                type="email"
-                                id="email"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                className="w-full border-2 border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-dark-text dark:text-light-text p-3 rounded focus:border-primary dark:focus:border-primary outline-none transition-colors"
-                                required
-                            />
-                        </div>
-                    </div>
-                    <div>
-                        <label htmlFor="website" className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                            Website
-                        </label>
-                        <input
-                            type="url"
-                            id="website"
-                            value={website}
-                            onChange={(e) => setWebsite(e.target.value)}
-                            placeholder="e.g. https://example.com"
-                            className="w-full border-2 border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-dark-text dark:text-light-text p-3 rounded focus:border-primary dark:focus:border-primary outline-none transition-colors"
-                        />
-                    </div>
-                    <div className="flex items-center">
-                        <input
-                            type="checkbox"
-                            id="save-info"
-                            checked={saveInfo}
-                            onChange={(e) => setSaveInfo(e.target.checked)}
-                            className="h-5 w-5 border-2 border-gray-400 dark:border-gray-500 rounded-sm mr-2"
-                        />
-                        <label htmlFor="save-info" className="text-sm text-gray-600 dark:text-gray-400">
-                            Save my name, email, and website in this browser for the next time I comment.
-                        </label>
-                    </div>
-                    <div>
-                        <button
-                            type="submit"
-                            className="bg-dark-text dark:bg-light-text text-light-text dark:text-dark-text px-8 py-3 font-semibold hover:opacity-85 transition-opacity"
+    // Breadcrumbs component
+    const Breadcrumbs: React.FC = () => (
+        <nav className="mb-8 text-sm text-slate-600 dark:text-slate-400">
+            <div className="flex items-center space-x-2">
+                <Link to="/" className="hover:text-primary transition-colors">
+                    Home
+                </Link>
+                <span>/</span>
+                {category && (
+                    <>
+                        <Link
+                            to={`/category/${category.slug}`}
+                            className="hover:text-primary transition-colors"
                         >
-                            Post Comment
-                        </button>
-                    </div>
-                </form>
+                            {category.name}
+                        </Link>
+                        <span>/</span>
+                    </>
+                )}
+                <span className="text-dark-text dark:text-light-text font-medium">
+                    {post.title}
+                </span>
             </div>
-        </div>
-    );
-
-    const InstagramFeed = () => (
-        <div className="mt-16 py-12 bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
-            <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="text-center mb-8">
-                    <h2 className="text-2xl font-bold text-dark-text dark:text-light-text">Follow Me On Instagram</h2>
-                    <a href="#" className="text-sm text-primary font-semibold flex items-center justify-center space-x-1 mt-1">
-                        <InstagramIcon className="w-4 h-4" />
-                        <span>@behindyourbrain</span>
-                    </a>
-                </div>
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-1">
-                    {Array.from({ length: 6 }).map((_, index) => (
-                        <div key={index} className="w-full aspect-square bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
-                            <div className="w-8 h-8 border-2 border-gray-400 dark:border-gray-500 rounded"></div>
-                        </div>
-                    ))}
-                </div>
-            </div>
-        </div>
+        </nav>
     );
 
     return (
-        <div className="bg-light dark:bg-dark min-h-screen">
+        <div className="bg-slate-50 dark:bg-slate-900 min-h-screen">
             <SocialMetaTags post={post} />
             <StructuredData
                 post={post}
                 category={category}
                 breadcrumbs={breadcrumbs}
             />
-            <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
-                <main className="mt-6 sm:mt-8 lg:mt-12">
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-x-16">
-                        <div className="lg:col-span-2 order-1 lg:order-1">
-                            <article className="max-w-none">
-                                {/* Article Header */}
-                                <header className="text-center mb-8 sm:mb-12">
-                                    <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight leading-tight text-dark-text dark:text-light-text px-2 text-center">
-                                        {post.title}
-                                    </h1>
-                                    <div className="mt-4 sm:mt-6 flex flex-col sm:flex-row justify-center items-center space-y-2 sm:space-y-0 sm:space-x-4">
-                                        <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center">
-                                            <div className="w-5 h-5 sm:w-6 sm:h-6 bg-gray-400 dark:bg-gray-500 rounded-full"></div>
+
+            <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-8">
+                {/* Breadcrumbs */}
+                <Breadcrumbs />
+
+                <div className="flex flex-col lg:flex-row gap-12">
+                    {/* Main Content Area */}
+                    <main className="flex-1 max-w-none bg-white dark:bg-slate-800 border border-slate-200/30 dark:border-slate-700/30 rounded-lg p-8">
+                        
+                        {/* Article Header */}
+                        <header className="mb-12 pb-8 border-b border-slate-200/30 dark:border-slate-700/30">
+                            <h1 className="text-4xl lg:text-5xl font-bold leading-tight mb-8 text-dark-text dark:text-light-text">
+                                {post.title}
+                            </h1>
+
+                            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6 mb-6 text-sm text-slate-600 dark:text-slate-400">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-12 h-12 bg-slate-200 dark:bg-slate-700 rounded-full flex items-center justify-center">
+                                        <div className="w-6 h-6 bg-slate-400 dark:bg-slate-500 rounded-full"></div>
+                                    </div>
+                                    <div>
+                                        <div className="font-semibold text-dark-text dark:text-light-text">
+                                            {post.authorName || 'Author'}
                                         </div>
-                                        <div className="text-center sm:text-left">
-                                            <p className="font-semibold text-sm sm:text-base text-dark-text dark:text-light-text">
-                                                By {post.authorName || 'Author'}
-                                            </p>
-                                            <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
-                                                {new Date(post.createdAt).toLocaleDateString('en-US', { 
-                                                    year: 'numeric', 
-                                                    month: 'short', 
-                                                    day: 'numeric' 
-                                                })}
-                                            </p>
-                                        </div>
-                                    </div>
-                                    {category && (
-                                        <p className="mt-3 sm:mt-4 text-xs sm:text-sm text-gray-500 dark:text-gray-400">
-                                            <Link to={`/category/${category.slug}`} className="hover:text-primary transition-colors">
-                                                {category.name}
-                                            </Link>
-                                        </p>
-                                    )}
-                                </header>
-
-                                {/* Main Article Image */}
-                                {post.imageUrl && (
-                                    <div className="w-full h-48 sm:h-64 md:h-80 lg:h-96 mb-6 sm:mb-8 overflow-hidden rounded-lg">
-                                        <img 
-                                            src={post.imageUrl} 
-                                            alt={post.title}
-                                            className="w-full h-full object-cover"
-                                        />
-                                    </div>
-                                )}
-
-                                {/* Article Content */}
-                                <div className="prose prose-sm sm:prose-base lg:prose-lg dark:prose-invert max-w-none text-dark-text dark:text-light-text">
-                                    <div
-                                        className="text-dark-text dark:text-light-text leading-relaxed enhanced-content"
-                                        dangerouslySetInnerHTML={{ __html: post.content }}
-                                    />
-                                </div>
-
-                                {/* Social Sharing */}
-                                <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 sm:p-6 lg:p-8 text-center my-8 sm:my-12">
-                                    <p className="text-sm sm:text-base lg:text-lg text-gray-700 dark:text-gray-300 mb-3 sm:mb-4 px-2">
-                                        If you enjoyed reading this story, then we'd love it if you would share it
-                                    </p>
-                                    <div className="flex justify-center space-x-2 sm:space-x-4">
-                                        {socialIcons.map(({ icon: Icon, label }, index) => (
-                                            <a
-                                                key={index}
-                                                href="#"
-                                                className="w-8 h-8 sm:w-10 sm:h-10 rounded-full border border-gray-300 dark:border-gray-600 flex items-center justify-center text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                                                aria-label={`Share on ${label}`}
-                                            >
-                                                <Icon className="w-3 h-3 sm:w-4 sm:h-4" />
-                                            </a>
-                                        ))}
+                                        <div className="text-xs">Senior Developer</div>
                                     </div>
                                 </div>
-
-                                {/* Tags */}
-                                <div className="border-t border-gray-200 dark:border-gray-700 pt-4 text-sm">
-                                    <span className="font-semibold text-dark-text dark:text-light-text">Tags:</span>{' '}
-                                    {post.tags && post.tags.length > 0 ? (
-                                        post.tags.map((tagId, index) => {
-                                            const tag = context.tags.find(t => t.id === tagId);
-                                            return tag ? (
-                                                <span key={tagId}>
-                                                    <a href="#" className="text-gray-600 dark:text-gray-400 hover:underline">
-                                                        {tag.name}
-                                                    </a>
-                                                    {index < post.tags!.length - 1 && ', '}
-                                                </span>
-                                            ) : null;
-                                        })
-                                    ) : (
-                                        <span className="text-gray-600 dark:text-gray-400">No tags</span>
-                                    )}
+                                <div className="flex flex-wrap gap-4 sm:gap-6">
+                                    <div className="flex items-center gap-1">
+                                        <span>📅</span>
+                                        <span>{new Date(post.createdAt).toLocaleDateString('en-US', {
+                                            month: 'long',
+                                            day: 'numeric',
+                                            year: 'numeric'
+                                        })}</span>
+                                    </div>
+                                    <div className="flex items-center gap-1">
+                                        <span>⏱️</span>
+                                        <span>{readTime} min read</span>
+                                    </div>
                                 </div>
+                            </div>
 
-                            </article>
+                            {post.tags && post.tags.length > 0 && (
+                                <div className="flex flex-wrap gap-2">
+                                    {post.tags.map((tagId) => {
+                                        const tag = context.tags.find(t => t.id === tagId);
+                                        return tag ? (
+                                            <span key={tagId} className="bg-slate-100 dark:bg-slate-700 px-3 py-1 rounded-full text-xs text-slate-700 dark:text-slate-300">
+                                                {tag.name}
+                                            </span>
+                                        ) : null;
+                                    })}
+                                </div>
+                            )}
+                        </header>
 
-                            {/* FAQ Schema */}
-                            <FAQSchema post={post} />
-                            
-                            {/* Author Information */}
-                            <AuthorInfo post={post} className="mt-12 sm:mt-16" />
+                        {/* Featured Image */}
+                        {post.imageUrl && (
+                            <div className="w-full h-72 sm:h-96 lg:h-[28rem] bg-slate-200 dark:bg-slate-700 rounded-xl mb-12 overflow-hidden">
+                                <img
+                                    src={post.imageUrl}
+                                    alt={post.title}
+                                    className="w-full h-full object-cover"
+                                />
+                            </div>
+                        )}
 
-                            <CommentSection />
-                        </div>
+                        {/* Article Content */}
+                        <article className="mb-12">
+                            <div className="enhanced-content prose prose-lg lg:prose-xl xl:prose-2xl dark:prose-invert max-w-none prose-headings:text-dark-text dark:prose-headings:text-light-text prose-p:text-dark-text dark:prose-p:text-light-text prose-li:text-dark-text dark:prose-li:text-light-text prose-strong:text-dark-text dark:prose-strong:text-light-text">
+                                <div dangerouslySetInnerHTML={{ __html: post.content }} />
+                            </div>
+                        </article>
 
-                        <div className="mt-8 sm:mt-12 lg:mt-0 order-2 lg:order-2">
-                            <div className="lg:sticky lg:top-8">
-                                <Sidebar />
+                        {/* Social Sharing */}
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-6 mb-12 py-8 border-t border-b border-slate-200/30 dark:border-slate-700/30">
+                            <h4 className="text-dark-text dark:text-light-text font-semibold text-xl">📢 Share this article:</h4>
+                            <div className="flex flex-wrap gap-4">
+                                {socialIcons.map(({ label, emoji }, index) => (
+                                    <button
+                                        key={index}
+                                        className="px-6 py-3 bg-slate-100 dark:bg-slate-700 border border-slate-200/30 dark:border-slate-600/30 rounded-xl text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors font-medium"
+                                    >
+                                        {emoji} {label}
+                                    </button>
+                                ))}
                             </div>
                         </div>
-                    </div>
-                </main>
+
+                        {/* Author Bio */}
+                        {post.authorName && (
+                            <div className="flex flex-col sm:flex-row gap-6 p-8 bg-slate-50 dark:bg-slate-700 border border-slate-200/20 dark:border-slate-600/20 rounded-xl mb-12">
+                                <div className="w-24 h-24 bg-slate-200 dark:bg-slate-600 rounded-full flex-shrink-0 flex items-center justify-center mx-auto sm:mx-0">
+                                    <div className="w-12 h-12 bg-slate-400 dark:bg-slate-500 rounded-full"></div>
+                                </div>
+                                <div className="text-center sm:text-left">
+                                    <h4 className="text-xl font-semibold mb-3 text-dark-text dark:text-light-text">
+                                        About {post.authorName}
+                                    </h4>
+                                    <p className="text-slate-600 dark:text-slate-400 leading-relaxed">
+                                        Senior Developer with expertise in modern web technologies. Passionate about sharing knowledge and helping developers grow.
+                                    </p>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Comments System */}
+                        {post.allowComments && (
+                            <section className="mb-12">
+                                <h3 className="text-2xl font-bold mb-8 text-dark-text dark:text-light-text">
+                                    💬 Comments
+                                </h3>
+
+                            {/* Comment Form */}
+                            <div className="bg-slate-50 dark:bg-slate-700 border border-slate-200/20 dark:border-slate-600/20 p-8 rounded-xl">
+                                <h4 className="text-xl font-semibold mb-6 text-dark-text dark:text-light-text">
+                                    ✍️ Leave a Comment
+                                </h4>
+                                <form onSubmit={handleCommentSubmit} className="space-y-5">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                        <div>
+                                            <input
+                                                type="text"
+                                                value={name}
+                                                onChange={(e) => setName(e.target.value)}
+                                                placeholder="Your Name"
+                                                className="w-full p-4 border border-slate-200/40 dark:border-slate-600/40 rounded-lg bg-white dark:bg-slate-800 text-dark-text dark:text-light-text focus:ring-2 focus:ring-primary focus:border-transparent"
+                                                required
+                                            />
+                                        </div>
+                                        <div>
+                                            <input
+                                                type="email"
+                                                value={email}
+                                                onChange={(e) => setEmail(e.target.value)}
+                                                placeholder="Your Email"
+                                                className="w-full p-4 border border-slate-200/40 dark:border-slate-600/40 rounded-lg bg-white dark:bg-slate-800 text-dark-text dark:text-light-text focus:ring-2 focus:ring-primary focus:border-transparent"
+                                                required
+                                            />
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <textarea
+                                            value={comment}
+                                            onChange={(e) => setComment(e.target.value)}
+                                            placeholder="Share your thoughts..."
+                                            className="w-full h-32 p-4 border border-slate-200/40 dark:border-slate-600/40 rounded-lg bg-white dark:bg-slate-800 text-dark-text dark:text-light-text resize-vertical focus:ring-2 focus:ring-primary focus:border-transparent"
+                                            required
+                                        />
+                                    </div>
+                                    <button
+                                        type="submit"
+                                        className="bg-primary text-white px-8 py-3 rounded-lg font-semibold hover:bg-primary-dark transition-colors"
+                                    >
+                                        Post Comment
+                                    </button>
+                                </form>
+                            </div>
+                            </section>
+                        )}
+                    </main>
+
+                    {/* Sidebar */}
+                    <aside className="w-full lg:w-72 flex-shrink-0 space-y-8">
+
+                        {/* Table of Contents */}
+                        <TableOfContents content={post.content} />
+
+                        {/* Search Widget */}
+                        <SidebarWidget title="🔍 Search">
+                            <input
+                                type="text"
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                placeholder="Search articles..."
+                                className="w-full p-3 border border-slate-200/40 dark:border-slate-600/40 rounded bg-white dark:bg-slate-800 text-dark-text dark:text-light-text"
+                            />
+                        </SidebarWidget>
+
+                        {/* Related Posts */}
+                        <SidebarWidget title="📖 Related Posts">
+                            {relatedPosts.map((relatedPost) => (
+                                <SidebarItem key={relatedPost.id} post={relatedPost} />
+                            ))}
+                        </SidebarWidget>
+
+                        {/* Categories */}
+                        <SidebarWidget title="📂 Categories">
+                            <ul className="space-y-0">
+                                {context.categories.map((cat) => (
+                                    <li key={cat.id} className="flex justify-between py-2 border-b border-slate-200/20 dark:border-slate-700/20 last:border-b-0">
+                                        <Link 
+                                            to={`/category/${cat.slug}`}
+                                            className="text-slate-700 dark:text-slate-300 hover:text-primary transition-colors"
+                                        >
+                                            {cat.name}
+                                        </Link>
+                                        <span className="text-slate-500 dark:text-slate-400">
+                                            ({context.posts.filter(p => p.categoryId === cat.id).length})
+                                        </span>
+                                    </li>
+                                ))}
+                            </ul>
+                        </SidebarWidget>
+
+                        {/* Popular Posts */}
+                        <SidebarWidget title="🔥 Popular This Week">
+                            {popularPosts.map((popularPost) => (
+                                <SidebarItem key={popularPost.id} post={popularPost} />
+                            ))}
+                        </SidebarWidget>
+
+                        {/* Newsletter Signup */}
+                        <SidebarWidget title="">
+                            <div className="text-center bg-gradient-to-br from-primary to-primary-dark text-white rounded-lg p-6">
+                                <h3 className="text-lg font-semibold mb-2">📧 Stay Updated!</h3>
+                                <p className="text-sm mb-4 opacity-90">
+                                    Get weekly web development tips and tutorials
+                                </p>
+                                <form onSubmit={handleNewsletterSubmit} className="space-y-3">
+                                    <input
+                                        type="email"
+                                        value={newsletterEmail}
+                                        onChange={(e) => setNewsletterEmail(e.target.value)}
+                                        placeholder="your@email.com"
+                                        className="w-full p-3 border-0 rounded text-dark-text"
+                                        required
+                                    />
+                                    <button
+                                        type="submit"
+                                        className="w-full bg-white text-primary px-5 py-2 rounded font-semibold hover:bg-slate-50 transition-colors"
+                                    >
+                                        Subscribe Now
+                                    </button>
+                                </form>
+                            </div>
+                        </SidebarWidget>
+
+                        {/* Tags Cloud */}
+                        <SidebarWidget title="🏷️ Popular Tags">
+                            <div className="flex flex-wrap gap-2">
+                                {context.tags.slice(0, 10).map((tag) => (
+                                    <span 
+                                        key={tag.id}
+                                        className="bg-slate-100 dark:bg-slate-700 px-3 py-1 rounded-full text-xs text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors cursor-pointer"
+                                    >
+                                        {tag.name}
+                                    </span>
+                                ))}
+                            </div>
+                        </SidebarWidget>
+                    </aside>
+                </div>
             </div>
             
-            <InstagramFeed />
+            {/* FAQ Schema */}
+            <FAQSchema post={post} />
         </div>
     );
 };

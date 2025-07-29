@@ -1,6 +1,9 @@
-import React, { createContext, useState, useEffect, useContext } from 'react';
+import React, { createContext, useContext } from 'react';
+import { useTheme as useThemeHook, UseThemeReturn } from '../src/hooks/useTheme';
 
-interface ThemeContextType {
+// Extended interface that includes all theme functionality
+interface ThemeContextType extends UseThemeReturn {
+  // Legacy compatibility
   isDarkMode: boolean;
   toggleDarkMode: () => void;
 }
@@ -8,30 +11,18 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [isDarkMode, setIsDarkMode] = useState(() => {
-    if (typeof window !== 'undefined' && window.localStorage) {
-      return localStorage.getItem('theme') === 'dark';
-    }
-    return false;
-  });
+  const themeHook = useThemeHook();
 
-  useEffect(() => {
-    const root = window.document.documentElement;
-    if (isDarkMode) {
-      root.classList.add('dark');
-      localStorage.setItem('theme', 'dark');
-    } else {
-      root.classList.remove('dark');
-      localStorage.setItem('theme', 'light');
-    }
-  }, [isDarkMode]);
-
-  const toggleDarkMode = () => {
-    setIsDarkMode(!isDarkMode);
+  // Create the context value with both new and legacy APIs
+  const contextValue: ThemeContextType = {
+    ...themeHook,
+    // Legacy compatibility - these are already provided by the hook
+    isDarkMode: themeHook.isDarkMode,
+    toggleDarkMode: themeHook.toggleDarkMode,
   };
 
   return (
-    <ThemeContext.Provider value={{ isDarkMode, toggleDarkMode }}>
+    <ThemeContext.Provider value={contextValue}>
       {children}
     </ThemeContext.Provider>
   );

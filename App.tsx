@@ -18,12 +18,20 @@ import PostEditorPage from './pages/admin/PostEditorPage';
 import CategoryManagerPage from './pages/admin/CategoryManagerPage';
 import EditorTestPage from './pages/admin/EditorTestPage';
 import EditorDebugPage from './pages/EditorDebugPage';
-import EditorDiagnosticPage from './pages/EditorDiagnosticPage';
-import PostEditorComparison from './pages/PostEditorComparison';
 import Sitemap from './pages/Sitemap';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import Breadcrumbs from './components/Breadcrumbs';
+import { useLocation } from 'react-router-dom';
+
+const ConditionalBreadcrumbs: React.FC = () => {
+  const location = useLocation();
+  // Don't show breadcrumbs on PostPage as it has its own aligned breadcrumbs
+  if (location.pathname.startsWith('/post/')) {
+    return null;
+  }
+  return <Breadcrumbs />;
+};
 
 const ProtectedRoute: React.FC = () => {
   const context = React.useContext(BlogContext);
@@ -59,7 +67,7 @@ const App: React.FC = () => {
                   <Header />
                   <main className="flex-1">
                     <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 pt-4">
-                        <Breadcrumbs />
+                        <ConditionalBreadcrumbs />
                         <Routes>
                             <Route path="/" element={<HomePage />} />
                             <Route path="/post" element={<Navigate to="/all-posts" replace />} />
@@ -67,8 +75,6 @@ const App: React.FC = () => {
                             <Route path="/category/:slug" element={<CategoryPage />} />
                             <Route path="/all-posts" element={<AllPostsPage />} />
                             <Route path="/editor-debug" element={<EditorDebugPage />} />
-          <Route path="/editor-diagnostic" element={<EditorDiagnosticPage />} />
-          <Route path="/editor-comparison" element={<PostEditorComparison />} />
                             <Route path="/sitemap.xml" element={<Sitemap />} />
                         </Routes>
                     </div>

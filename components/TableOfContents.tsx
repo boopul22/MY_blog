@@ -103,37 +103,37 @@ const TableOfContents: React.FC<TableOfContentsProps> = ({ content, className = 
   }
 
   return (
-    <div className={`bg-gray-50 dark:bg-gray-800 rounded-lg p-4 ${className}`}>
-      <h3 className="text-lg font-bold text-dark-text dark:text-light-text mb-4 relative after:content-[''] after:absolute after:left-0 after:bottom-[-8px] after:w-8 after:h-0.5 after:bg-slate-800 dark:after:bg-slate-200">
-        TABLE OF CONTENTS
+    <div className={`bg-white dark:bg-slate-800 border border-slate-200/20 dark:border-slate-700/20 rounded-lg p-6 ${className}`}>
+      <h3 className="text-lg font-semibold mb-5 pb-3 border-b border-slate-200/30 dark:border-slate-700/30 text-dark-text dark:text-light-text">
+        📋 Table of Contents
       </h3>
-      <nav>
-        <ul className="space-y-2">
-          {headings.map((heading) => (
-            <li key={heading.id}>
-              <button
-                onClick={() => scrollToHeading(heading.id)}
-                className={`text-left w-full text-sm transition-colors hover:text-primary dark:hover:text-primary ${
-                  activeId === heading.id
-                    ? 'text-primary dark:text-primary font-semibold'
-                    : 'text-gray-600 dark:text-gray-400'
-                } ${
-                  heading.level === 2 ? 'pl-0' :
-                  heading.level === 3 ? 'pl-4' : 'pl-8'
-                }`}
-              >
-                <span className="flex items-center gap-2">
-                  <div className={`w-1.5 h-1.5 rounded-full ${
-                    activeId === heading.id
-                      ? 'bg-primary dark:bg-primary'
-                      : 'bg-gray-400 dark:bg-gray-500'
-                  }`} />
-                  {heading.text}
-                </span>
-              </button>
-            </li>
-          ))}
-        </ul>
+      <nav className="space-y-1">
+        {headings.map((heading) => (
+          <button
+            key={heading.id}
+            onClick={() => scrollToHeading(heading.id)}
+            className={`
+              block w-full text-left py-2 px-3 rounded text-sm transition-colors
+              ${heading.level === 2 ? 'font-medium' : ''}
+              ${heading.level === 2 ? 'ml-0' : ''}
+              ${heading.level === 3 ? 'ml-4' : ''}
+              ${heading.level === 4 ? 'ml-8' : ''}
+              ${activeId === heading.id
+                ? 'bg-primary/10 text-primary border-l-2 border-primary'
+                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700'
+              }
+            `}
+          >
+            <span className="flex items-center gap-2">
+              <div className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${
+                activeId === heading.id
+                  ? 'bg-primary'
+                  : 'bg-slate-400 dark:bg-slate-500'
+              }`} />
+              <span className="truncate">{heading.text}</span>
+            </span>
+          </button>
+        ))}
       </nav>
     </div>
   );

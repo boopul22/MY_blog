@@ -6,88 +6,122 @@
 
 /* behindyourbrain Blog - Custom Styles */
 
-/* Color scheme support for proper dark mode */
+/*
+ * Centralized Color System
+ * Colors are now managed through src/config/colorSchemes.ts
+ * This section will be dynamically updated by the theme system
+ */
 :root {
   color-scheme: light;
   --radius: 0.5rem;
-  --background: 248 249 250; /* #f8f9fa - light */
-  --foreground: 26 32 44; /* #1a202c - dark-text */
-  --card: 255 255 255; /* white */
-  --card-foreground: 26 32 44; /* #1a202c - dark-text */
-  --popover: 255 255 255; /* white */
-  --popover-foreground: 26 32 44; /* #1a202c - dark-text */
-  --primary: 0 123 255; /* #007bff - primary */
-  --primary-foreground: 247 250 252; /* #f7fafc - light-text */
-  --secondary: 108 117 125; /* #6c757d - secondary */
-  --secondary-foreground: 26 32 44; /* #1a202c - dark-text */
-  --muted: 248 249 250; /* #f8f9fa - light */
-  --muted-foreground: 108 117 125; /* #6c757d - secondary */
-  --accent: 202 66 70; /* #ca4246 - accent */
-  --accent-foreground: 247 250 252; /* #f7fafc - light-text */
-  --destructive: 220 38 38; /* red-600 */
-  --destructive-foreground: 248 249 250; /* #f8f9fa - light */
-  --border: 229 231 235; /* gray-200 */
-  --input: 229 231 235; /* gray-200 */
-  --ring: 0 123 255; /* #007bff - primary */
-  --chart-1: 0 123 255; /* #007bff - primary */
-  --chart-2: 202 66 70; /* #ca4246 - accent */
-  --chart-3: 108 117 125; /* #6c757d - secondary */
-  --chart-4: 34 197 94; /* green-500 */
-  --chart-5: 168 85 247; /* purple-500 */
-  --sidebar: 26 32 44; /* #1a202c - dark */
-  --sidebar-foreground: 247 250 252; /* #f7fafc - light-text */
-  --sidebar-primary: 0 123 255; /* #007bff - primary */
-  --sidebar-primary-foreground: 247 250 252; /* #f7fafc - light-text */
-  --sidebar-accent: 45 55 72; /* #2d3748 - medium-dark */
-  --sidebar-accent-foreground: 247 250 252; /* #f7fafc - light-text */
-  --sidebar-border: 74 85 104; /* #4a5568 - light-dark */
-  --sidebar-ring: 0 123 255; /* #007bff - primary */
+
+  /* Core colors - Light theme defaults */
+  --background: 248 249 250;
+  --foreground: 26 32 44;
+  --card: 255 255 255;
+  --card-foreground: 26 32 44;
+  --popover: 255 255 255;
+  --popover-foreground: 26 32 44;
+  --primary: 0 123 255;
+  --primary-foreground: 247 250 252;
+  --secondary: 108 117 125;
+  --secondary-foreground: 26 32 44;
+  --muted: 248 249 250;
+  --muted-foreground: 108 117 125;
+  --accent: 202 66 70;
+  --accent-foreground: 247 250 252;
+  --destructive: 220 38 38;
+  --destructive-foreground: 248 249 250;
+  --border: 229 231 235;
+  --input: 229 231 235;
+  --ring: 0 123 255;
+
+  /* Chart colors */
+  --chart-1: 0 123 255;
+  --chart-2: 202 66 70;
+  --chart-3: 108 117 125;
+  --chart-4: 34 197 94;
+  --chart-5: 168 85 247;
+
+  /* Sidebar colors */
+  --sidebar: 26 32 44;
+  --sidebar-foreground: 247 250 252;
+  --sidebar-primary: 0 123 255;
+  --sidebar-primary-foreground: 247 250 252;
+  --sidebar-accent: 45 55 72;
+  --sidebar-accent-foreground: 247 250 252;
+  --sidebar-border: 74 85 104;
+  --sidebar-ring: 0 123 255;
+
+  /* Accessibility and focus colors */
+  --focus-ring: var(--ring);
+  --focus-ring-offset: var(--background);
+  --selection-bg: var(--accent);
+  --selection-text: var(--accent-foreground);
+  --high-contrast-outline: 0 0 0;
+  --high-contrast-bg: 255 255 0;
+  --high-contrast-text: 0 0 0;
 }
 
 .dark {
   color-scheme: dark;
-  --background: 26 32 44; /* #1a202c - dark */
-  --foreground: 247 250 252; /* #f7fafc - light-text */
-  --card: 45 55 72; /* #2d3748 - medium-dark */
-  --card-foreground: 247 250 252; /* #f7fafc - light-text */
-  --popover: 45 55 72; /* #2d3748 - medium-dark */
-  --popover-foreground: 247 250 252; /* #f7fafc - light-text */
-  --primary: 0 123 255; /* #007bff - primary */
-  --primary-foreground: 247 250 252; /* #f7fafc - light-text */
-  --secondary: 74 85 104; /* #4a5568 - light-dark */
-  --secondary-foreground: 247 250 252; /* #f7fafc - light-text */
-  --muted: 45 55 72; /* #2d3748 - medium-dark */
-  --muted-foreground: 156 163 175; /* gray-400 */
-  --accent: 202 66 70; /* #ca4246 - accent */
-  --accent-foreground: 247 250 252; /* #f7fafc - light-text */
-  --destructive: 239 68 68; /* red-500 */
-  --destructive-foreground: 247 250 252; /* #f7fafc - light-text */
-  --border: 74 85 104; /* #4a5568 - light-dark */
-  --input: 74 85 104; /* #4a5568 - light-dark */
-  --ring: 0 123 255; /* #007bff - primary */
-  --chart-1: 0 123 255; /* #007bff - primary */
-  --chart-2: 202 66 70; /* #ca4246 - accent */
-  --chart-3: 108 117 125; /* #6c757d - secondary */
-  --chart-4: 34 197 94; /* green-500 */
-  --chart-5: 168 85 247; /* purple-500 */
-  --sidebar: 26 32 44; /* #1a202c - dark */
-  --sidebar-foreground: 247 250 252; /* #f7fafc - light-text */
-  --sidebar-primary: 0 123 255; /* #007bff - primary */
-  --sidebar-primary-foreground: 247 250 252; /* #f7fafc - light-text */
-  --sidebar-accent: 45 55 72; /* #2d3748 - medium-dark */
-  --sidebar-accent-foreground: 247 250 252; /* #f7fafc - light-text */
-  --sidebar-border: 74 85 104; /* #4a5568 - light-dark */
-  --sidebar-ring: 0 123 255; /* #007bff - primary */
+
+  /* Core colors - Dark theme */
+  --background: 26 32 44;
+  --foreground: 247 250 252;
+  --card: 45 55 72;
+  --card-foreground: 247 250 252;
+  --popover: 45 55 72;
+  --popover-foreground: 247 250 252;
+  --primary: 0 123 255;
+  --primary-foreground: 247 250 252;
+  --secondary: 74 85 104;
+  --secondary-foreground: 247 250 252;
+  --muted: 45 55 72;
+  --muted-foreground: 156 163 175;
+  --accent: 202 66 70;
+  --accent-foreground: 247 250 252;
+  --destructive: 239 68 68;
+  --destructive-foreground: 247 250 252;
+  --border: 74 85 104;
+  --input: 74 85 104;
+  --ring: 0 123 255;
+
+  /* Chart colors */
+  --chart-1: 0 123 255;
+  --chart-2: 202 66 70;
+  --chart-3: 108 117 125;
+  --chart-4: 34 197 94;
+  --chart-5: 168 85 247;
+
+  /* Sidebar colors */
+  --sidebar: 26 32 44;
+  --sidebar-foreground: 247 250 252;
+  --sidebar-primary: 0 123 255;
+  --sidebar-primary-foreground: 247 250 252;
+  --sidebar-accent: 45 55 72;
+  --sidebar-accent-foreground: 247 250 252;
+  --sidebar-border: 74 85 104;
+  --sidebar-ring: 0 123 255;
+
+  /* Accessibility and focus colors for dark mode */
+  --focus-ring: var(--ring);
+  --focus-ring-offset: var(--background);
+  --selection-bg: var(--accent);
+  --selection-text: var(--accent-foreground);
+  --high-contrast-outline: 255 255 255;
+  --high-contrast-bg: 0 0 0;
+  --high-contrast-text: 255 255 255;
 }
 
-/* Ensure full page dark mode coverage */
+/* Ensure full page theme coverage */
 html {
-  background-color: #f8f9fa;
+  background-color: rgb(var(--background));
   transition: background-color 0.2s ease;
 }
 
 html.dark {
-  background-color: #1a202c;
+  background-color: rgb(var(--background));
 }
 
 body {
@@ -105,7 +139,7 @@ html {
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: rgb(var(--muted));
 }
 
 ::-webkit-scrollbar-thumb {
@@ -122,7 +156,7 @@ html {
 }
 
 .dark ::-webkit-scrollbar-track {
-  background: #374151;
+  background: rgb(var(--muted));
 }
 
 .dark ::-webkit-scrollbar-thumb {
@@ -174,22 +208,23 @@ html {
   input:focus,
   textarea:focus,
   select:focus {
-    outline: 3px solid #3b82f6;
+    outline: 3px solid rgb(var(--focus-ring));
     outline-offset: 2px;
     border-radius: 4px;
   }
 
   /* Enhanced focus for interactive elements */
   .mobile-focus:focus {
-    outline: 3px solid #3b82f6;
+    outline: 3px solid rgb(var(--focus-ring));
     outline-offset: 3px;
-    box-shadow: 0 0 0 6px rgba(59, 130, 246, 0.2);
+    box-shadow: 0 0 0 6px rgb(var(--focus-ring) / 0.2);
   }
 }
 
 /* Selection color */
 ::selection {
-  @apply bg-accent text-white;
+  background: rgb(var(--selection-bg));
+  color: rgb(var(--selection-text));
 }
 
 /* Gradient text */
@@ -215,11 +250,11 @@ html {
 /* Backdrop blur fallback */
 @supports not (backdrop-filter: blur(12px)) {
   .backdrop-blur-md {
-    background-color: rgba(255, 255, 255, 0.95);
+    background-color: rgb(var(--background) / 0.95);
   }
 
   .dark .backdrop-blur-md {
-    background-color: rgba(26, 26, 26, 0.95);
+    background-color: rgb(var(--background) / 0.95);
   }
 }
 
@@ -564,16 +599,16 @@ html {
   }
 
   .high-contrast-focus:focus {
-    outline: 4px solid #000;
+    outline: 4px solid rgb(var(--high-contrast-outline));
     outline-offset: 2px;
-    background-color: #ffff00;
-    color: #000;
+    background-color: rgb(var(--high-contrast-bg));
+    color: rgb(var(--high-contrast-text));
   }
 
   .dark .high-contrast-focus:focus {
-    outline: 4px solid #fff;
-    background-color: #000;
-    color: #fff;
+    outline: 4px solid rgb(var(--high-contrast-outline));
+    background-color: rgb(var(--high-contrast-bg));
+    color: rgb(var(--high-contrast-text));
   }
 }
 

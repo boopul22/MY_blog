@@ -3,10 +3,11 @@ import React, { useState, useContext, useEffect, useRef } from 'react';
 import { NavLink, Link } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext';
 import { BlogContext } from '../context/SupabaseBlogContext';
-import { MenuIcon, SearchIcon, MoonIcon, SunIcon, GlobeAltIcon } from './icons';
+import { MenuIcon, SearchIcon, GlobeAltIcon } from './icons';
+import { ThemeToggle } from '../src/components/ThemeSelector';
 
 const Header: React.FC = () => {
-    const { isDarkMode, toggleDarkMode } = useTheme();
+    const { isDarkMode } = useTheme();
     const context = useContext(BlogContext);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isCategoriesOpen, setIsCategoriesOpen] = useState(false);
@@ -45,29 +46,29 @@ const Header: React.FC = () => {
 
     return (
         <>
-            <header className="bg-light dark:bg-dark transition-colors relative">
+            <header className="bg-background transition-colors relative">
                 <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
                     {/* Logo Section */}
                     <div className="text-center py-6 sm:py-8">
                         <div className="inline-block relative mb-2 sm:mb-4">
-                            
+
                         </div>
                         <Link to="/" className="block">
-                            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif tracking-widest text-dark-text dark:text-light-text hover:text-primary dark:hover:text-primary transition-colors">
+                            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif tracking-widest text-foreground hover:text-primary transition-colors">
                                 behindyourbrain
                             </h1>
-                            <p className="text-xs tracking-[0.2em] text-secondary dark:text-slate-400 mt-1">
+                            <p className="text-xs tracking-[0.2em] text-muted-foreground mt-1">
                                 CREATIVE MAGAZINE
                             </p>
                         </Link>
                     </div>
-                    
+
                     {/* Navigation Section */}
-                    <div className="flex justify-between items-center border-t border-b border-slate-200 dark:border-light-dark py-4">
+                    <div className="flex justify-between items-center border-t border-b border-border py-4">
                         {/* Mobile Menu Button */}
-                        <button 
+                        <button
                             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                            className="md:hidden w-8 h-8 flex items-center justify-center text-dark-text dark:text-light-text hover:text-primary transition-colors"
+                            className="md:hidden w-8 h-8 flex items-center justify-center text-foreground hover:text-primary transition-colors"
                             aria-label="Toggle mobile menu"
                         >
                             <MenuIcon className="w-6 h-6" />
@@ -115,26 +116,17 @@ const Header: React.FC = () => {
                         
                         {/* Action Buttons */}
                         <div className="flex items-center space-x-2 sm:space-x-4">
-                            <button 
-                                onClick={toggleDarkMode}
-                                className="w-6 h-6 border rounded-full border-slate-400 dark:border-slate-500 flex items-center justify-center hover:bg-slate-100 dark:hover:bg-medium-dark transition-colors"
-                                aria-label="Toggle dark mode"
-                            >
-                                {isDarkMode ? 
-                                    <SunIcon className="w-4 h-4 text-dark-text dark:text-light-text" /> : 
-                                    <MoonIcon className="w-4 h-4 text-dark-text dark:text-light-text" />
-                                }
-                            </button>
+                            <ThemeToggle />
                             
-                            <button className="hidden sm:flex w-6 h-6 border rounded-full border-slate-400 dark:border-slate-500 items-center justify-center hover:bg-slate-100 dark:hover:bg-medium-dark transition-colors" aria-label="Search">
-                                <SearchIcon className="w-3 h-3 text-dark-text dark:text-light-text" />
+                            <button className="hidden sm:flex w-6 h-6 border rounded-full border-border items-center justify-center hover:bg-accent hover:text-accent-foreground transition-colors" aria-label="Search">
+                                <SearchIcon className="w-3 h-3 text-foreground" />
                             </button>
-                            
+
                             <div className="hidden sm:flex items-center gap-2 text-sm">
-                                <button className="w-6 h-6 border rounded-full border-slate-400 dark:border-slate-500 flex items-center justify-center hover:bg-slate-100 dark:hover:bg-medium-dark transition-colors" aria-label="Language">
-                                    <GlobeAltIcon className="w-4 h-4 text-dark-text dark:text-light-text" />
+                                <button className="w-6 h-6 border rounded-full border-border flex items-center justify-center hover:bg-accent hover:text-accent-foreground transition-colors" aria-label="Language">
+                                    <GlobeAltIcon className="w-4 h-4 text-foreground" />
                                 </button>
-                                <span className="text-dark-text dark:text-light-text text-xs">EN</span>
+                                <span className="text-foreground text-xs">EN</span>
                             </div>
                             
                             <Link 
