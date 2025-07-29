@@ -332,96 +332,99 @@ const PostPage: React.FC = () => {
                     </main>
 
                     {/* Sidebar */}
-                    <aside className="lg:col-span-4 space-y-8">
-
+                    <aside className="lg:col-span-4">
                         {/* Table of Contents */}
                         <div className="lg:sticky lg:top-8">
-                            <TableOfContents content={post.content} />
+                            <SidebarWidget title="In this article">
+                                <TableOfContents content={post.content} />
+                            </SidebarWidget>
                         </div>
 
-                        {/* Search Widget */}
-                        <SidebarWidget title="🔍 Search">
-                            <input
-                                type="text"
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                placeholder="Search articles..."
-                                className="w-full p-3 border border-slate-200/40 dark:border-slate-600/40 rounded bg-background text-foreground focus:ring-2 focus:ring-primary focus:border-transparent transition"
-                            />
-                        </SidebarWidget>
+                        <div className="mt-8 space-y-8">
+                            {/* Search Widget */}
+                            <SidebarWidget title="🔍 Search">
+                                <input
+                                    type="text"
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    placeholder="Search articles..."
+                                    className="w-full p-3 border border-slate-200/40 dark:border-slate-600/40 rounded bg-background text-foreground focus:ring-2 focus:ring-primary focus:border-transparent transition"
+                                />
+                            </SidebarWidget>
 
-                        {/* Related Posts */}
-                        <SidebarWidget title="📖 Related Posts">
-                            {relatedPosts.map((relatedPost) => (
-                                <SidebarItem key={relatedPost.id} post={relatedPost} />
-                            ))}
-                        </SidebarWidget>
+                            {/* Related Posts */}
+                            <SidebarWidget title="📖 Related Posts">
+                                {relatedPosts.map((relatedPost) => (
+                                    <SidebarItem key={relatedPost.id} post={relatedPost} />
+                                ))}
+                            </SidebarWidget>
 
-                        {/* Categories */}
-                        <SidebarWidget title="📂 Categories">
-                            <ul className="space-y-0">
-                                {context.categories.map((cat) => (
-                                    <li key={cat.id} className="flex justify-between items-center py-2.5 border-b border-slate-200/20 dark:border-slate-700/20 last:border-b-0">
-                                        <Link 
-                                            to={`/category/${cat.slug}`}
-                                            className="text-slate-700 dark:text-slate-300 hover:text-primary transition-colors text-sm font-medium"
+                            {/* Categories */}
+                            <SidebarWidget title="📂 Categories">
+                                <ul className="space-y-0">
+                                    {context.categories.map((cat) => (
+                                        <li key={cat.id} className="flex justify-between items-center py-2.5 border-b border-slate-200/20 dark:border-slate-700/20 last:border-b-0">
+                                            <Link 
+                                                to={`/category/${cat.slug}`}
+                                                className="text-slate-700 dark:text-slate-300 hover:text-primary transition-colors text-sm font-medium"
+                                            >
+                                                {cat.name}
+                                            </Link>
+                                            <span className="text-slate-500 dark:text-slate-400 text-xs">
+                                                ({context.posts.filter(p => p.categoryId === cat.id).length})
+                                            </span>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </SidebarWidget>
+
+                            {/* Popular Posts */}
+                            <SidebarWidget title="🔥 Popular This Week">
+                                {popularPosts.map((popularPost) => (
+                                    <SidebarItem key={popularPost.id} post={popularPost} />
+                                ))}
+                            </SidebarWidget>
+
+                            {/* Newsletter Signup */}
+                            <SidebarWidget title="">
+                                <div className="text-center bg-gradient-to-br from-primary to-primary-dark text-white rounded-lg p-6 -m-2">
+                                    <h3 className="text-lg font-semibold mb-2">📧 Stay Updated!</h3>
+                                    <p className="text-sm mb-4 opacity-90">
+                                        Get weekly web development tips and tutorials
+                                    </p>
+                                    <form onSubmit={handleNewsletterSubmit} className="space-y-3">
+                                        <input
+                                            type="email"
+                                            value={newsletterEmail}
+                                            onChange={(e) => setNewsletterEmail(e.target.value)}
+                                            placeholder="your@email.com"
+                                            className="w-full p-3 border-0 rounded text-dark-text focus:ring-2 focus:ring-white transition"
+                                            required
+                                        />
+                                        <button
+                                            type="submit"
+                                            className="w-full bg-white text-primary px-5 py-2.5 rounded font-semibold hover:bg-slate-50 transition-colors"
                                         >
-                                            {cat.name}
-                                        </Link>
-                                        <span className="text-slate-500 dark:text-slate-400 text-xs">
-                                            ({context.posts.filter(p => p.categoryId === cat.id).length})
+                                            Subscribe Now
+                                        </button>
+                                    </form>
+                                </div>
+                            </SidebarWidget>
+
+                            {/* Tags Cloud */}
+                            <SidebarWidget title="🏷️ Popular Tags">
+                                <div className="flex flex-wrap gap-2">
+                                    {context.tags.slice(0, 10).map((tag) => (
+                                        <span 
+                                            key={tag.id}
+                                            className="bg-slate-100 dark:bg-slate-700 px-3 py-1.5 rounded-full text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors cursor-pointer"
+                                        >
+                                            {tag.name}
                                         </span>
-                                    </li>
-                                ))}
-                            </ul>
-                        </SidebarWidget>
-
-                        {/* Popular Posts */}
-                        <SidebarWidget title="🔥 Popular This Week">
-                            {popularPosts.map((popularPost) => (
-                                <SidebarItem key={popularPost.id} post={popularPost} />
-                            ))}
-                        </SidebarWidget>
-
-                        {/* Newsletter Signup */}
-                        <SidebarWidget title="">
-                            <div className="text-center bg-gradient-to-br from-primary to-primary-dark text-white rounded-lg p-6 -m-2">
-                                <h3 className="text-lg font-semibold mb-2">📧 Stay Updated!</h3>
-                                <p className="text-sm mb-4 opacity-90">
-                                    Get weekly web development tips and tutorials
-                                </p>
-                                <form onSubmit={handleNewsletterSubmit} className="space-y-3">
-                                    <input
-                                        type="email"
-                                        value={newsletterEmail}
-                                        onChange={(e) => setNewsletterEmail(e.target.value)}
-                                        placeholder="your@email.com"
-                                        className="w-full p-3 border-0 rounded text-dark-text focus:ring-2 focus:ring-white transition"
-                                        required
-                                    />
-                                    <button
-                                        type="submit"
-                                        className="w-full bg-white text-primary px-5 py-2.5 rounded font-semibold hover:bg-slate-50 transition-colors"
-                                    >
-                                        Subscribe Now
-                                    </button>
-                                </form>
-                            </div>
-                        </SidebarWidget>
-
-                        {/* Tags Cloud */}
-                        <SidebarWidget title="🏷️ Popular Tags">
-                            <div className="flex flex-wrap gap-2">
-                                {context.tags.slice(0, 10).map((tag) => (
-                                    <span 
-                                        key={tag.id}
-                                        className="bg-slate-100 dark:bg-slate-700 px-3 py-1.5 rounded-full text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors cursor-pointer"
-                                    >
-                                        {tag.name}
-                                    </span>
-                                ))}
-                            </div>
-                        </SidebarWidget>
+                                    ))}
+                                </div>
+                            </SidebarWidget>
+                        </div>
                     </aside>
                 </div>
             </div>

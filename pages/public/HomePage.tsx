@@ -11,7 +11,7 @@ const HomePage: React.FC = () => {
         return <div className="flex items-center justify-center min-h-96">
             <div className="text-center">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-                <p className="text-slate-500 dark:text-slate-400">Loading...</p>
+                <p className="text-muted-foreground">Loading...</p>
             </div>
         </div>;
     }
@@ -66,11 +66,11 @@ const HomePage: React.FC = () => {
                         <span className="font-medium">@behindyourbrain_magazine</span>
                     </div>
                     <h2 className="text-2xl sm:text-3xl font-serif text-slate-800 dark:text-slate-200 mt-2">Follow Me On Instagram</h2>
-                    <p className="text-slate-600 dark:text-slate-400 mt-2 text-sm sm:text-base px-4">Stay updated with our latest stories and behind-the-scenes content</p>
+                    <p className="text-muted-foreground mt-2 text-sm sm:text-base px-4">Stay updated with our latest stories and behind-the-scenes content</p>
                 </div>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2 sm:gap-3">
                     {[...Array(6)].map((_, i) => (
-                        <div key={i} className="aspect-square bg-slate-300 dark:bg-slate-700 border border-white dark:border-slate-600 hover:opacity-80 transition-opacity cursor-pointer rounded-sm overflow-hidden">
+                        <div key={i} className="aspect-square bg-muted border border-card hover:opacity-80 transition-opacity cursor-pointer rounded-sm overflow-hidden">
                             {/* Placeholder for Instagram image */}
                         </div>
                     ))}
