@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import EnhancedRichTextEditor from '../../components/EnhancedRichTextEditor';
+import LazyEnhancedRichTextEditor from '../../components/LazyEnhancedRichTextEditor';
 import FormField from '../../components/FormField';
 
 const EditorTestPage: React.FC = () => {
@@ -80,7 +80,7 @@ const EditorTestPage: React.FC = () => {
               required
               hint="Test the TinyMCE rich text editor"
             >
-              <EnhancedRichTextEditor
+              <LazyEnhancedRichTextEditor
                 value={content}
                 onChange={handleContentChange}
                 placeholder="Start typing in the rich text editor..."

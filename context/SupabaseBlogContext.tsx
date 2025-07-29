@@ -2,6 +2,7 @@ import React, { createContext, useState, useEffect, ReactNode } from 'react';
 import { Post, Category, Tag } from '../types';
 import { postsService, categoriesService, tagsService, authService } from '../services/supabaseService';
 import { ImageSizes } from '../services/imageService';
+import { useNonCriticalData } from '../hooks/useNonCriticalData';
 import type { RealtimeChannel } from '@supabase/supabase-js';
 
 interface BlogContextType {
@@ -10,6 +11,7 @@ interface BlogContextType {
   tags: Tag[];
   isAdmin: boolean;
   loading: boolean;
+  criticalDataLoaded: boolean;
   error: string | null;
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
@@ -33,11 +35,14 @@ export const BlogContext = createContext<BlogContextType | undefined>(undefined)
 export const SupabaseBlogProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
-  const [tags, setTags] = useState<Tag[]>([]);
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [criticalDataLoaded, setCriticalDataLoaded] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [realtimeChannels, setRealtimeChannels] = useState<RealtimeChannel[]>([]);
+
+  // Load non-critical data (tags, etc.) off the critical path
+  const { tags } = useNonCriticalData(isAdmin);
 
   // Initialize data and auth state
   useEffect(() => {
@@ -55,16 +60,40 @@ export const SupabaseBlogProvider: React.FC<{ children: ReactNode }> = ({ childr
       setLoading(true);
       setError(null);
 
-      // Check authentication state
-      const session = await authService.getSession();
-      setIsAdmin(!!session?.user);
+      // Load critical data first (published posts for homepage)
+      const publishedPosts = await postsService.getPublishedPosts(12);
+      setPosts(publishedPosts);
+      setCriticalDataLoaded(true);
 
-      // Load initial data
-      await refreshData();
+      // Load non-critical data in parallel (don't block UI)
+      Promise.all([
+        authService.getSession(),
+        categoriesService.getAllCategories(),
+      ]).then(async ([session, categoriesData]) => {
+        const isAdminUser = !!session?.user;
+        setIsAdmin(isAdminUser);
+        setCategories(categoriesData);
 
-      // Set up auth state listener
-      authService.onAuthStateChange((event, session) => {
-        setIsAdmin(!!session?.user);
+        // Load tags only for admin users (non-critical)
+        if (isAdminUser) {
+          tagsService.getAllTags().then(tagsData => {
+            setTags(tagsData);
+          }).catch(err => console.error('Failed to load tags:', err));
+        }
+
+        // If admin, load full posts data
+        if (isAdminUser) {
+          const allPosts = await postsService.getAllPosts();
+          setPosts(allPosts);
+        }
+
+        // Set up auth state listener
+        authService.onAuthStateChange((event, session) => {
+          setIsAdmin(!!session?.user);
+        });
+      }).catch(err => {
+        console.error('Failed to load non-critical data:', err);
+        // Don't set error for non-critical data failures
       });
 
     } catch (err) {
@@ -77,15 +106,25 @@ export const SupabaseBlogProvider: React.FC<{ children: ReactNode }> = ({ childr
 
   const refreshData = async () => {
     try {
-      const [postsData, categoriesData, tagsData] = await Promise.all([
-        postsService.getAllPosts(),
-        categoriesService.getAllCategories(),
-        tagsService.getAllTags(),
-      ]);
-
-      setPosts(postsData);
-      setCategories(categoriesData);
-      setTags(tagsData);
+      if (isAdmin) {
+        // Admin needs all data
+        const [postsData, categoriesData, tagsData] = await Promise.all([
+          postsService.getAllPosts(),
+          categoriesService.getAllCategories(),
+          tagsService.getAllTags(),
+        ]);
+        setPosts(postsData);
+        setCategories(categoriesData);
+        setTags(tagsData);
+      } else {
+        // Public users only need published posts and categories
+        const [postsData, categoriesData] = await Promise.all([
+          postsService.getPublishedPosts(50), // Load more for all-posts page
+          categoriesService.getAllCategories(),
+        ]);
+        setPosts(postsData);
+        setCategories(categoriesData);
+      }
     } catch (err) {
       console.error('Failed to refresh data:', err);
       setError(err instanceof Error ? err.message : 'Failed to load data');
@@ -93,30 +132,38 @@ export const SupabaseBlogProvider: React.FC<{ children: ReactNode }> = ({ childr
   };
 
   const setupRealtimeSubscriptions = () => {
-    const channels: RealtimeChannel[] = [];
+    // Defer realtime subscriptions to not block initial render
+    setTimeout(() => {
+      const channels: RealtimeChannel[] = [];
 
-    // Subscribe to posts changes
-    const postsChannel = postsService.subscribeToChanges((payload) => {
-      console.log('Posts change:', payload);
-      refreshData(); // Simple approach: refresh all data on any change
-    });
-    channels.push(postsChannel);
+      // Subscribe to posts changes
+      const postsChannel = postsService.subscribeToChanges((payload) => {
+        console.log('Posts change:', payload);
+        // Only refresh if user is admin or if it's a published post change
+        if (isAdmin || payload.new?.status === 'published') {
+          refreshData();
+        }
+      });
+      channels.push(postsChannel);
 
-    // Subscribe to categories changes
-    const categoriesChannel = categoriesService.subscribeToChanges((payload) => {
-      console.log('Categories change:', payload);
-      refreshData();
-    });
-    channels.push(categoriesChannel);
+      // Subscribe to categories changes (only if admin)
+      if (isAdmin) {
+        const categoriesChannel = categoriesService.subscribeToChanges((payload) => {
+          console.log('Categories change:', payload);
+          refreshData();
+        });
+        channels.push(categoriesChannel);
 
-    // Subscribe to tags changes
-    const tagsChannel = tagsService.subscribeToChanges((payload) => {
-      console.log('Tags change:', payload);
-      refreshData();
-    });
-    channels.push(tagsChannel);
+        // Subscribe to tags changes (only if admin)
+        const tagsChannel = tagsService.subscribeToChanges((payload) => {
+          console.log('Tags change:', payload);
+          refreshData();
+        });
+        channels.push(tagsChannel);
+      }
 
-    setRealtimeChannels(channels);
+      setRealtimeChannels(channels);
+    }, 2000); // Delay by 2 seconds to not interfere with critical path
   };
 
   const login = async (email: string, password: string) => {
@@ -282,6 +329,7 @@ export const SupabaseBlogProvider: React.FC<{ children: ReactNode }> = ({ childr
       tags,
       isAdmin,
       loading,
+      criticalDataLoaded,
       error,
       login,
       logout,

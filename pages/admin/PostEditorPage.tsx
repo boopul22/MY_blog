@@ -7,7 +7,7 @@ import { generateBlogPostContent, generateSEOMetadata } from '../../services/gem
 import { SparklesIcon } from '../../components/icons';
 import Spinner from '../../components/Spinner';
 import ImageUpload from '../../components/ImageUpload';
-import EnhancedRichTextEditor from '../../components/EnhancedRichTextEditor';
+import LazyEnhancedRichTextEditor from '../../components/LazyEnhancedRichTextEditor';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -270,7 +270,7 @@ const PostEditorPage: React.FC = () => {
                     {validationErrors.title && <p className="text-red-500 text-sm">{validationErrors.title}</p>}
 
                     <div className="min-h-[500px]">
-                        <EnhancedRichTextEditor
+                        <LazyEnhancedRichTextEditor
                             key={`post-content-editor-${id || 'new'}`}
                             value={post.content || ''}
                             onChange={handleContentChange}

@@ -3,9 +3,19 @@ export default {
   content: [
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
-    "./**/*.{js,ts,jsx,tsx}"
+    "./pages/**/*.{js,ts,jsx,tsx}",
+    "./components/**/*.{js,ts,jsx,tsx}",
+    "./context/**/*.{js,ts,jsx,tsx}",
+    "./hooks/**/*.{js,ts,jsx,tsx}",
+    "./services/**/*.{js,ts,jsx,tsx}",
+    "./types/**/*.{js,ts,jsx,tsx}",
+    "./config/**/*.{js,ts,jsx,tsx}"
   ],
   darkMode: 'selector',
+  // Optimize for production builds
+  future: {
+    hoverOnlyWhenSupported: true,
+  },
   theme: {
     screens: {
       'xs': '475px',
@@ -85,4 +95,37 @@ export default {
     },
   },
   plugins: [],
+  // Optimize CSS output
+  corePlugins: {
+    // Disable unused core plugins to reduce bundle size
+    preflight: true, // Keep for CSS reset
+    container: false, // Not used in this project
+    accessibility: true, // Keep for a11y
+    appearance: false, // Not used
+    backdropBlur: false, // Not used
+    backdropBrightness: false, // Not used
+    backdropContrast: false, // Not used
+    backdropGrayscale: false, // Not used
+    backdropHueRotate: false, // Not used
+    backdropInvert: false, // Not used
+    backdropOpacity: false, // Not used
+    backdropSaturate: false, // Not used
+    backdropSepia: false, // Not used
+    backgroundAttachment: false, // Not used
+    backgroundClip: false, // Not used
+    backgroundOrigin: false, // Not used
+    backgroundRepeat: false, // Not used
+    backgroundSize: false, // Not used
+    blur: false, // Not used
+    brightness: false, // Not used
+    contrast: false, // Not used
+    dropShadow: false, // Not used
+    grayscale: false, // Not used
+    hueRotate: false, // Not used
+    invert: false, // Not used
+    saturate: false, // Not used
+    sepia: false, // Not used
+    filter: false, // Not used
+    backdropFilter: false, // Not used
+  },
 }

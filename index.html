@@ -7,16 +7,83 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>behindyourbrain - Creative Magazine</title>
 
+    <!-- DNS preconnect for external resources -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <!-- Preload critical fonts to reduce layout shift -->
-    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700;800&display=swap"></noscript>
-    <!-- Fallback for immediate font availability -->
+    <link rel="preconnect" href="https://orztieawpqbcnfyyyilk.supabase.co" crossorigin>
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
+    <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+    <link rel="dns-prefetch" href="https://orztieawpqbcnfyyyilk.supabase.co">
+
+    <!-- Preload critical font files directly for fastest loading -->
+    <link rel="preload" href="https://fonts.gstatic.com/s/inter/v12/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyeMZhrib2Bg-4.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="https://fonts.gstatic.com/s/playfairdisplay/v30/nuFvD-vYSZviVYUb_rj3ij__anPXJzDwcbmjWBN2PKdFvXDXbtXK-F2qO0isEw.woff2" as="font" type="font/woff2" crossorigin>
+
+    <!-- Preload optimized font CSS with minimal weights and latin subset -->
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Playfair+Display:wght@700&display=swap&subset=latin" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Playfair+Display:wght@700&display=swap&subset=latin"></noscript>
+    <!-- Critical CSS - Inlined for immediate rendering -->
     <style>
-      /* Prevent layout shift by defining fallback fonts with similar metrics */
-      body { font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
-      .font-serif, h1, h2, h3, h4, h5, h6 { font-family: 'Playfair Display', Georgia, 'Times New Roman', serif; }
+      /* Critical CSS Variables */
+      :root {
+        --background: 248 249 250;
+        --foreground: 26 32 44;
+        --primary: 0 123 255;
+        --muted: 248 249 250;
+        --muted-foreground: 108 117 125;
+        --border: 229 231 235;
+      }
+
+      /* Critical font loading */
+      body {
+        font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        background-color: rgb(var(--background));
+        color: rgb(var(--foreground));
+        margin: 0;
+        line-height: 1.5;
+      }
+
+      .font-serif, h1, h2, h3, h4, h5, h6 {
+        font-family: 'Playfair Display', Georgia, 'Times New Roman', serif;
+      }
+
+      /* Critical layout styles */
+      .min-h-screen { min-height: 100vh; }
+      .flex { display: flex; }
+      .flex-col { flex-direction: column; }
+      .flex-1 { flex: 1 1 0%; }
+      .items-center { align-items: center; }
+      .justify-center { justify-content: center; }
+      .max-w-screen-xl { max-width: 1280px; }
+      .mx-auto { margin-left: auto; margin-right: auto; }
+      .px-4 { padding-left: 1rem; padding-right: 1rem; }
+      .py-8 { padding-top: 2rem; padding-bottom: 2rem; }
+      .py-12 { padding-top: 3rem; padding-bottom: 3rem; }
+      .grid { display: grid; }
+      .gap-6 { gap: 1.5rem; }
+      .text-center { text-align: center; }
+      .text-2xl { font-size: 1.5rem; line-height: 2rem; }
+      .font-serif { font-family: 'Playfair Display', Georgia, 'Times New Roman', serif; }
+      .animate-spin { animation: spin 1s linear infinite; }
+      .rounded-full { border-radius: 9999px; }
+      .border-b-2 { border-bottom-width: 2px; }
+      .border-primary { border-color: rgb(var(--primary)); }
+      .mb-4 { margin-bottom: 1rem; }
+      .text-muted-foreground { color: rgb(var(--muted-foreground)); }
+
+      @keyframes spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+      }
+
+      /* Dark mode support */
+      .dark {
+        --background: 26 32 44;
+        --foreground: 247 250 252;
+        --muted: 45 55 72;
+        --muted-foreground: 156 163 175;
+        --border: 74 85 104;
+      }
     </style>
   <script type="importmap">
 {
@@ -30,10 +97,47 @@
   }
 }
 </script>
-<link rel="stylesheet" href="/index.css">
+<!-- Load main CSS asynchronously to prevent render blocking -->
+<link rel="preload" href="/index.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="/index.css"></noscript>
 </head>
   <body class="bg-light dark:bg-dark text-dark-text dark:text-light">
     <div id="root"></div>
+
+    <!-- Load additional non-critical styles after page load -->
+    <script>
+      window.addEventListener('load', () => {
+        // Load any additional non-critical CSS here
+        // This ensures they don't block the initial render
+
+        // Implement intelligent prefetching for likely next pages
+        setTimeout(() => {
+          // Prefetch likely next pages based on current page
+          const currentPath = window.location.pathname;
+
+          if (currentPath === '/') {
+            // From homepage, users likely go to posts or categories
+            prefetchRoute('/all-posts');
+            prefetchRoute('/category/technology'); // Most popular category
+          } else if (currentPath.startsWith('/post/')) {
+            // From post page, users likely go back to homepage or other posts
+            prefetchRoute('/');
+            prefetchRoute('/all-posts');
+          } else if (currentPath.startsWith('/category/')) {
+            // From category page, users likely go to posts or homepage
+            prefetchRoute('/');
+          }
+        }, 2000); // Wait 2 seconds before prefetching
+      });
+
+      function prefetchRoute(path) {
+        const link = document.createElement('link');
+        link.rel = 'prefetch';
+        link.href = path;
+        document.head.appendChild(link);
+      }
+    </script>
+
   <script type="module" src="/index.tsx"></script>
 </body>
 </html>

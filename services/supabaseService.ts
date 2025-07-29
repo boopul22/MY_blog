@@ -3,6 +3,52 @@ import { Post, Category, Tag } from '../types';
 import type { Database, Tables } from '../lib/supabase';
 import { imageService, ImageSizes } from './imageService';
 
+// Simple in-memory cache with TTL
+interface CacheEntry<T> {
+  data: T;
+  timestamp: number;
+  ttl: number;
+}
+
+class SimpleCache {
+  private cache = new Map<string, CacheEntry<any>>();
+
+  set<T>(key: string, data: T, ttlMinutes: number = 5): void {
+    this.cache.set(key, {
+      data,
+      timestamp: Date.now(),
+      ttl: ttlMinutes * 60 * 1000
+    });
+  }
+
+  get<T>(key: string): T | null {
+    const entry = this.cache.get(key);
+    if (!entry) return null;
+
+    if (Date.now() - entry.timestamp > entry.ttl) {
+      this.cache.delete(key);
+      return null;
+    }
+
+    return entry.data;
+  }
+
+  invalidate(pattern?: string): void {
+    if (!pattern) {
+      this.cache.clear();
+      return;
+    }
+
+    for (const key of this.cache.keys()) {
+      if (key.includes(pattern)) {
+        this.cache.delete(key);
+      }
+    }
+  }
+}
+
+const cache = new SimpleCache();
+
 // Helper function to convert database post to frontend post format
 const convertDbPostToPost = (dbPost: Tables<'posts'>, tags: Tag[] = []): Post => {
   return {
@@ -45,7 +91,37 @@ const slugify = (text: string) =>
 
 // Posts service
 export const postsService = {
-  // Get all posts with their tags
+  // Get published posts for homepage (optimized for performance)
+  async getPublishedPosts(limit: number = 12): Promise<Post[]> {
+    const cacheKey = `published_posts_${limit}`;
+    const cached = cache.get<Post[]>(cacheKey);
+    if (cached) return cached;
+
+    const { data: posts, error } = await supabase
+      .from('posts')
+      .select(`
+        id,
+        title,
+        slug,
+        image_url,
+        seo_description,
+        category_id,
+        author_name,
+        created_at,
+        status
+      `)
+      .eq('status', 'published')
+      .order('created_at', { ascending: false })
+      .limit(limit);
+
+    if (error) throw error;
+
+    const result = posts.map(post => convertDbPostToPost(post, []));
+    cache.set(cacheKey, result, 3); // Cache for 3 minutes
+    return result;
+  },
+
+  // Get all posts with their tags (for admin use)
   async getAllPosts(): Promise<Post[]> {
     const { data: posts, error } = await supabase
       .from('posts')
@@ -94,7 +170,7 @@ export const postsService = {
     });
   },
 
-  // Get post by ID
+  // Get post by ID with full details
   async getPostById(id: string): Promise<Post | null> {
     const { data: post, error } = await supabase
       .from('posts')
@@ -120,7 +196,7 @@ export const postsService = {
     return convertDbPostToPost(post, tags as Tag[]);
   },
 
-  // Get post by slug
+  // Get post by slug with full details (for individual post pages)
   async getPostBySlug(slug: string): Promise<Post | null> {
     const { data: post, error } = await supabase
       .from('posts')
@@ -190,6 +266,9 @@ export const postsService = {
 
       if (tagError) throw tagError;
     }
+
+    // Invalidate posts cache when new post is added
+    cache.invalidate('posts');
 
     // Get the complete post with tags
     const completePost = await this.getPostById(newPost.id);
@@ -331,6 +410,10 @@ export const postsService = {
 export const categoriesService = {
   // Get all categories
   async getAllCategories(): Promise<Category[]> {
+    const cacheKey = 'all_categories';
+    const cached = cache.get<Category[]>(cacheKey);
+    if (cached) return cached;
+
     const { data: categories, error } = await supabase
       .from('categories')
       .select('*')
@@ -338,7 +421,9 @@ export const categoriesService = {
 
     if (error) throw error;
 
-    return categories.map(convertDbCategoryToCategory);
+    const result = categories.map(convertDbCategoryToCategory);
+    cache.set(cacheKey, result, 10); // Cache for 10 minutes (categories change less frequently)
+    return result;
   },
 
   // Add new category
@@ -352,6 +437,9 @@ export const categoriesService = {
       .single();
 
     if (error) throw error;
+
+    // Invalidate categories cache when new category is added
+    cache.invalidate('categories');
 
     return convertDbCategoryToCategory(newCategory);
   },

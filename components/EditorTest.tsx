@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import EnhancedRichTextEditor from './EnhancedRichTextEditor';
+import LazyEnhancedRichTextEditor from './LazyEnhancedRichTextEditor';
 
 const EditorTest: React.FC = () => {
   const [content, setContent] = useState('<p>Test the optimized TinyMCE editor configuration...</p>');
@@ -15,7 +15,7 @@ const EditorTest: React.FC = () => {
           better toolbar organization, and enhanced content styling.
         </p>
         
-        <EnhancedRichTextEditor
+        <LazyEnhancedRichTextEditor
           value={content}
           onChange={setContent}
           placeholder="Start typing to test the optimized editor..."

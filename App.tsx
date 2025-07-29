@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { Suspense } from 'react';
 import { Routes, Route, Navigate, Outlet } from 'react-router-dom';
 import { BlogContext } from './context/SupabaseBlogContext';
 import { ThemeProvider } from './context/ThemeContext';
@@ -11,19 +11,23 @@ import PostPage from './pages/public/PostPage';
 import CategoryPage from './pages/public/CategoryPage';
 import AllPostsPage from './pages/public/AllPostsPage';
 import LoginPage from './pages/admin/LoginPage';
-import AdminLayout from './pages/admin/AdminLayout';
-import DashboardPage from './pages/admin/DashboardPage';
-import PostListPage from './pages/admin/PostListPage';
-import PostEditorPage from './pages/admin/PostEditorPage';
-import CategoryManagerPage from './pages/admin/CategoryManagerPage';
-import EditorTestPage from './pages/admin/EditorTestPage';
-import EditorDebugPage from './pages/EditorDebugPage';
-import ScrollPerformanceTestPage from './pages/ScrollPerformanceTestPage';
-import Sitemap from './pages/Sitemap';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import Breadcrumbs from './components/Breadcrumbs';
 import { useLocation } from 'react-router-dom';
+
+// Lazy load admin components to reduce main bundle size
+const AdminLayout = React.lazy(() => import('./pages/admin/AdminLayout'));
+const DashboardPage = React.lazy(() => import('./pages/admin/DashboardPage'));
+const PostListPage = React.lazy(() => import('./pages/admin/PostListPage'));
+const PostEditorPage = React.lazy(() => import('./pages/admin/PostEditorPage'));
+const CategoryManagerPage = React.lazy(() => import('./pages/admin/CategoryManagerPage'));
+const EditorTestPage = React.lazy(() => import('./pages/admin/EditorTestPage'));
+
+// Lazy load debug/test pages
+const EditorDebugPage = React.lazy(() => import('./pages/EditorDebugPage'));
+const ScrollPerformanceTestPage = React.lazy(() => import('./pages/ScrollPerformanceTestPage'));
+const Sitemap = React.lazy(() => import('./pages/Sitemap'));
 
 const ConditionalBreadcrumbs: React.FC = () => {
   const location = useLocation();
@@ -33,6 +37,15 @@ const ConditionalBreadcrumbs: React.FC = () => {
   }
   return <Breadcrumbs />;
 };
+
+const LazyLoadingFallback: React.FC = () => (
+  <div className="flex items-center justify-center min-h-96">
+    <div className="text-center">
+      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+      <p className="text-muted-foreground text-sm">Loading...</p>
+    </div>
+  </div>
+);
 
 const ProtectedRoute: React.FC = () => {
   const context = React.useContext(BlogContext);
@@ -53,13 +66,41 @@ const App: React.FC = () => {
           <Route path="/login" element={<LoginPage />} />
           
           <Route element={<ProtectedRoute />}>
-            <Route path="/admin" element={<AdminLayout />}>
-              <Route index element={<DashboardPage />} />
-              <Route path="posts" element={<PostListPage />} />
-              <Route path="posts/new" element={<PostEditorPage />} />
-              <Route path="posts/edit/:id" element={<PostEditorPage />} />
-              <Route path="categories" element={<CategoryManagerPage />} />
-              <Route path="test-editor" element={<EditorTestPage />} />
+            <Route path="/admin" element={
+              <Suspense fallback={<LazyLoadingFallback />}>
+                <AdminLayout />
+              </Suspense>
+            }>
+              <Route index element={
+                <Suspense fallback={<LazyLoadingFallback />}>
+                  <DashboardPage />
+                </Suspense>
+              } />
+              <Route path="posts" element={
+                <Suspense fallback={<LazyLoadingFallback />}>
+                  <PostListPage />
+                </Suspense>
+              } />
+              <Route path="posts/new" element={
+                <Suspense fallback={<LazyLoadingFallback />}>
+                  <PostEditorPage />
+                </Suspense>
+              } />
+              <Route path="posts/edit/:id" element={
+                <Suspense fallback={<LazyLoadingFallback />}>
+                  <PostEditorPage />
+                </Suspense>
+              } />
+              <Route path="categories" element={
+                <Suspense fallback={<LazyLoadingFallback />}>
+                  <CategoryManagerPage />
+                </Suspense>
+              } />
+              <Route path="test-editor" element={
+                <Suspense fallback={<LazyLoadingFallback />}>
+                  <EditorTestPage />
+                </Suspense>
+              } />
             </Route>
           </Route>
 
@@ -75,9 +116,21 @@ const App: React.FC = () => {
                             <Route path="/post/:slug" element={<PostPage />} />
                             <Route path="/category/:slug" element={<CategoryPage />} />
                             <Route path="/all-posts" element={<AllPostsPage />} />
-                            <Route path="/editor-debug" element={<EditorDebugPage />} />
-                            <Route path="/performance-test" element={<ScrollPerformanceTestPage />} />
-                            <Route path="/sitemap.xml" element={<Sitemap />} />
+                            <Route path="/editor-debug" element={
+                              <Suspense fallback={<LazyLoadingFallback />}>
+                                <EditorDebugPage />
+                              </Suspense>
+                            } />
+                            <Route path="/performance-test" element={
+                              <Suspense fallback={<LazyLoadingFallback />}>
+                                <ScrollPerformanceTestPage />
+                              </Suspense>
+                            } />
+                            <Route path="/sitemap.xml" element={
+                              <Suspense fallback={<LazyLoadingFallback />}>
+                                <Sitemap />
+                              </Suspense>
+                            } />
                         </Routes>
                     </div>
                   </main>

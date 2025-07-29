@@ -1,0 +1,125 @@
+name: Performance Testing
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  performance-test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Build application
+      run: npm run build
+      
+    - name: Start preview server
+      run: |
+        npm run preview &
+        sleep 10
+        
+    - name: Run Lighthouse CI
+      run: npm run perf:ci
+      
+    - name: Generate performance report
+      run: npm run perf:report
+      
+    - name: Upload Lighthouse results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: lighthouse-results
+        path: lighthouse-results/
+        
+    - name: Comment PR with performance results
+      if: github.event_name == 'pull_request'
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const fs = require('fs');
+          const path = require('path');
+          
+          // Read performance results
+          const resultsDir = './lighthouse-results';
+          if (!fs.existsSync(resultsDir)) {
+            console.log('No performance results found');
+            return;
+          }
+          
+          const files = fs.readdirSync(resultsDir).filter(f => f.endsWith('.json'));
+          if (files.length === 0) {
+            console.log('No Lighthouse results found');
+            return;
+          }
+          
+          // Generate summary comment
+          let comment = '## 📊 Performance Test Results\n\n';
+          comment += '| Page | Performance | Accessibility | Best Practices | SEO |\n';
+          comment += '|------|-------------|---------------|----------------|-----|\n';
+          
+          files.forEach(file => {
+            const data = JSON.parse(fs.readFileSync(path.join(resultsDir, file)));
+            if (data.lhr) {
+              const url = new URL(data.lhr.finalUrl).pathname;
+              const pageName = url === '/' ? 'Homepage' : url;
+              const categories = data.lhr.categories;
+              
+              const perf = Math.round(categories.performance.score * 100);
+              const a11y = Math.round(categories.accessibility.score * 100);
+              const bp = Math.round(categories['best-practices'].score * 100);
+              const seo = Math.round(categories.seo.score * 100);
+              
+              const perfEmoji = perf >= 90 ? '🟢' : perf >= 70 ? '🟡' : '🔴';
+              const a11yEmoji = a11y >= 90 ? '🟢' : a11y >= 70 ? '🟡' : '🔴';
+              const bpEmoji = bp >= 90 ? '🟢' : bp >= 70 ? '🟡' : '🔴';
+              const seoEmoji = seo >= 90 ? '🟢' : seo >= 70 ? '🟡' : '🔴';
+              
+              comment += `| ${pageName} | ${perf}% ${perfEmoji} | ${a11y}% ${a11yEmoji} | ${bp}% ${bpEmoji} | ${seo}% ${seoEmoji} |\n`;
+            }
+          });
+          
+          comment += '\n### Core Web Vitals\n';
+          comment += '- 🟢 Good: Meets recommended thresholds\n';
+          comment += '- 🟡 Needs Improvement: Between good and poor thresholds\n';
+          comment += '- 🔴 Poor: Below recommended thresholds\n';
+          comment += '\n📁 Detailed results are available in the artifacts.';
+          
+          // Post comment
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: comment
+          });
+          
+  bundle-size-check:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Check bundle size
+      run: npm run build:check-size

@@ -26,14 +26,17 @@ const PostCard: React.FC<PostCardProps> = ({ post, variant = 'default', isLarge 
 
   if (variant === 'wireframe') {
     return (
-        <div className="group relative flex flex-col sm:flex-row border border-border rounded-lg p-4 mb-4 sm:mb-6 bg-card text-card-foreground hover:border-muted-foreground transition-colors">
+        <div className="group relative flex border border-border rounded-lg p-4 mb-4 sm:mb-6 bg-card text-card-foreground hover:border-muted-foreground transition-colors">
             {/* Date positioned vertically within the card boundaries */}
-            <div className="flex sm:items-center justify-center sm:pr-4 pb-2 sm:pb-0">
-                <p className="text-xs text-secondary font-medium tracking-widest uppercase sm:vertical-text">
+            <div className="flex items-center justify-center pr-4">
+                <p
+                    className="text-xs text-muted-foreground font-medium tracking-widest uppercase"
+                    style={{ writingMode: 'vertical-rl', textOrientation: 'mixed' }}
+                >
                     {formattedDate}
                 </p>
             </div>
-            
+
             {/* Main content area */}
             <div className="flex-1">
                 <div className="mb-4 sm:mb-6">
@@ -49,11 +52,11 @@ const PostCard: React.FC<PostCardProps> = ({ post, variant = 'default', isLarge 
                         </div>
                     </Link>
                 </div>
-                
+
                 <div className="space-y-2 sm:space-y-3">
-                    <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
+                    <div className="flex items-center space-x-4">
                         {category && (
-                            <Link to={`/category/${category.slug}`} className="inline-block px-3 py-1 bg-muted text-muted-foreground rounded-full text-xs font-medium uppercase tracking-wider hover:bg-secondary/20 transition-colors w-fit">
+                            <Link to={`/category/${category.slug}`} className="px-3 py-1 bg-muted text-muted-foreground rounded-full text-xs font-medium uppercase tracking-wider hover:bg-secondary/20 transition-colors">
                                 {category.name}
                             </Link>
                         )}
@@ -61,13 +64,13 @@ const PostCard: React.FC<PostCardProps> = ({ post, variant = 'default', isLarge 
                     </div>
                     <div className="space-y-2">
                         <Link to={`/post/${post.slug}`} className="block">
-                            <h3 className={`font-serif font-bold text-dark-text dark:text-light-text hover:text-primary transition-colors leading-tight text-left ${
+                            <h3 className={`font-serif font-bold text-foreground hover:text-primary transition-colors leading-tight text-left ${
                                 isLarge ? 'text-lg sm:text-xl lg:text-2xl' : 'text-base sm:text-lg'
                             }`}>
                                 {post.title}
                             </h3>
                         </Link>
-                        <p className="text-sm text-secondary leading-relaxed">
+                        <p className="text-sm text-muted-foreground leading-relaxed">
                             {getExcerpt(isLarge ? 150 : 100)}
                         </p>
                     </div>

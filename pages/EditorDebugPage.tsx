@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import EnhancedRichTextEditor from '../components/EnhancedRichTextEditor';
+import LazyEnhancedRichTextEditor from '../components/LazyEnhancedRichTextEditor';
 
 const EditorDebugPage: React.FC = () => {
   const [content, setContent] = useState('<p>Testing toolbar visibility...</p>');
@@ -16,7 +16,7 @@ const EditorDebugPage: React.FC = () => {
           </p>
           
           <div className="border border-gray-300 rounded-lg p-4">
-            <EnhancedRichTextEditor
+            <LazyEnhancedRichTextEditor
               value={content}
               onChange={setContent}
               placeholder="Type here to test the editor..."

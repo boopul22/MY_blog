@@ -1,7 +1,8 @@
 
 import React, { useContext } from 'react';
 import { BlogContext } from '../../context/SupabaseBlogContext';
-import AnalyticsChart from '../../components/AnalyticsChart';
+import LazyAnalyticsChart from '../../components/LazyAnalyticsChart';
+import PerformanceMonitor from '../../components/PerformanceMonitor';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { DocumentTextIcon, TagIcon } from '../../components/icons';
@@ -53,36 +54,47 @@ const DashboardPage: React.FC = () => {
                             <CardTitle className="text-lg">Analytics</CardTitle>
                         </CardHeader>
                         <CardContent className="p-3 pt-0">
-                            <AnalyticsChart />
+                            <LazyAnalyticsChart />
                         </CardContent>
                     </Card>
                 </div>
 
-                <Card className="h-fit">
-                    <CardHeader className="pb-3">
-                        <CardTitle className="text-lg">Recent Posts</CardTitle>
-                    </CardHeader>
-                    <CardContent className="p-3 pt-0">
-                        <div className="space-y-3">
-                            {posts.slice(0, 5).map(post => (
-                                <div key={post.id} className="flex justify-between items-start gap-2">
-                                    <div className="flex-1 min-w-0">
-                                        <p className="font-medium text-sm truncate">{post.title}</p>
-                                        <Badge
-                                            variant={post.status === 'published' ? 'default' : 'secondary'}
-                                            className="text-xs mt-1"
-                                        >
-                                            {post.status}
-                                        </Badge>
+                <div className="space-y-4">
+                    <Card className="h-fit">
+                        <CardHeader className="pb-3">
+                            <CardTitle className="text-lg">Recent Posts</CardTitle>
+                        </CardHeader>
+                        <CardContent className="p-3 pt-0">
+                            <div className="space-y-3">
+                                {posts.slice(0, 5).map(post => (
+                                    <div key={post.id} className="flex justify-between items-start gap-2">
+                                        <div className="flex-1 min-w-0">
+                                            <p className="font-medium text-sm truncate">{post.title}</p>
+                                            <Badge
+                                                variant={post.status === 'published' ? 'default' : 'secondary'}
+                                                className="text-xs mt-1"
+                                            >
+                                                {post.status}
+                                            </Badge>
+                                        </div>
+                                        <span className="text-xs text-muted-foreground whitespace-nowrap">
+                                            {new Date(post.createdAt).toLocaleDateString()}
+                                        </span>
                                     </div>
-                                    <span className="text-xs text-muted-foreground whitespace-nowrap">
-                                        {new Date(post.createdAt).toLocaleDateString()}
-                                    </span>
-                                </div>
-                            ))}
-                        </div>
-                    </CardContent>
-                </Card>
+                                ))}
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    <Card className="h-fit">
+                        <CardHeader className="pb-3">
+                            <CardTitle className="text-lg">Performance Monitoring</CardTitle>
+                        </CardHeader>
+                        <CardContent className="p-3 pt-0">
+                            <PerformanceMonitor embedded={true} />
+                        </CardContent>
+                    </Card>
+                </div>
             </div>
         </div>
     );
