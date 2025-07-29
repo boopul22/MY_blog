@@ -2,7 +2,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext';
-import { FacebookIcon, TwitterIcon, PinterestIcon, LinkedInIcon, InstagramIcon } from './icons';
+import { FacebookIcon, TwitterIcon, PinterestIcon, LinkedInIcon } from './icons';
 
 const Footer: React.FC = () => {
     const { isDarkMode } = useTheme();
@@ -53,7 +53,6 @@ const Footer: React.FC = () => {
                         <div className="flex space-x-4">
                             <a href="#" className="text-secondary dark:text-slate-400 hover:text-primary dark:hover:text-primary transition-colors"><FacebookIcon className="w-5 h-5" /></a>
                             <a href="#" className="text-secondary dark:text-slate-400 hover:text-primary dark:hover:text-primary transition-colors"><TwitterIcon className="w-5 h-5" /></a>
-                            <a href="#" className="text-secondary dark:text-slate-400 hover:text-primary dark:hover:text-primary transition-colors"><InstagramIcon className="w-5 h-5" /></a>
                             <a href="#" className="text-secondary dark:text-slate-400 hover:text-primary dark:hover:text-primary transition-colors"><LinkedInIcon className="w-5 h-5" /></a>
                             <a href="#" className="text-secondary dark:text-slate-400 hover:text-primary dark:hover:text-primary transition-colors"><PinterestIcon className="w-5 h-5" /></a>
                         </div>

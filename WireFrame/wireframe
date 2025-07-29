@@ -126,29 +126,7 @@ const ArticleGrid = () => {
   );
 };
 
-const InstagramFeed = () => {
-  return (
-    <section className="py-16">
-      <div className="text-center mb-8">
-        <div className="inline-flex items-center gap-3 text-gray-800 text-lg">
-          <div className="w-6 h-6 border-2 border-gray-400 rounded-md flex items-center justify-center">
-            <div className="w-3 h-3 border-2 border-gray-400 rounded-full"></div>
-          </div>
-          <div className="w-24 h-5 bg-gray-400 rounded"></div>
-        </div>
-        <h2 className="text-3xl font-serif text-gray-800 mt-2">Follow Me On Instagram</h2>
-        <div className="mt-2 h-4 w-48 bg-gray-300 rounded mx-auto"></div>
-      </div>
-      <div className="flex w-full overflow-hidden">
-        {[...Array(6)].map((_, i) => (
-          <div key={i} className="flex-shrink-0 w-1/5">
-            <div className="w-full aspect-square bg-gray-300 border border-white"></div>
-          </div>
-        ))}
-      </div>
-    </section>
-  );
-};
+
 
 const CookieBanner = () => {
   return (
@@ -176,7 +154,6 @@ const App = () => {
         <Header />
         <ArticleGrid />
       </div>
-      <InstagramFeed />
       <CookieBanner />
     </div>
   );

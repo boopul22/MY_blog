@@ -1,6 +1,6 @@
 import React from 'react';
 import { Post } from '../types';
-import { FacebookIcon, TwitterIcon, LinkedInIcon, InstagramIcon } from './icons';
+import { FacebookIcon, TwitterIcon, LinkedInIcon } from './icons';
 
 interface AuthorInfoProps {
   post: Post;
@@ -15,7 +15,6 @@ interface AuthorData {
     facebook?: string;
     twitter?: string;
     linkedin?: string;
-    instagram?: string;
   };
 }
 
@@ -31,8 +30,7 @@ const AuthorInfo: React.FC<AuthorInfoProps> = ({ post, className = '' }) => {
         socialLinks: {
           facebook: '#',
           twitter: '#',
-          linkedin: '#',
-          instagram: '#'
+          linkedin: '#'
         }
       }
     };
@@ -45,8 +43,7 @@ const AuthorInfo: React.FC<AuthorInfoProps> = ({ post, className = '' }) => {
   const socialIcons = [
     { icon: FacebookIcon, label: 'Facebook', url: author.socialLinks?.facebook },
     { icon: TwitterIcon, label: 'Twitter', url: author.socialLinks?.twitter },
-    { icon: LinkedInIcon, label: 'LinkedIn', url: author.socialLinks?.linkedin },
-    { icon: InstagramIcon, label: 'Instagram', url: author.socialLinks?.instagram }
+    { icon: LinkedInIcon, label: 'LinkedIn', url: author.socialLinks?.linkedin }
   ];
 
   return (

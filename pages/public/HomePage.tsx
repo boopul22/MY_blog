@@ -56,48 +56,7 @@ const HomePage: React.FC = () => {
                 </div>
             </main>
 
-            {/* Instagram Feed Section */}
-            <section className="py-12 sm:py-16" style={{ minHeight: '320px' }}>
-                <div className="text-center mb-6 sm:mb-8" style={{ minHeight: '120px' }}>
-                    <div className="inline-flex items-center gap-3 text-slate-800 dark:text-slate-200 text-base sm:text-lg">
-                        <div className="w-5 h-5 sm:w-6 sm:h-6 border-2 border-slate-400 dark:border-slate-600 rounded-md flex items-center justify-center">
-                            <div className="w-2 h-2 sm:w-3 sm:h-3 border-2 border-slate-400 dark:border-slate-600 rounded-full"></div>
-                        </div>
-                        <span className="font-medium" style={{ fontFamily: 'Inter, sans-serif' }}>@behindyourbrain_magazine</span>
-                    </div>
-                    <h2 className="text-2xl sm:text-3xl text-slate-800 dark:text-slate-200 mt-2"
-                        style={{
-                            fontFamily: 'Playfair Display, serif',
-                            fontWeight: '700',
-                            lineHeight: '1.2',
-                            minHeight: '2.5rem'
-                        }}>
-                        Follow Me On Instagram
-                    </h2>
-                    <p className="text-muted-foreground mt-2 text-sm sm:text-base px-4" style={{ minHeight: '1.5rem' }}>
-                        Stay updated with our latest stories and behind-the-scenes content
-                    </p>
-                </div>
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2 sm:gap-3" style={{ minHeight: '160px' }}>
-                    {[...Array(6)].map((_, i) => (
-                        <div
-                            key={i}
-                            className="aspect-square bg-muted border border-card hover:opacity-80 transition-opacity cursor-pointer rounded-sm overflow-hidden"
-                            style={{
-                                width: '100%',
-                                height: 'auto',
-                                aspectRatio: '1',
-                                minHeight: '80px',
-                                backgroundColor: 'rgb(var(--muted))',
-                                borderColor: 'rgb(var(--card))'
-                            }}
-                        >
-                            {/* Placeholder for Instagram image */}
-                            <div className="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 animate-pulse"></div>
-                        </div>
-                    ))}
-                </div>
-            </section>
+
         </>
     );
 };
