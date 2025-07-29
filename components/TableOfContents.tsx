@@ -57,15 +57,20 @@ const TableOfContents: React.FC<TableOfContentsProps> = ({ content, className = 
 
       observerRef.current = new IntersectionObserver(
         (entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-              setActiveId(entry.target.id);
-            }
+          // Use requestAnimationFrame to batch DOM updates and improve performance
+          requestAnimationFrame(() => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                setActiveId(entry.target.id);
+              }
+            });
           });
         },
         {
-          rootMargin: '-20% 0% -35% 0%',
-          threshold: 0
+          // Optimized root margin for better performance
+          rootMargin: '-10% 0% -80% 0%',
+          // Use multiple thresholds for smoother transitions
+          threshold: [0, 0.1, 0.5, 1.0]
         }
       );
 
@@ -77,8 +82,10 @@ const TableOfContents: React.FC<TableOfContentsProps> = ({ content, className = 
     };
 
     if (headings.length > 0) {
-      // Small delay to ensure DOM is updated
-      setTimeout(addIdsToHeadings, 100);
+      // Use requestAnimationFrame instead of setTimeout for better performance
+      requestAnimationFrame(() => {
+        requestAnimationFrame(addIdsToHeadings);
+      });
     }
 
     return () => {
@@ -91,9 +98,14 @@ const TableOfContents: React.FC<TableOfContentsProps> = ({ content, className = 
   const scrollToHeading = (id: string) => {
     const element = document.getElementById(id);
     if (element) {
-      element.scrollIntoView({
-        behavior: 'smooth',
-        block: 'start'
+      // Use requestAnimationFrame for smoother scrolling
+      requestAnimationFrame(() => {
+        element.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start',
+          // Add inline option for better performance
+          inline: 'nearest'
+        });
       });
     }
   };

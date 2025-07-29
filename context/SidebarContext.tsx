@@ -49,14 +49,15 @@ export const SidebarProvider: React.FC<SidebarProviderProps> = ({ children }) =>
       }
     };
 
-    // Debounce resize events
+    // Debounce resize events with passive listener for better performance
     let timeoutId: NodeJS.Timeout;
     const debouncedHandleResize = () => {
       clearTimeout(timeoutId);
       timeoutId = setTimeout(handleResize, 150);
     };
 
-    window.addEventListener('resize', debouncedHandleResize);
+    // Use passive listener for better scroll performance
+    window.addEventListener('resize', debouncedHandleResize, { passive: true });
     return () => {
       window.removeEventListener('resize', debouncedHandleResize);
       clearTimeout(timeoutId);

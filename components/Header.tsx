@@ -13,7 +13,7 @@ const Header: React.FC = () => {
     const [isCategoriesOpen, setIsCategoriesOpen] = useState(false);
     const dropdownRef = useRef<HTMLLIElement>(null);
 
-    // Close dropdown when clicking outside
+    // Close dropdown when clicking outside - optimized with passive listener
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -21,7 +21,8 @@ const Header: React.FC = () => {
             }
         };
 
-        document.addEventListener('mousedown', handleClickOutside);
+        // Use passive listener for better performance
+        document.addEventListener('mousedown', handleClickOutside, { passive: true });
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
         };

@@ -18,6 +18,7 @@ import PostEditorPage from './pages/admin/PostEditorPage';
 import CategoryManagerPage from './pages/admin/CategoryManagerPage';
 import EditorTestPage from './pages/admin/EditorTestPage';
 import EditorDebugPage from './pages/EditorDebugPage';
+import ScrollPerformanceTestPage from './pages/ScrollPerformanceTestPage';
 import Sitemap from './pages/Sitemap';
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -47,7 +48,7 @@ const App: React.FC = () => {
     <ThemeProvider>
       <NotificationProvider>
         <SidebarProvider>
-          <div className="min-h-screen bg-light dark:bg-dark transition-colors duration-200 flex flex-col">
+          <div className="min-h-screen bg-light dark:bg-dark transition-colors duration-200 flex flex-col scroll-container" style={{contain: 'layout style paint'}}>
             <Routes>
           <Route path="/login" element={<LoginPage />} />
           
@@ -65,7 +66,7 @@ const App: React.FC = () => {
           <Route path="/*" element={
               <div className="flex-1 flex flex-col">
                   <Header />
-                  <main className="flex-1">
+                  <main className="flex-1" style={{contain: 'layout style paint', transform: 'translateZ(0)'}}>
                     <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 pt-4">
                         <ConditionalBreadcrumbs />
                         <Routes>
@@ -75,6 +76,7 @@ const App: React.FC = () => {
                             <Route path="/category/:slug" element={<CategoryPage />} />
                             <Route path="/all-posts" element={<AllPostsPage />} />
                             <Route path="/editor-debug" element={<EditorDebugPage />} />
+                            <Route path="/performance-test" element={<ScrollPerformanceTestPage />} />
                             <Route path="/sitemap.xml" element={<Sitemap />} />
                         </Routes>
                     </div>

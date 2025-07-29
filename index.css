@@ -128,9 +128,47 @@ body {
   background-color: inherit;
 }
 
-/* Smooth scrolling */
+/* Smooth scrolling with performance optimizations */
 html {
   scroll-behavior: smooth;
+  /* Optimize scrolling performance */
+  -webkit-overflow-scrolling: touch;
+  /* Prevent overscroll bounce on supported browsers */
+  overscroll-behavior: none;
+}
+
+/* Performance optimizations for all elements */
+* {
+  /* Optimize box-sizing for better layout performance */
+  box-sizing: border-box;
+}
+
+/* Optimize scrolling container performance */
+.scroll-container {
+  /* Enable hardware acceleration */
+  will-change: scroll-position;
+  /* Optimize scrolling on iOS */
+  -webkit-overflow-scrolling: touch;
+  /* Prevent overscroll bounce */
+  overscroll-behavior: none;
+}
+
+/* Optimize main content areas */
+main {
+  /* Enable containment for better performance */
+  contain: layout style paint;
+  /* Hardware acceleration */
+  transform: translateZ(0);
+}
+
+/* Hardware acceleration for commonly animated elements */
+.transition-transform,
+.hover\\:scale-105:hover,
+.hover\\:scale-110:hover,
+.group:hover .group-hover\\:scale-105,
+.group:hover .group-hover\\:scale-110 {
+  will-change: transform;
+  transform: translateZ(0);
 }
 
 /* Custom scrollbar */
@@ -172,13 +210,20 @@ html {
   font-feature-settings: "liga" 1, "kern" 1;
 }
 
-/* Image hover effects */
+/* Image hover effects - Optimized for performance */
 .image-hover-effect {
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  /* Use specific properties instead of 'all' for better performance */
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  /* Hardware acceleration hint */
+  will-change: transform;
+  /* Force GPU layer creation */
+  transform: translateZ(0);
 }
 
 .image-hover-effect:hover {
-  transform: scale(1.02);
+  /* Use transform3d for hardware acceleration */
+  transform: scale3d(1.02, 1.02, 1) translateZ(0);
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
 }
 
@@ -267,10 +312,39 @@ html {
 
 /* Mobile-specific enhancements */
 @media (max-width: 768px) {
-  /* Improved mobile scrolling */
+  /* Improved mobile scrolling performance */
   html {
     -webkit-overflow-scrolling: touch;
     scroll-behavior: smooth;
+    /* Optimize touch interactions */
+    touch-action: manipulation;
+  }
+
+  /* Optimize body for mobile scrolling */
+  body {
+    /* Prevent momentum scrolling issues */
+    overscroll-behavior-y: none;
+    /* Optimize touch interactions */
+    touch-action: pan-y;
+    /* Improve mobile scrolling performance */
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+  }
+
+  /* Optimize mobile card interactions for better performance */
+  .mobile-card,
+  .group {
+    /* Prevent layout thrashing on mobile */
+    contain: layout style paint;
+  }
+
+  /* Optimize mobile images */
+  img {
+    /* Prevent layout shifts */
+    height: auto;
+    /* Optimize rendering */
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
   }
 
   /* Mobile-optimized containers */
@@ -280,27 +354,36 @@ html {
     max-width: 100%;
   }
 
-  /* Enhanced mobile card interactions */
+  /* Enhanced mobile card interactions - Performance optimized */
   .mobile-card {
     border-radius: 12px;
     padding: 20px;
     margin-bottom: 20px;
-    transition: all 0.3s ease;
+    /* Optimize transitions for specific properties */
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    /* Hardware acceleration */
+    will-change: transform;
+    transform: translateZ(0);
   }
 
   .mobile-card:active {
-    transform: scale(0.98);
+    /* Use transform3d for hardware acceleration */
+    transform: scale3d(0.98, 0.98, 1) translateZ(0);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   }
 
-  /* Mobile navigation improvements */
+  /* Mobile navigation improvements - Performance optimized */
   .mobile-nav {
     position: sticky;
     top: 0;
     z-index: 50;
-    backdrop-filter: blur(12px);
+    /* Optimize backdrop filter for better performance */
+    backdrop-filter: blur(8px);
     background-color: rgba(255, 255, 255, 0.95);
+    /* Hardware acceleration for sticky positioning */
+    will-change: transform;
+    transform: translateZ(0);
   }
 
   .dark .mobile-nav {

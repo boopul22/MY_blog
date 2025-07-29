@@ -1,0 +1,92 @@
+# Web Performance Issues Report
+
+## 🔺 Render Blocking Requests
+**Estimated Savings: 360ms**
+
+Requests are blocking the page's initial render, which may delay LCP (Largest Contentful Paint).
+
+### Blocking Resources:
+- **vercel.app** (1st Party): 18.4 KiB - 110ms
+- **CSS file** (/assets/index-CNO66wIU.css): 18.4 KiB - 110ms  
+- **Google Fonts** (CDN): 1.6 KiB - 230ms
+- **Font CSS** (/css2?family=...): 1.6 KiB - 230ms
+
+**Solution:** Defer or inline these network requests to move them out of the critical path.
+
+---
+
+## 🔺 Layout Shift Issues
+**Cumulative Layout Shift (CLS) Problems**
+
+Layout shifts occur when elements move without user interaction during page load.
+
+### Problem Areas:
+1. **Header Element** (`<h1>` with text classes)
+   - Layout shift score: 0.004
+   - Related to web font loading
+
+2. **Instagram Section** (`<section class="py-12 sm:py-16">`)
+   - Layout shift score: 0.532 ⚠️ **High Impact**
+   - Significant visual instability
+
+**Solution:** Investigate and fix elements being added, removed, or changing fonts during page load.
+
+---
+
+## 🔺 Network Dependency Chain
+**Maximum Critical Path Latency: 2,649ms**
+
+Long dependency chains are slowing down page load times.
+
+### Critical Path Breakdown:
+1. **Initial Page Load**: 364ms
+2. **Font Loading**: 363ms → 1,264ms (font files)
+3. **JavaScript Bundle**: 1,078ms → 2,649ms (API calls)
+4. **CSS Loading**: 959ms
+
+### Slowest Resources:
+- **Supabase API calls**: 2,431ms - 2,649ms
+- **Web fonts**: 1,264ms each
+- **JavaScript bundle**: 1,078ms
+
+**Solution:** Reduce chain length, optimize resource sizes, or defer non-critical downloads.
+
+---
+
+## 🔺 Unused JavaScript
+**Estimated Savings: 165 KiB**
+
+Large amounts of unused JavaScript are being loaded unnecessarily.
+
+### Waste Analysis:
+- **Total JavaScript**: 277.5 KiB
+- **Unused Code**: 164.8 KiB (59% waste)
+- **File**: /assets/index-Czi81pWE.js
+
+**Solution:** Remove unused JavaScript and defer loading scripts until required.
+
+---
+
+## 📋 Priority Recommendations
+
+### High Priority:
+1. **Fix Instagram section layout shift** (0.532 score)
+2. **Optimize Supabase API calls** (2,649ms delay)
+3. **Remove unused JavaScript** (165 KiB savings)
+
+### Medium Priority:
+4. **Defer Google Fonts loading** (230ms blocking)
+5. **Optimize font loading strategy** (prevent layout shifts)
+6. **Reduce JavaScript bundle size**
+
+### Low Priority:
+7. **Optimize CSS delivery**
+8. **Consider resource preconnecting**
+
+---
+
+## 🎯 Expected Impact
+- **Load Time Improvement**: ~525ms (360ms + 165ms savings)
+- **Layout Stability**: Significant CLS improvement
+- **User Experience**: Faster perceived performance
+- **Core Web Vitals**: Better LCP, CLS, and FCP scores

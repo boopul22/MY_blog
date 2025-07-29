@@ -79,17 +79,22 @@ const PostCard: React.FC<PostCardProps> = ({ post, variant = 'default', isLarge 
 
   if (variant === 'list') {
     return (
-      <article className="group bg-card text-card-foreground rounded-lg border border-border hover:border-muted-foreground transition-colors duration-300 overflow-hidden mb-6">
+      <article className="group bg-card text-card-foreground rounded-lg border border-border hover:border-muted-foreground transition-colors duration-200 overflow-hidden mb-6" style={{willChange: 'transform', transform: 'translateZ(0)'}}>
         <div className="grid md:grid-cols-3 gap-0 items-stretch">
           <div className="md:col-span-1">
             <Link to={`/post/${post.slug}`} className="block h-full">
               <div className="relative bg-muted p-3 h-full">
-                <img 
-                  src={post.imageUrl} 
+                <img
+                  src={post.imageUrl}
                   alt={post.title}
-                  className="w-full h-48 md:h-full object-cover rounded border border-border transition-transform duration-300 group-hover:scale-[1.02]"
+                  className="w-full h-48 md:h-full object-cover rounded border border-border transition-transform duration-200 group-hover:scale-[1.02]"
+                  style={{willChange: 'transform', transform: 'translateZ(0)'}}
+                  loading="lazy"
+                  decoding="async"
+                  width="400"
+                  height="192"
                 />
-                <div className="absolute inset-3 bg-black bg-opacity-0 group-hover:bg-opacity-5 transition-all duration-300 rounded"></div>
+                <div className="absolute inset-3 bg-black bg-opacity-0 group-hover:bg-opacity-5 transition-opacity duration-200 rounded" style={{willChange: 'opacity'}}></div>
               </div>
             </Link>
           </div>
@@ -123,16 +128,21 @@ const PostCard: React.FC<PostCardProps> = ({ post, variant = 'default', isLarge 
 
   if (variant === 'grid') {
     return (
-      <article className="group bg-card text-card-foreground rounded-lg border border-border hover:border-muted-foreground transition-colors duration-300 overflow-hidden mb-4 sm:mb-6">
+      <article className="group bg-card text-card-foreground rounded-lg border border-border hover:border-muted-foreground transition-colors duration-200 overflow-hidden mb-4 sm:mb-6" style={{willChange: 'transform', transform: 'translateZ(0)'}}>
         <div className="relative">
           <Link to={`/post/${post.slug}`} className="block">
             <div className="relative bg-muted p-3">
-              <img 
-                src={post.imageUrl} 
+              <img
+                src={post.imageUrl}
                 alt={post.title}
-                className="w-full h-48 object-cover rounded border border-border transition-transform duration-300 group-hover:scale-[1.02]"
+                className="w-full h-48 object-cover rounded border border-border transition-transform duration-200 group-hover:scale-[1.02]"
+                style={{willChange: 'transform', transform: 'translateZ(0)'}}
+                loading="lazy"
+                decoding="async"
+                width="400"
+                height="192"
               />
-              <div className="absolute inset-3 bg-black bg-opacity-0 group-hover:bg-opacity-5 transition-all duration-300 rounded"></div>
+              <div className="absolute inset-3 bg-black bg-opacity-0 group-hover:bg-opacity-5 transition-opacity duration-200 rounded" style={{willChange: 'opacity'}}></div>
             </div>
           </Link>
         </div>
@@ -165,7 +175,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, variant = 'default', isLarge 
 
   // Default variant - Gallery-inspired design with contained date
   return (
-    <div className="group bg-card text-card-foreground rounded-lg border border-border hover:border-muted-foreground transition-colors duration-300 overflow-hidden mb-4 sm:mb-6">
+    <div className="group bg-card text-card-foreground rounded-lg border border-border hover:border-muted-foreground transition-colors duration-200 overflow-hidden mb-4 sm:mb-6" style={{willChange: 'transform', transform: 'translateZ(0)'}}>
       <div className="flex">
         {/* Date positioned vertically within the card */}
         <div className="flex items-center justify-center bg-muted px-3">
@@ -181,13 +191,18 @@ const PostCard: React.FC<PostCardProps> = ({ post, variant = 'default', isLarge 
           {/* Image with frame-like styling */}
           <Link to={`/post/${post.slug}`} className="block">
             <div className="relative bg-muted p-4">
-              <img 
-                className="w-full h-64 object-cover rounded border border-border transition-transform duration-300 group-hover:scale-[1.02]"
-                src={post.imageUrl} 
-                alt={post.title} 
+              <img
+                className="w-full h-64 object-cover rounded border border-border transition-transform duration-200 group-hover:scale-[1.02]"
+                src={post.imageUrl}
+                alt={post.title}
+                style={{willChange: 'transform', transform: 'translateZ(0)'}}
+                loading="lazy"
+                decoding="async"
+                width="400"
+                height="256"
               />
               {/* Subtle overlay on hover */}
-              <div className="absolute inset-4 bg-black bg-opacity-0 group-hover:bg-opacity-5 transition-all duration-300 rounded"></div>
+              <div className="absolute inset-4 bg-black bg-opacity-0 group-hover:bg-opacity-5 transition-opacity duration-200 rounded" style={{willChange: 'opacity'}}></div>
             </div>
           </Link>
 
